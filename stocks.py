@@ -5,8 +5,8 @@ from datetime import datetime, timedelta
 # http://baostock.com/baostock/index.php/Python_API%E6%96%87%E6%A1%A3
 
 format_date = '%Y-%m-%d'
-minus_days = 4
-end_date = datetime.now().date() - timedelta(days=3)
+minus_days = 1
+end_date = datetime.now().date()
 start_date = end_date - timedelta(days=minus_days)
 ratio_min = 20
 print(start_date)
@@ -15,18 +15,16 @@ print(end_date)
 
 def download_data():
     bs.login()
-
-    # 获取指定日期的指数、股票数据
     start_date_str = start_date.strftime(format_date)
     end_date_str = end_date.strftime(format_date)
     stock_rs = bs.query_all_stock(end_date_str)
     stock_df = stock_rs.get_data()
-    data_df = pd.DataFrame()
+    if stock_df.empty:
+        print('no data')
+        bs.logout()
+        return
     count = 0
     for code in stock_df["code"]:
-        # if '002186' not in code:
-        #     continue
-        # print("Downloading :" + code)
         count += 1
         if count % 100 == 0:
             print(count)
