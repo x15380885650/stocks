@@ -1,19 +1,26 @@
 import baostock as bs
-import pandas as pd
 from datetime import datetime, timedelta
 
 # http://baostock.com/baostock/index.php/Python_API%E6%96%87%E6%A1%A3
 
 format_date = '%Y-%m-%d'
 minus_days = 30*12
-end_date = datetime.now().date() - timedelta(days=1)
-start_date = end_date - timedelta(days=minus_days)
 ratio_min = 20
 pct_change_min = 3
 pct_change_h = 9.5
-print(start_date)
-print(end_date)
+close_price_max = 25
 
+def get_end_date():
+    end_date_t = datetime.now().date()
+    for _ in range(10):
+        end_date_str = end_date_t.strftime(format_date)
+        stock_rs = bs.query_all_stock(end_date_str)
+        stock_df = stock_rs.get_data()
+        if not stock_df.empty:
+            return end_date_t
+        else:
+            end_date_t = end_date_t - timedelta(days=1)
+    return None
 
 def cond_1(data):
     close_price = float(data['close'].iloc[-1])
@@ -47,14 +54,17 @@ def get_max_high_price(data):
 
 def download_data():
     bs.login()
+    end_date = get_end_date()
+    if not end_date:
+        bs.logout()
+        return
+    start_date = end_date - timedelta(days=minus_days)
     start_date_str = start_date.strftime(format_date)
+    print(start_date)
+    print(end_date)
     end_date_str = end_date.strftime(format_date)
     stock_rs = bs.query_all_stock(end_date_str)
     stock_df = stock_rs.get_data()
-    if stock_df.empty:
-        print('no data')
-        bs.logout()
-        return
     count = 0
     for code in stock_df["code"]:
         count += 1
@@ -88,7 +98,8 @@ def download_data():
         #     continue
         max_high_price = get_max_high_price(data)
         latest_high_price = float(data['high'].iloc[-1])
-        if latest_high_price >= max_high_price:
+        latest_close_price = float(data['close'].iloc[-1])
+        if latest_high_price >= max_high_price and latest_close_price < close_price_max:
             print(code)
     bs.logout()
 
