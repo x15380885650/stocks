@@ -4,11 +4,12 @@ from datetime import datetime, timedelta
 # http://baostock.com/baostock/index.php/Python_API%E6%96%87%E6%A1%A3
 
 format_date = '%Y-%m-%d'
-minus_days = 30*12
+minus_days = 30*6
 ratio_min = 20
 pct_change_min = 3
 pct_change_h = 9.5
 close_price_max = 25
+
 
 def get_end_date():
     end_date_t = datetime.now().date()
@@ -21,6 +22,7 @@ def get_end_date():
         else:
             end_date_t = end_date_t - timedelta(days=1)
     return None
+
 
 def cond_1(data):
     close_price = float(data['close'].iloc[-1])
@@ -52,7 +54,8 @@ def get_max_high_price(data):
     return max_price
 
 
-def download_data():
+
+def run():
     bs.login()
     end_date = get_end_date()
     if not end_date:
@@ -60,9 +63,8 @@ def download_data():
         return
     start_date = end_date - timedelta(days=minus_days)
     start_date_str = start_date.strftime(format_date)
-    print(start_date)
-    print(end_date)
     end_date_str = end_date.strftime(format_date)
+    print(start_date_str, end_date_str)
     stock_rs = bs.query_all_stock(end_date_str)
     stock_df = stock_rs.get_data()
     count = 0
@@ -79,8 +81,8 @@ def download_data():
         data = k_rs.get_data()
         if data.empty:
             continue
-        data_shape = data.shape
-        if data_shape[0] < int(minus_days/2):
+        total_count = data.shape[0]
+        if total_count < int(minus_days/2):
             continue
         is_st = data['isST'].iloc[-1]
         if is_st == '1':
@@ -88,22 +90,37 @@ def download_data():
         trade_status = data['tradestatus'].iloc[-1]
         if trade_status == '0':
             continue
+        latest_close_price = float(data['close'].iloc[-1])
+        if latest_close_price < 10 or latest_close_price > 25:
+            continue
 
-        last_5_data = data[-5:]
+        half_count = int(total_count/2)
+        last_half_max_price = get_max_high_price(data[0:half_count])
+        next_half_max_price = get_max_high_price(data[half_count:])
+        latest_7_days_max_price = get_max_high_price(data[-5:])
+        if latest_7_days_max_price == next_half_max_price:
+            i_ratio = ((latest_7_days_max_price-last_half_max_price)/last_half_max_price)*100
+            if i_ratio >= 0 and i_ratio <= 10:
+                print(code, last_half_max_price, next_half_max_price, i_ratio)
+        # latest_high_price = float(data['high'].iloc[-1])
+        # if latest_high_price > t_max_price:
+        #     print(code, latest_high_price, t_max_price)
+
+        # last_5_data = data[-5:]
         # cond_1_ok = cond_1(last_5_data)
         # if not cond_1_ok:
         #     continue
         # cond_2_ok = cond_2(last_5_data)
         # if not cond_2_ok:
         #     continue
-        max_high_price = get_max_high_price(data)
-        latest_high_price = float(data['high'].iloc[-1])
-        latest_close_price = float(data['close'].iloc[-1])
-        if latest_high_price >= max_high_price and latest_close_price < close_price_max:
-            print(code)
+        # max_high_price = get_max_high_price(data)
+        # latest_high_price = float(data['high'].iloc[-1])
+        # latest_close_price = float(data['close'].iloc[-1])
+        # if latest_high_price >= max_high_price and latest_close_price < close_price_max:
+        #     print(code)
     bs.logout()
 
 
 if __name__ == '__main__':
     # 获取指定日期全部股票的日K线数据
-    download_data()
+    run()
