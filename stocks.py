@@ -53,6 +53,9 @@ def get_max_high_price(data):
             max_price = float(price)
     return max_price
 
+def is_red(one_data):
+    return float(one_data['close']) > float(one_data['open'])
+
 
 
 def run():
@@ -74,7 +77,7 @@ def run():
             print(count)
         if code.startswith('sh.000'):
             continue
-        # if '002336' not in code:
+        # if '300616' not in code:
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST",
                                             start_date_str, end_date_str)
@@ -94,13 +97,17 @@ def run():
         if latest_close_price < 10 or latest_close_price > 25:
             continue
 
+        red = is_red(data.iloc[-1])
+        if not red:
+            continue
+
         half_count = int(total_count/2)
         last_half_max_price = get_max_high_price(data[0:half_count])
         next_half_max_price = get_max_high_price(data[half_count:])
-        latest_7_days_max_price = get_max_high_price(data[-5:])
-        if latest_7_days_max_price == next_half_max_price:
-            i_ratio = ((latest_7_days_max_price-last_half_max_price)/last_half_max_price)*100
-            if i_ratio >= 0 and i_ratio <= 10:
+        latest_some_days_max_price = get_max_high_price(data[-1:])
+        if latest_some_days_max_price == next_half_max_price:
+            i_ratio = ((latest_some_days_max_price-last_half_max_price)/last_half_max_price)*100
+            if 0 <= i_ratio <= 10:
                 print(code, last_half_max_price, next_half_max_price, i_ratio)
         # latest_high_price = float(data['high'].iloc[-1])
         # if latest_high_price > t_max_price:
