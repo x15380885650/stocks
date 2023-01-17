@@ -24,26 +24,27 @@ def get_end_date():
     return None
 
 
-def cond_1(data):
-    close_price = float(data['close'].iloc[-1])
-    start_price = float(data['open'].iloc[0])
-    ratio = ((close_price - start_price) / start_price) * 100
-    if not data['pctChg'].iloc[-1]:
-        return False
-    pct_chg = float(data['pctChg'].iloc[-1])
-    if ratio < ratio_min or pct_chg < pct_change_min:
-        return False
+def cond_1(data, min_max_day):  # 例如5天内有2天涨停
+    day = 0
     for chg in data['pctChg']:
+        if not chg:
+            return False
         if float(chg) >= pct_change_h:
+            day += 1
+        if day >= min_max_day:
             return True
     return False
 
 
-def cond_2(data):
-    for chg in data['pctChg']:
-        if not chg or float(chg) <= 0:
-            return False
-    return True
+def cond_2(data, half_count):   # 近期最高点，且涨幅在0-10
+    last_half_max_price = get_max_high_price(data[0:half_count])
+    next_half_max_price = get_max_high_price(data[half_count:])
+    latest_some_days_max_price = get_max_high_price(data[-1:])
+    if latest_some_days_max_price == next_half_max_price:
+        i_ratio = ((latest_some_days_max_price-last_half_max_price)/last_half_max_price)*100
+        if 0 <= i_ratio <= 10:
+            return True
+    return False
 
 
 def get_max_high_price(data):
@@ -87,6 +88,7 @@ def run():
         total_count = data.shape[0]
         if total_count < int(minus_days/2):
             continue
+        half_count = int(total_count / 2)
         is_st = data['isST'].iloc[-1]
         if is_st == '1':
             continue
@@ -101,30 +103,13 @@ def run():
         if not red:
             continue
 
-        half_count = int(total_count/2)
-        last_half_max_price = get_max_high_price(data[0:half_count])
-        next_half_max_price = get_max_high_price(data[half_count:])
-        latest_some_days_max_price = get_max_high_price(data[-1:])
-        if latest_some_days_max_price == next_half_max_price:
-            i_ratio = ((latest_some_days_max_price-last_half_max_price)/last_half_max_price)*100
-            if 0 <= i_ratio <= 10:
-                print(code, last_half_max_price, next_half_max_price, i_ratio)
-        # latest_high_price = float(data['high'].iloc[-1])
-        # if latest_high_price > t_max_price:
-        #     print(code, latest_high_price, t_max_price)
-
-        # last_5_data = data[-5:]
-        # cond_1_ok = cond_1(last_5_data)
+        # cond_1_ok = cond_1(data[-5:], min_max_day=2)
         # if not cond_1_ok:
         #     continue
-        # cond_2_ok = cond_2(last_5_data)
-        # if not cond_2_ok:
-        #     continue
-        # max_high_price = get_max_high_price(data)
-        # latest_high_price = float(data['high'].iloc[-1])
-        # latest_close_price = float(data['close'].iloc[-1])
-        # if latest_high_price >= max_high_price and latest_close_price < close_price_max:
-        #     print(code)
+        cond_2_ok = cond_2(data, half_count)
+        if not cond_2_ok:
+            continue
+        print(code)
     bs.logout()
 
 
