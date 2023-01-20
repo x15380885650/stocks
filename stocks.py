@@ -74,18 +74,81 @@ def get_max_high_price(data):
 
 
 def get_max_high_volume(data):
-    max_volume = float(data['volume'].iloc[0])
+    max_volume = 0
     for volume in data['volume']:
         if not volume:
             continue
-        if max_volume < float(volume):
-            max_volume = float(volume)
+        if max_volume < int(volume):
+            max_volume = int(volume)
     return max_volume
 
 
-# def cond_5(data):
-#     for row in data[['date', 'volume']].itertuples(index=False):
-#         print(row)
+def cond_5(data, latest_days=30):
+    volume_up_ratio_min = 40
+    volume_down_ratio_min = 50
+    count = data.shape[0]
+    volume_date_dict = {}
+    for row in data[['date', 'volume']].itertuples(index=False):
+        vol = row[1]
+        date = row[0]
+        if not vol or not date:
+            continue
+        volume_date_dict[int(row[1])] = datetime.strptime(row[0], format_date)
+    if not volume_date_dict:
+        return False
+    sorted_date_volume = sorted(volume_date_dict.items(), key=lambda x: x[0], reverse=True)
+    date_list = []
+    sorted_volume_list = []
+    for item in sorted_date_volume:
+        date_list.append(item[1])
+        sorted_volume_list.append(item[0])
+    sorted_date_list = sorted(date_list)
+    max_vol_date_index = sorted_date_list.index(date_list[0])
+    if (count-max_vol_date_index) > latest_days:  # 最大量必须在最近的时间内
+        return False
+    pivot_vol = get_max_high_volume(data[0:count-latest_days])
+    q_date_vol_dict = {}
+    for index, vol in enumerate(sorted_volume_list):
+        volume_up_ratio = (vol-pivot_vol) / pivot_vol * 100
+        if volume_up_ratio >= volume_up_ratio_min:
+            q_date_vol_dict[volume_date_dict[vol]] = vol
+    if not q_date_vol_dict:
+        return False
+    sorted_q_date_list = sorted(list(q_date_vol_dict.keys()))
+    f_date_index = sorted_date_list.index(sorted_q_date_list[0])
+    l_scope_days = count-f_date_index
+    f_max_vol = q_date_vol_dict[sorted_q_date_list[0]]
+    # print('date:{}, vol:{}, pre_days:{}'.format(sorted_q_date_list[0], f_max_vol, l_scope_days))
+    volume_down_days_min = int(l_scope_days / 2)
+    volume_down_days = 0
+    l_scope_volumes = list(volume_date_dict.keys())[f_date_index:]
+    for vol in l_scope_volumes:
+        volume_down_ratio = (vol - f_max_vol) / f_max_vol * 100
+        # print('date:{}, ratio:{}, vol:{}, f_max_vol:{}'.format(volume_date_dict[vol], volume_down_ratio, vol, f_max_vol))
+        if volume_down_ratio >= -volume_down_ratio_min:
+            volume_down_days += 1
+    if volume_down_days <= volume_down_days_min:
+        return False
+
+    latest_days_max_price = get_max_high_price(data[-latest_days:])
+    max_price_ok = False
+    for price in data[-3:]['high']:
+        if float(price) == latest_days_max_price:
+            max_price_ok = True
+            break
+    if not max_price_ok:
+        return False
+
+    red_days = 0
+    scope_interval_days = count-f_date_index
+    for i in range(f_date_index, count):
+        one_data = data.iloc[i]
+        red = is_red(one_data)
+        if red:
+            red_days += 1
+    if (red_days/scope_interval_days) <= 0.5:
+        return False
+    return True
 
 
 
@@ -166,8 +229,8 @@ def run():
             print(count)
         if code.startswith('sh.000'):
             continue
-        if '002441' not in code:  #600731  600733
-            continue
+        # if '600477' not in code:  #600731  600733
+        #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
         data = k_rs.get_data()
@@ -187,9 +250,9 @@ def run():
         if latest_close_price < 5 or latest_close_price > 25:
             continue
 
-        red = is_red(data.iloc[-1])
-        if not red:
-            continue
+        # red = is_red(data.iloc[-1])
+        # if not red:
+        #     continue
 
         # cond_2_ok = cond_2(data, half_count)
         # if not cond_2_ok:
@@ -207,7 +270,10 @@ def run():
         # if not cond_4_ok:
         #     continue
 
-        cond_5(data[-60:])
+        cond_5_ok = cond_5(data[-60:])
+        if not cond_5_ok:
+            continue
+
 
         print(code)
     bs.logout()
