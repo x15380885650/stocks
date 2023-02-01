@@ -87,13 +87,14 @@ def cond_5(data, latest_days=30):
     volume_up_ratio_min = 40
     volume_down_ratio_min = 50
     count = data.shape[0]
+    scope_interval_days_min = 5
     volume_date_dict = {}
     for row in data[['date', 'volume']].itertuples(index=False):
         vol = row[1]
         date = row[0]
         if not vol or not date:
             continue
-        volume_date_dict[int(row[1])] = datetime.strptime(row[0], format_date)
+        volume_date_dict[int(vol)] = datetime.strptime(date, format_date)
     if not volume_date_dict:
         return False
     sorted_date_volume = sorted(volume_date_dict.items(), key=lambda x: x[0], reverse=True)
@@ -117,6 +118,8 @@ def cond_5(data, latest_days=30):
     sorted_q_date_list = sorted(list(q_date_vol_dict.keys()))
     f_date_index = sorted_date_list.index(sorted_q_date_list[0])
     l_scope_days = count-f_date_index
+    if l_scope_days < scope_interval_days_min:
+        return False
     f_max_vol = q_date_vol_dict[sorted_q_date_list[0]]
     # print('date:{}, vol:{}, pre_days:{}'.format(sorted_q_date_list[0], f_max_vol, l_scope_days))
     volume_down_days_min = int(l_scope_days / 2)
@@ -140,13 +143,12 @@ def cond_5(data, latest_days=30):
         return False
 
     red_days = 0
-    scope_interval_days = count-f_date_index
     for i in range(f_date_index, count):
         one_data = data.iloc[i]
         red = is_red(one_data)
         if red:
             red_days += 1
-    if (red_days/scope_interval_days) <= 0.5:
+    if (red_days/l_scope_days) <= 0.5:
         return False
     return True
 
@@ -229,7 +231,8 @@ def run():
             print(count)
         if code.startswith('sh.000'):
             continue
-        # if '600477' not in code:  #600731  600733
+        # print(code)
+        # if '300044' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
