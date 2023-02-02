@@ -47,7 +47,7 @@ def cond_2(data, half_count):   # 近期最高点，且涨幅在0-10
     return False
 
 
-def cond_3(data, min_up_days):   # 5天内涨了4次
+def cond_3(code, data, min_up_days):   # 5天内涨了4次
     days = 0
     for _, d in data.iterrows():
         close_price = d['close']
@@ -59,7 +59,7 @@ def cond_3(data, min_up_days):   # 5天内涨了4次
             days += 1
     if days >= min_up_days:
         r = (float(data.iloc[-1]['close']) - float(data.iloc[0]['open']))/float(data.iloc[0]['open']) * 100
-        if 5 <= r <= 10:
+        if 10 <= r <= 15:
             return True
 
     return False
@@ -83,7 +83,7 @@ def get_max_high_volume(data):
     return max_volume
 
 
-def cond_5(data, latest_days=30):
+def cond_5(code, data, latest_days=5):
     volume_up_ratio_min = 40
     volume_down_ratio_min = 50
     count = data.shape[0]
@@ -118,19 +118,19 @@ def cond_5(data, latest_days=30):
     sorted_q_date_list = sorted(list(q_date_vol_dict.keys()))
     f_date_index = sorted_date_list.index(sorted_q_date_list[0])
     l_scope_days = count-f_date_index
-    if l_scope_days < scope_interval_days_min:
+    # if l_scope_days < scope_interval_days_min:
+    #     return False
+    if l_scope_days not in [3, 4, 5]:
         return False
     f_max_vol = q_date_vol_dict[sorted_q_date_list[0]]
-    # print('date:{}, vol:{}, pre_days:{}'.format(sorted_q_date_list[0], f_max_vol, l_scope_days))
     volume_down_days_min = int(l_scope_days / 2)
     volume_down_days = 0
     l_scope_volumes = list(volume_date_dict.keys())[f_date_index:]
     for vol in l_scope_volumes:
         volume_down_ratio = (vol - f_max_vol) / f_max_vol * 100
-        # print('date:{}, ratio:{}, vol:{}, f_max_vol:{}'.format(volume_date_dict[vol], volume_down_ratio, vol, f_max_vol))
         if volume_down_ratio >= -volume_down_ratio_min:
             volume_down_days += 1
-    if volume_down_days <= volume_down_days_min:
+    if volume_down_days < volume_down_days_min:
         return False
 
     latest_days_max_price = get_max_high_price(data[-latest_days:])
@@ -150,63 +150,22 @@ def cond_5(data, latest_days=30):
             red_days += 1
     if (red_days/l_scope_days) <= 0.5:
         return False
-    return True
-
-
-
-def cond_4(data):
-    window_size = 10
-    volume_up_ratio_min = 40
-    volume_down_ratio_min = 50
-    volume_down_days_min = int(window_size/2)-1
-    window_pre_sorted_volume_list = []
-    window_next_sorted_volume_list = []
-    for volume in data[:-window_size]['volume']:
-        if not volume:
+    pch_chg_count = 0
+    pch_chg_sum = 0
+    for pct_chg in data[f_date_index:]['pctChg']:
+        if not pct_chg:
             continue
-        window_pre_sorted_volume_list.append(float(volume))
-    if not window_pre_sorted_volume_list:
+        if float(pct_chg) > 6:
+            pch_chg_count += 1
+        pch_chg_sum += float(pct_chg)
+    if pch_chg_count < 1:
         return False
-    for volume in data[-window_size:]['volume']:
-        if not volume:
-            continue
-        window_next_sorted_volume_list.append(float(volume))
-    if not window_next_sorted_volume_list:
-        return False
-    window_pre_sorted_volume_list.sort(reverse=True)
-    window_next_sorted_volume_list.sort(reverse=True)
-    window_pre_max_volume = window_pre_sorted_volume_list[0]
-    window_next_max_volume = window_next_sorted_volume_list[0]
-    if window_pre_max_volume > window_next_max_volume:
-        return False
-    volume_up_days = 0
-    for v in window_next_sorted_volume_list:
-        volume_up_ratio = (v - window_pre_max_volume) / window_pre_max_volume * 100
-        if volume_up_ratio >= volume_up_ratio_min:
-            volume_up_days += 1
-    if volume_up_days <= 0:
+    if pch_chg_sum >= 20:
+        # print(pch_chg_sum)
         return False
 
-    # print('code: {}'.format(data['code'].iloc[0]))
-    volume_down_days = 0
-    for v in window_next_sorted_volume_list[1:]:
-        volume_down_ratio = abs((v - window_next_max_volume) / window_next_max_volume * 100)
-        if volume_down_ratio <= volume_down_ratio_min:
-            volume_down_days += 1
-    if volume_down_days <= volume_down_days_min:
-        return False
-    window_next_max_price = get_max_high_price(data[-window_size:])
-    # print(window_next_max_price)
-    max_price_ok = False
-    for price in data[-3:]['high']:
-        # print(price)
-        if float(price) == window_next_max_price:
-            max_price_ok = True
-            break
-    if not max_price_ok:
-        return False
+
     return True
-
 
 def is_red(one_data):
     return float(one_data['close']) > float(one_data['open'])
@@ -232,7 +191,7 @@ def run():
         if code.startswith('sh.000'):
             continue
         # print(code)
-        # if '300044' not in code:  #600731  600733
+        # if '600366' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -265,7 +224,7 @@ def run():
         # if not cond_1_ok:
         #     continue
 
-        # cond_3_ok = cond_3(data[-5:], min_up_days=4)
+        # cond_3_ok = cond_3(code, data[-5:], min_up_days=5)
         # if not cond_3_ok:
         #     continue
 
@@ -273,7 +232,7 @@ def run():
         # if not cond_4_ok:
         #     continue
 
-        cond_5_ok = cond_5(data[-60:])
+        cond_5_ok = cond_5(code, data[-60:])
         if not cond_5_ok:
             continue
 
