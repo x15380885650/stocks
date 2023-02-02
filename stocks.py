@@ -167,6 +167,39 @@ def cond_5(code, data, latest_days=5):
 
     return True
 
+def cond_6(code, data, latest_days=5):
+    volume_up_ratio_min = 40
+    volume_down_ratio_min = 50
+    count = data.shape[0]
+    scope_interval_days_min = 5
+    date_low_price_dict = {}
+    for row in data[['date', 'low']].itertuples(index=False):
+        low_price = row[1]
+        date = row[0]
+        if not low_price or not date:
+            continue
+        date_low_price_dict[datetime.strptime(date, format_date)] = float(low_price)
+    if not date_low_price_dict:
+        return False
+    sorted_date_low_price = sorted(date_low_price_dict.items(), key=lambda x: x[1], reverse=False)
+    date_list = []
+    sorted_price_list = []
+    for item in sorted_date_low_price:
+        date_list.append(item[0])
+        sorted_price_list.append(item[1])
+    sorted_date_list = sorted(date_list)
+    min_low_price_date_index = sorted_date_list.index(date_list[0])
+    t_date_interval_ok = False
+    for t_date in date_list[:10]:
+        t_date_index = sorted_date_list.index(t_date)
+        t_interval = abs(min_low_price_date_index-t_date_index)
+        if t_interval >= count/2:
+            t_date_interval_ok = True
+            break
+    if not t_date_interval_ok:
+        return False
+    return True
+
 def is_red(one_data):
     return float(one_data['close']) > float(one_data['open'])
 
@@ -188,10 +221,12 @@ def run():
         count += 1
         if count % 1000 == 0:
             print(count)
+        if not (code.startswith('sh') or code.startswith('sz')):
+            continue
         if code.startswith('sh.000'):
             continue
         # print(code)
-        # if '600366' not in code:  #600731  600733
+        # if '600172' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -232,8 +267,12 @@ def run():
         # if not cond_4_ok:
         #     continue
 
-        cond_5_ok = cond_5(code, data[-60:])
-        if not cond_5_ok:
+        # cond_5_ok = cond_5(code, data[-60:])
+        # if not cond_5_ok:
+        #     continue
+
+        cond_6_ok = cond_6(code, data[-90:])
+        if not cond_6_ok:
             continue
 
 
