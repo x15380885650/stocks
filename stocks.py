@@ -192,12 +192,14 @@ def cond_6(code, data, latest_days=60):
     max_high_price = get_max_high_price(data)
     now_date_close_price = float(data.iloc[-1]['close'])
     min_date_open_price = float(data.iloc[min_low_price_date_index]['open'])
-    down_ratio = (max_high_price-min_date_open_price)/min_date_open_price * 100
-    if down_ratio < 80:
+    min_low_price = sorted_price_list[0]
+    down_ratio = (max_high_price-min_low_price)/max_high_price * 100
+    if down_ratio < 45:
         return False
     up_ratio = (now_date_close_price-min_date_open_price)/min_date_open_price * 100
     if up_ratio < 0 or up_ratio > 15:
         return False
+    print(code, down_ratio, up_ratio)
     return True
 
 
@@ -228,8 +230,8 @@ def run():
             continue
         if not code.startswith('sz.300'):
             continue
-        # print(code)
-        # if '300984' not in code:  #600731  600733
+        # # print(code)
+        # if '300978' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -244,13 +246,15 @@ def run():
         if is_st == '1':
             continue
         pe_ttm = data['peTTM'].iloc[-1]
-        if float(pe_ttm) < 0:
-            continue
+        # if float(pe_ttm) < 0:
+        #     continue
         trade_status = data['tradestatus'].iloc[-1]
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
-        if latest_close_price < 5 or latest_close_price > 25:
+        # if latest_close_price < 5 or latest_close_price > 25:
+        #     continue
+        if latest_close_price > 25:
             continue
 
         # red = is_red(data.iloc[-1])
