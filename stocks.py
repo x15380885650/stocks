@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 # http://baostock.com/baostock/index.php/Python_API%E6%96%87%E6%A1%A3
 
 format_date = '%Y-%m-%d'
-minus_days = 30*6
+minus_days = 30*12
 ratio_min = 20
 pct_change_min = 3
 pct_change_h = 9.5
@@ -167,11 +167,9 @@ def cond_5(code, data, latest_days=5):
 
     return True
 
-def cond_6(code, data, latest_days=5):
-    volume_up_ratio_min = 40
-    volume_down_ratio_min = 50
+
+def cond_6(code, data, latest_days=60):
     count = data.shape[0]
-    scope_interval_days_min = 5
     date_low_price_dict = {}
     for row in data[['date', 'low']].itertuples(index=False):
         low_price = row[1]
@@ -189,16 +187,19 @@ def cond_6(code, data, latest_days=5):
         sorted_price_list.append(item[1])
     sorted_date_list = sorted(date_list)
     min_low_price_date_index = sorted_date_list.index(date_list[0])
-    t_date_interval_ok = False
-    for t_date in date_list[:10]:
-        t_date_index = sorted_date_list.index(t_date)
-        t_interval = abs(min_low_price_date_index-t_date_index)
-        if t_interval >= count/2:
-            t_date_interval_ok = True
-            break
-    if not t_date_interval_ok:
+    if (count-min_low_price_date_index) > latest_days:  # 最大量必须在最近的时间内
+        return False
+    max_high_price = get_max_high_price(data)
+    now_date_close_price = float(data.iloc[-1]['close'])
+    min_date_open_price = float(data.iloc[min_low_price_date_index]['open'])
+    down_ratio = (max_high_price-min_date_open_price)/min_date_open_price * 100
+    if down_ratio < 80:
+        return False
+    up_ratio = (now_date_close_price-min_date_open_price)/min_date_open_price * 100
+    if up_ratio < 0 or up_ratio > 15:
         return False
     return True
+
 
 def is_red(one_data):
     return float(one_data['close']) > float(one_data['open'])
@@ -225,8 +226,10 @@ def run():
             continue
         if code.startswith('sh.000'):
             continue
+        if not code.startswith('sz.300'):
+            continue
         # print(code)
-        # if '600172' not in code:  #600731  600733
+        # if '300984' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -239,6 +242,9 @@ def run():
         half_count = int(total_count / 2)
         is_st = data['isST'].iloc[-1]
         if is_st == '1':
+            continue
+        pe_ttm = data['peTTM'].iloc[-1]
+        if float(pe_ttm) < 0:
             continue
         trade_status = data['tradestatus'].iloc[-1]
         if trade_status == '0':
@@ -271,7 +277,7 @@ def run():
         # if not cond_5_ok:
         #     continue
 
-        cond_6_ok = cond_6(code, data[-90:])
+        cond_6_ok = cond_6(code, data[-180:])
         if not cond_6_ok:
             continue
 
