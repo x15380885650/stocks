@@ -282,8 +282,8 @@ def run():
         # # print(code)
         # if '300978' not in code:  #600731  600733
         #   continum
-        # if not code.startswith('sz.300'):
-        #     continue
+        if not code.startswith('sz.300'):
+            continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
         data = k_rs.get_data()
@@ -297,8 +297,8 @@ def run():
         if is_st == '1':
             continue
         pe_ttm = data['peTTM'].iloc[-1]
-        if float(pe_ttm) < 0:
-            continue
+        # if float(pe_ttm) < 0:
+        #     continue
         trade_status = data['tradestatus'].iloc[-1]
         if trade_status == '0':
             continue
