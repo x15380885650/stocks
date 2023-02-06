@@ -163,8 +163,6 @@ def cond_5(code, data, latest_days=5):
     if pch_chg_sum >= 20:
         # print(pch_chg_sum)
         return False
-
-
     return True
 
 
@@ -203,6 +201,25 @@ def cond_6(code, data, latest_days=60):
     return True
 
 
+def cond_7(code, data, min_up_days=5):
+    days = 0
+    for _, d in data.iterrows():
+        close_price = d['close']
+        open_price = d['open']
+        if not close_price or not open_price:
+            return False
+        r = (float(close_price) - float(open_price)) / float(open_price) * 100
+        if r >= 0:
+            days += 1
+    if days >= min_up_days:
+        r = (float(data.iloc[-1]['close']) - float(data.iloc[0]['open'])) / float(data.iloc[0]['open']) * 100
+        if 10 <= r <= 15:
+            return True
+
+    return False
+
+
+
 def is_red(one_data):
     return float(one_data['close']) > float(one_data['open'])
 
@@ -228,8 +245,8 @@ def run():
             continue
         if code.startswith('sh.000'):
             continue
-        if not code.startswith('sz.300'):
-            continue
+        # if not code.startswith('sz.300'):
+        #     continue
         # # print(code)
         # if '300978' not in code:  #600731  600733
         #     continue
