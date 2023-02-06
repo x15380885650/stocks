@@ -49,20 +49,26 @@ def cond_2(data, half_count):   # 近期最高点，且涨幅在0-10
 
 def cond_3(code, data, min_up_days):   # 5天内涨了4次
     days = 0
+    prev_close_price = 0
     for _, d in data.iterrows():
         close_price = d['close']
         open_price = d['open']
         if not close_price or not open_price:
             return False
         r = (float(close_price) - float(open_price))/float(open_price) * 100
-        if r >= 0:
-            days += 1
-    if days >= min_up_days:
-        r = (float(data.iloc[-1]['close']) - float(data.iloc[0]['open']))/float(data.iloc[0]['open']) * 100
-        if 10 <= r <= 15:
-            return True
+        if r < 0 or r > 3.5:
+            return False
+        if float(close_price) - prev_close_price < 0:
+            return False
+        prev_close_price = float(close_price)
+        days += 1
+    if days < min_up_days:
+        return False
+        # r = (float(data.iloc[-1]['close']) - float(data.iloc[0]['open']))/float(data.iloc[0]['open']) * 100
+        # if 10 <= r <= 15:
+        #     return True
 
-    return False
+    return True
 
 
 def get_max_high_price(data):
@@ -73,6 +79,14 @@ def get_max_high_price(data):
     return max_price
 
 
+def get_min_low_price(data):
+    min_price = float(data['low'].iloc[0])
+    for price in data['low']:
+        if min_price > float(price):
+            min_price = float(price)
+    return min_price
+
+
 def get_max_high_volume(data):
     max_volume = 0
     for volume in data['volume']:
@@ -81,6 +95,16 @@ def get_max_high_volume(data):
         if max_volume < int(volume):
             max_volume = int(volume)
     return max_volume
+
+
+def get_latest_low_index(data, low_price):
+    latest_index = -1
+    for index, price in enumerate(data['low']):
+        if not low_price:
+            continue
+        if float(price) == low_price:
+            latest_index = index
+    return latest_index
 
 
 def cond_5(code, data, latest_days=5):
@@ -166,7 +190,7 @@ def cond_5(code, data, latest_days=5):
     return True
 
 
-def cond_6(code, data, latest_days=60):
+def cond_6(code, data, latest_days=30):
     count = data.shape[0]
     date_low_price_dict = {}
     for row in data[['date', 'low']].itertuples(index=False):
@@ -183,21 +207,29 @@ def cond_6(code, data, latest_days=60):
     for item in sorted_date_low_price:
         date_list.append(item[0])
         sorted_price_list.append(item[1])
-    sorted_date_list = sorted(date_list)
-    min_low_price_date_index = sorted_date_list.index(date_list[0])
-    if (count-min_low_price_date_index) > latest_days:  # 最大量必须在最近的时间内
-        return False
+    # sorted_date_list = sorted(date_list)
+    min_low_price = get_min_low_price(data[-latest_days:])
+    for row in data[['date', 'low']].itertuples(index=False):
+        low_price = row[1]
+        date = row[0]
+        if not low_price or not date:
+            continue
+        date_low_price_dict[datetime.strptime(date, format_date)] = float(low_price)
+    # min_low_price_date_index = sorted_date_list.index(date_list[0])
+    # if (count-min_low_price_date_index) > latest_days:  # 最大量必须在最近的时间内
+    #     return False
+    min_low_price_date_index = get_latest_low_index(data, min_low_price)
     max_high_price = get_max_high_price(data)
     now_date_close_price = float(data.iloc[-1]['close'])
     min_date_open_price = float(data.iloc[min_low_price_date_index]['open'])
-    min_low_price = sorted_price_list[0]
+    # min_low_price = sorted_price_list[0]
     down_ratio = (max_high_price-min_low_price)/max_high_price * 100
     if down_ratio < 45:
         return False
     up_ratio = (now_date_close_price-min_date_open_price)/min_date_open_price * 100
     if up_ratio < 0 or up_ratio > 15:
         return False
-    print(code, down_ratio, up_ratio)
+    print(code, down_ratio, up_ratio, max_high_price)
     return True
 
 
@@ -249,6 +281,8 @@ def run():
         #     continue
         # # print(code)
         # if '300978' not in code:  #600731  600733
+        #   continum
+        # if not code.startswith('sz.300'):
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -263,15 +297,15 @@ def run():
         if is_st == '1':
             continue
         pe_ttm = data['peTTM'].iloc[-1]
-        # if float(pe_ttm) < 0:
-        #     continue
+        if float(pe_ttm) < 0:
+            continue
         trade_status = data['tradestatus'].iloc[-1]
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
         # if latest_close_price < 5 or latest_close_price > 25:
         #     continue
-        if latest_close_price > 25:
+        if latest_close_price < 5 or latest_close_price > 15:
             continue
 
         # red = is_red(data.iloc[-1])
@@ -286,9 +320,9 @@ def run():
         # if not cond_1_ok:
         #     continue
 
-        # cond_3_ok = cond_3(code, data[-5:], min_up_days=5)
-        # if not cond_3_ok:
-        #     continue
+        cond_3_ok = cond_3(code, data[-5:], min_up_days=5)
+        if not cond_3_ok:
+            continue
 
         # cond_4_ok = cond_4(data[-60:])
         # if not cond_4_ok:
@@ -298,9 +332,9 @@ def run():
         # if not cond_5_ok:
         #     continue
 
-        cond_6_ok = cond_6(code, data[-180:])
-        if not cond_6_ok:
-            continue
+        # cond_6_ok = cond_6(code, data[-180:])
+        # if not cond_6_ok:
+        #     continue
 
 
         print(code)
