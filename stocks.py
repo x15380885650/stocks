@@ -226,8 +226,8 @@ def run():
             continue
         if code.startswith('sh.000'):
             continue
-        if not code.startswith('sz.300'):
-            continue
+        # if not code.startswith('sz.300'):
+        #     continue
         # print(code)
         # if '300984' not in code:  #600731  600733
         #     continue
@@ -277,9 +277,9 @@ def run():
         # if not cond_5_ok:
         #     continue
 
-        cond_6_ok = cond_6(code, data[-180:])
-        if not cond_6_ok:
-            continue
+        # cond_6_ok = cond_6(code, data[-180:])
+        # if not cond_6_ok:
+        #     continue
 
 
         print(code)
