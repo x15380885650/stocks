@@ -47,26 +47,44 @@ def cond_2(data, half_count):   # 近期最高点，且涨幅在0-10
     return False
 
 
-def cond_3(code, data, min_up_days):   # 5天内涨了4次
-    days = 0
-    prev_close_price = 0
-    for _, d in data.iterrows():
+def cond_3(code, data, min_up_days):   # 5天内涨了5次
+    l_up_days = []
+    for _, d in data[-10:].iterrows():
         close_price = d['close']
         open_price = d['open']
         if not close_price or not open_price:
             return False
-        r = (float(close_price) - float(open_price))/float(open_price) * 100
-        if r < 0 or r > 3.5:
-            return False
+        r = (float(close_price) - float(open_price)) / float(open_price) * 100
+        if r >= -0.1:
+            l_up_days.append(1)
+        else:
+            l_up_days.append(0)
+    t_flag_days = l_up_days[-min_up_days:]
+    if not all(t_flag_days):
+        return False
+
+    flag_days = l_up_days[-(min_up_days + 3):]
+    if all(flag_days):
+        return False
+
+    prev_close_price = 0
+    latest_data = data[-min_up_days:]
+    for _, d in latest_data.iterrows():
+        close_price = d['close']
+        open_price = d['open']
+        if not close_price or not open_price:
+            continue
+        # r = (float(close_price) - float(open_price))/float(open_price) * 100
+        # if r < -0.1 or r > 3.5:
+        #     return False
         if float(close_price) - prev_close_price < 0:
             return False
         prev_close_price = float(close_price)
-        days += 1
-    if days < min_up_days:
+
+    min_low_price = get_min_low_price(data)
+    r = (float(data.iloc[-1]['close']) - min_low_price)/min_low_price * 100
+    if r > 15:
         return False
-        # r = (float(data.iloc[-1]['close']) - float(data.iloc[0]['open']))/float(data.iloc[0]['open']) * 100
-        # if 10 <= r <= 15:
-        #     return True
 
     return True
 
@@ -250,8 +268,6 @@ def cond_7(code, data, min_up_days=5):
 
     return False
 
-
-
 def is_red(one_data):
     return float(one_data['close']) > float(one_data['open'])
 
@@ -280,10 +296,10 @@ def run():
         # if not code.startswith('sz.300'):
         #     continue
         # # print(code)
-        # if '300978' not in code:  #600731  600733
-        #   continum
-        if not code.startswith('sz.300'):
-            continue
+        # if '002702' not in code:  #600731  600733
+        #     continue
+        # if not code.startswith('sz.300'):
+        #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
         data = k_rs.get_data()
@@ -320,7 +336,7 @@ def run():
         # if not cond_1_ok:
         #     continue
 
-        cond_3_ok = cond_3(code, data[-5:], min_up_days=5)
+        cond_3_ok = cond_3(code, data[-60:], min_up_days=5)
         if not cond_3_ok:
             continue
 
