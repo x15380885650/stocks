@@ -63,12 +63,17 @@ def cond_3(code, data, min_up_days):   # 5天内涨了5次
     if not all(t_flag_days):
         return False
 
-    flag_days = l_up_days[-(min_up_days + 3):]
-    if all(flag_days):
-        return False
+    # t_flag = l_up_days[-8]
+    # if t_flag == 1:
+    #     return False
+
+    # flag_days = l_up_days[-(min_up_days + 3):]
+    # if all(flag_days):
+    #     return False
 
     prev_close_price = 0
     latest_data = data[-min_up_days:]
+    t_n_day = 0
     for _, d in latest_data.iterrows():
         close_price = d['close']
         open_price = d['open']
@@ -77,13 +82,19 @@ def cond_3(code, data, min_up_days):   # 5天内涨了5次
         # r = (float(close_price) - float(open_price))/float(open_price) * 100
         # if r < -0.1 or r > 3.5:
         #     return False
-        if float(close_price) - prev_close_price < 0:
-            return False
-        prev_close_price = float(close_price)
+        if prev_close_price != 0:
+            t_ratio = abs((float(close_price) - prev_close_price) / prev_close_price) * 100
+            # if t_ratio <= 0.15:
+            #     print(t_ratio)
 
+            if t_ratio > 0.15 and float(close_price) - prev_close_price < 0:
+                t_n_day += 1
+        prev_close_price = float(close_price)
+    if t_n_day > 1:
+        return False
     min_low_price = get_min_low_price(data)
     r = (float(data.iloc[-1]['close']) - min_low_price)/min_low_price * 100
-    if r > 15:
+    if r > 20:
         return False
 
     return True
@@ -293,10 +304,10 @@ def run():
             continue
         if code.startswith('sh.000'):
             continue
-        # if not code.startswith('sz.300'):
-        #     continue
+        if not code.startswith('sz.300'):
+            continue
         # # print(code)
-        # if '002702' not in code:  #600731  600733
+        # if '300024' not in code:  #600731  600733
         #     continue
         # if not code.startswith('sz.300'):
         #     continue
@@ -336,7 +347,7 @@ def run():
         # if not cond_1_ok:
         #     continue
 
-        cond_3_ok = cond_3(code, data[-60:], min_up_days=5)
+        cond_3_ok = cond_3(code, data[-60:], min_up_days=7)
         if not cond_3_ok:
             continue
 
