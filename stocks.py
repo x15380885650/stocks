@@ -67,9 +67,9 @@ def cond_3(code, data, min_up_days):   # 5天内涨了5次
     # if t_flag == 1:
     #     return False
 
-    # flag_days = l_up_days[-(min_up_days + 3):]
-    # if all(flag_days):
-    #     return False
+    flag_days = l_up_days[-(min_up_days + 1):]
+    if all(flag_days):
+        return False
 
     prev_close_price = 0
     latest_data = data[-min_up_days:]
@@ -94,8 +94,8 @@ def cond_3(code, data, min_up_days):   # 5天内涨了5次
         return False
     min_low_price = get_min_low_price(data)
     r = (float(data.iloc[-1]['close']) - min_low_price)/min_low_price * 100
-    if r > 20:
-        return False
+    # if r < 20:
+    #     return False
 
     return True
 
