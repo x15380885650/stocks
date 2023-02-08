@@ -33,7 +33,7 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
             return False
         r = (float(close_price) - float(open_price)) / float(open_price) * 100
         # print(r)
-        if r >= -0.1:
+        if r >= 0:
             l_up_days.append(1)
         else:
             l_up_days.append(0)
@@ -48,7 +48,10 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
 
     prev_close_price = 0
     # latest_data = data[-min_up_days:]
-    latest_data = data[-(min_up_days+i):-i]
+    if i != 0:
+        latest_data = data[-(min_up_days+i):-i]
+    else:
+        latest_data = data[-(min_up_days + i):]
     t_n_day = 0
     for _, d in latest_data.iterrows():
         close_price = d['close']
@@ -116,7 +119,7 @@ def run():
         if not code.startswith('sz.300'):
             continue
         # # print(code)
-        # if '300707' not in code:  #600731  600733
+        # if '300608' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
