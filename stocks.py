@@ -100,6 +100,68 @@ def cond_3(code, data, min_up_days):   # 5天内涨了5次
     return True
 
 
+def cond_8(code, data, min_up_days=5):   # 5天内涨了5次
+    print(code)
+    l_up_days = []
+    for _, d in data[-10:].iterrows():
+        close_price = d['close']
+        open_price = d['open']
+        pct_change = d['pctChg']
+        if not close_price or not open_price or not pct_change:
+            continue
+        # r_1 = float(pct_change)
+        r_2 = (float(close_price) - float(open_price)) / float(open_price) * 100
+        r_1 = r_2
+        if r_1 >= -0.1 or r_2 >= -0.1:
+            l_up_days.append(1)
+        else:
+            l_up_days.append(0)
+    t_flag_days = l_up_days[-min_up_days:]
+    if sum(t_flag_days) not in [min_up_days-1, min_up_days]:
+        return False
+    # print(sum(t_flag_days))
+    # if not all(t_flag_days):
+    #     return False
+
+    # t_flag = l_up_days[-8]
+    # if t_flag == 1:
+    #     return False
+
+    flag_days = l_up_days[-(min_up_days + 1):]
+    if all(flag_days):
+        return False
+
+    prev_close_price = 0
+    latest_data = data[-min_up_days:]
+    t_n_day = 0
+    for _, d in latest_data.iterrows():
+        close_price = d['close']
+        open_price = d['open']
+        pct_change = d['pctChg']
+        if not close_price or not open_price or not pct_change:
+            continue
+        # r = float(pct_change)
+        r = (float(close_price) - float(open_price)) / float(open_price) * 100
+        if r < -0.1 or r > 2.5:
+            return False
+        if prev_close_price != 0:
+            t_ratio = abs((float(close_price) - prev_close_price) / prev_close_price) * 100
+            # if t_ratio <= 0.15:
+            #     print(t_ratio)
+
+            if t_ratio > 0.15 and float(close_price) - prev_close_price < 0:
+                t_n_day += 1
+        prev_close_price = float(close_price)
+    if t_n_day > 1:
+        return False
+    min_low_price = get_min_low_price(data)
+    r = (float(data.iloc[-1]['close']) - min_low_price)/min_low_price * 100
+    # if r < 20:
+    #     return False
+
+    return True
+
+
 def get_max_high_price(data):
     max_price = float(data['high'].iloc[0])
     for price in data['high']:
@@ -304,8 +366,8 @@ def run():
             continue
         if code.startswith('sh.000'):
             continue
-        # if not code.startswith('sz.300'):
-        #     continue
+        if not code.startswith('sz.300'):
+            continue
         # # print(code)
         # if '300024' not in code:  #600731  600733
         #     continue
@@ -361,6 +423,9 @@ def run():
         # if not cond_6_ok:
         #     continue
 
+        # cond_8_ok = cond_8(code, data[-180:])
+        # if not cond_8_ok:
+        #     continue
 
         print(code)
     bs.logout()
