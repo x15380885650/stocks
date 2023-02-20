@@ -116,8 +116,8 @@ def run():
             continue
         if code.startswith('sh.000'):
             continue
-        if not code.startswith('sz.300'):
-            continue
+        # if not code.startswith('sz.300'):
+        #     continue
         # # print(code)
         # if '300608' not in code:  #600731  600733
         #     continue
@@ -142,7 +142,7 @@ def run():
         latest_close_price = float(data['close'].iloc[-1])
         # if latest_close_price < 5 or latest_close_price > 25:
         #     continue
-        if latest_close_price < 5 or latest_close_price > 15:
+        if latest_close_price < 0 or latest_close_price > 25:
             continue
 
         cond_ok = cond(code, data[-60:])
