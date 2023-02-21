@@ -366,8 +366,8 @@ def run():
             continue
         if code.startswith('sh.000'):
             continue
-        if not code.startswith('sz.300'):
-            continue
+        # if not code.startswith('sz.300'):
+        #     continue
         # # print(code)
         # if '300024' not in code:  #600731  600733
         #     continue
@@ -407,17 +407,17 @@ def run():
         # if not cond_1_ok:
         #     continue
 
-        cond_3_ok = cond_3(code, data[-60:], min_up_days=7)
-        if not cond_3_ok:
-            continue
+        # cond_3_ok = cond_3(code, data[-60:], min_up_days=7)
+        # if not cond_3_ok:
+        #     continue
 
         # cond_4_ok = cond_4(data[-60:])
         # if not cond_4_ok:
         #     continue
 
-        # cond_5_ok = cond_5(code, data[-60:])
-        # if not cond_5_ok:
-        #     continue
+        cond_5_ok = cond_5(code, data[-60:])
+        if not cond_5_ok:
+            continue
 
         # cond_6_ok = cond_6(code, data[-180:])
         # if not cond_6_ok:

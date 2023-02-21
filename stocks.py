@@ -38,26 +38,26 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
             l_up_days.append(1)
         else:
             l_up_days.append(0)
-    # if not all(l_up_days[-min_up_days:]):
-    #     return False
-    # if all(l_up_days[-min_up_days-1:]):
-    #     return False
-
-    t_flag_days_ok = False
-    for i in [0, 1, 2, 3]:
-        t_flag_days = l_up_days[-min_up_days-i:-i] or l_up_days[-min_up_days-i:]
-        if all(t_flag_days):
-            t_flag_days_ok = True
-            break
-    if not t_flag_days_ok:
+    if not all(l_up_days[-min_up_days:]):
+        return False
+    if all(l_up_days[-min_up_days-1:]):
         return False
 
+    # t_flag_days_ok = False
+    # for i in [0, 1, 2, 3]:
+    #     t_flag_days = l_up_days[-min_up_days-i:-i] or l_up_days[-min_up_days-i:]
+    #     if all(t_flag_days):
+    #         t_flag_days_ok = True
+    #         break
+    # if not t_flag_days_ok:
+    #     return False
+
     prev_close_price = 0
-    # latest_data = data[-min_up_days:]
-    if i != 0:
-        latest_data = data[-(min_up_days+i):-i]
-    else:
-        latest_data = data[-(min_up_days + i):]
+    latest_data = data[-min_up_days:]
+    # if i != 0:
+    #     latest_data = data[-(min_up_days+i):-i]
+    # else:
+    #     latest_data = data[-(min_up_days + i):]
     t_n_day = 0
     for _, d in latest_data.iterrows():
         close_price = d['close']
@@ -65,7 +65,7 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
         if not close_price or not open_price:
             continue
         r = (float(close_price) - float(open_price))/float(open_price) * 100
-        if r > 3:
+        if r > 5:
             return False
         if prev_close_price != 0:
             if float(close_price) - prev_close_price < 0:
@@ -125,11 +125,11 @@ def run():
             continue
         if code.startswith('sh.000'):
             continue
-        if not code.startswith('sz.300') and not code.startswith('sz.00'):
-            continue
-        if code in target_stocks_list:
-            continue
-        # if not code.startswith('sz.300'):
+        # if not code.startswith('sz.300') and not code.startswith('sz.00'):
+        #     continue
+        # if code in target_stocks_list:
+        #     continue
+        # # if not code.startswith('sz.300'):
         #     continue
         # # print(code)
         # if '300608' not in code:  #600731  600733
@@ -153,9 +153,9 @@ def run():
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
-        # if latest_close_price < 5 or latest_close_price > 25:
+        # if latest_close_price < 4 or latest_close_price > 20:
         #     continue
-        if latest_close_price < 5 or latest_close_price > 20:
+        if latest_close_price < 0 or latest_close_price > 30:
             continue
 
         cond_ok = cond(code, data[-60:])
