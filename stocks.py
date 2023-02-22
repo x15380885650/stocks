@@ -1,5 +1,6 @@
 import baostock as bs
 from datetime import datetime, timedelta
+from dumper_loader import FileDataDumper, load_data_append_simple
 
 # http://baostock.com/baostock/index.php/Python_API%E6%96%87%E6%A1%A3
 
@@ -37,6 +38,11 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
             l_up_days.append(1)
         else:
             l_up_days.append(0)
+    # if not all(l_up_days[-min_up_days:]):
+    #     return False
+    # if all(l_up_days[-min_up_days-1:]):
+    #     return False
+
     t_flag_days_ok = False
     for i in [0, 1, 2, 3]:
         t_flag_days = l_up_days[-min_up_days-i:-i] or l_up_days[-min_up_days-i:]
@@ -108,6 +114,9 @@ def run():
     stock_rs = bs.query_all_stock(end_date_str)
     stock_df = stock_rs.get_data()
     count = 0
+    file_path = 'stocks.txt'
+    target_stocks_list = load_data_append_simple(file_path, ret_type=[])
+    dumper = FileDataDumper(file_path, mode='a+')
     for code in stock_df["code"]:
         count += 1
         if count % 1000 == 0:
@@ -148,7 +157,8 @@ def run():
         cond_ok = cond(code, data[-60:])
         if not cond_ok:
             continue
-
+        if code not in target_stocks_list:
+            dumper.dump_data_by_append(code, json_dumps=False)
         print(code)
     bs.logout()
 
