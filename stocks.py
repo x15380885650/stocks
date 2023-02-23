@@ -162,7 +162,7 @@ def run():
         if latest_close_price < 0 or latest_close_price > 30:
             continue
 
-        cond_ok = cond(code, data[-60:], min_up_days=5)
+        cond_ok = cond(code, data[-60:], min_up_days=6)
         if not cond_ok:
             continue
         if code not in target_stocks_list:
