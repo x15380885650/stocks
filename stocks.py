@@ -40,6 +40,7 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
             l_up_days.append(0)
     if not all(l_up_days[-min_up_days:]):
         return False
+    # print('code: {}, noticed'.format(code))
     if all(l_up_days[-min_up_days-1:]):
         return False
 
@@ -158,7 +159,7 @@ def run():
         if latest_close_price < 0 or latest_close_price > 30:
             continue
 
-        cond_ok = cond(code, data[-60:])
+        cond_ok = cond(code, data[-60:], min_up_days=6)
         if not cond_ok:
             continue
         if code not in target_stocks_list:
