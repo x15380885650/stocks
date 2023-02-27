@@ -25,22 +25,24 @@ def get_end_date():
     return None
 
 
-def cond(code, data, min_up_days=6):   # 5天内涨了5次
+def cond(code, data, min_up_days=6, i_pct_chg=True):   # 5天内涨了5次
     l_up_days = []
     for _, d in data[-20:].iterrows():
         close_price = d['close']
         open_price = d['open']
-        if not close_price or not open_price:
+        pct_chg = d['pctChg']
+        if not close_price or not open_price or not pct_chg:
             return False
-        r = (float(close_price) - float(open_price)) / float(open_price) * 100
-        # print(r)
+        r_1 = (float(close_price) - float(open_price)) / float(open_price) * 100
+        r_2 = float(pct_chg)
+        r = r_1 if r_1 > r_2 else r_2
         if r >= 0:
             l_up_days.append(1)
         else:
             l_up_days.append(0)
     if not all(l_up_days[-min_up_days:]):
         return False
-    # print('code: {}, noticed'.format(code))
+    print('code: {}, noticed'.format(code))
     if all(l_up_days[-min_up_days-1:]):
         return False
 
@@ -126,6 +128,7 @@ def run():
             continue
         if code.startswith('sh.000'):
             continue
+
         # if not code.startswith('sz.300') and not code.startswith('sz.00'):
         #     continue
         # if code in target_stocks_list:
