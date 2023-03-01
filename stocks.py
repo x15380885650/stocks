@@ -78,8 +78,8 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
 
     end_index = start_index + i + min_up_days - 1
     r_days = p_days - end_index
-    if r_days < 3:
-        return False
+    # if r_days < 3:
+    #     return False
     l_data = p_data[start_index:end_index]
     l_high_price = get_max_high_price(l_data)
     r_high_price = get_max_high_price(p_data)
@@ -100,10 +100,11 @@ def cond_1(latest_data):
     for _, d in latest_data.iterrows():
         close_price = d['close']
         open_price = d['open']
-        if not close_price or not open_price:
+        pct_chg = d['pctChg']
+        if not close_price or not open_price or not pct_chg:
             continue
-        r = (float(close_price) - float(open_price)) / float(open_price) * 100
-        if r >= 3:
+        r_1 = (float(close_price) - float(open_price)) / float(open_price) * 100
+        if r_1 >= 3 or float(pct_chg) >= 3:
             r_n_day += 1
         if prev_close_price != 0:
             t_price = float(close_price) - prev_close_price
@@ -172,7 +173,7 @@ def run():
         # # if not code.startswith('sz.300'):
         #     continue
         # # print(code)
-        # if '600312' not in code:  #600731  600733
+        # if '000534' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
