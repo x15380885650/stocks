@@ -34,17 +34,25 @@ def cond(code, data, min_up_days=6, i_pct_chg=True):   # 5天内涨了5次
         if not close_price or not open_price or not pct_chg:
             return False
         r_1 = (float(close_price) - float(open_price)) / float(open_price) * 100
-        r_2 = float(pct_chg)
-        r = r_1 if r_1 > r_2 else r_2
-        if r >= 0:
+        if r_1 >= 0:
             l_up_days.append(1)
-        else:
-            l_up_days.append(0)
+            continue
+        r_2 = float(pct_chg)
+        if r_2 >= 0 and abs(r_1) <= 0.05:
+            l_up_days.append(1)
+            continue
+        l_up_days.append(0)
+        # r = r_1
+        # if r >= 0 or (r < 0 and abs(r) <= 0.35):
+        #     l_up_days.append(1)
+        # else:
+        #     l_up_days.append(0)
     if not all(l_up_days[-min_up_days:]):
         return False
-    print('code: {}, noticed'.format(code))
+    # print('code: {}, noticed'.format(code))
     if all(l_up_days[-min_up_days-1:]):
         return False
+    # print('code: {}, noticed'.format(code))
 
     # t_flag_days_ok = False
     # for i in [0, 1, 2, 3]:
@@ -136,7 +144,7 @@ def run():
         # # if not code.startswith('sz.300'):
         #     continue
         # # print(code)
-        # if '300608' not in code:  #600731  600733
+        # if '600064' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -157,10 +165,10 @@ def run():
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
-        # if latest_close_price < 4 or latest_close_price > 20:
-        #     continue
-        if latest_close_price < 0 or latest_close_price > 30:
+        if latest_close_price < 4 or latest_close_price > 25:
             continue
+        # if latest_close_price < 0 or latest_close_price > 30:
+        #     continue
 
         cond_ok = cond(code, data[-60:], min_up_days=6)
         if not cond_ok:
