@@ -83,10 +83,15 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
     l_data = p_data[start_index:end_index]
     l_high_price = get_max_high_price(l_data)
     r_high_price = get_max_high_price(p_data)
+    r_low_price = get_min_low_price(p_data)
     n_high_price = float(data.iloc[-1]['high'])
     if r_high_price > n_high_price:
         return False
-    r = (n_high_price - l_high_price)/l_high_price * 100
+    r = (n_high_price - r_low_price)/r_low_price * 100
+    if r_days < 0:
+        return False
+    if r > 25:
+        return False
     print('code: {}, r_days: {}, r: {}'.format(code, r_days, r))
     # if r < 20:
     #     return False
