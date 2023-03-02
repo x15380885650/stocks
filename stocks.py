@@ -90,7 +90,7 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
     r = (n_high_price - r_low_price)/r_low_price * 100
     if r_days < 0:
         return False
-    if r > 25:
+    if r > 30:
         return False
     print('code: {}, r_days: {}, r: {}'.format(code, r_days, r))
     # if r < 20:
