@@ -85,14 +85,28 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
     r_high_price = get_max_high_price(p_data)
     r_low_price = get_min_low_price(p_data)
     n_high_price = float(data.iloc[-1]['high'])
+    n_volume = float(data.iloc[-1]['volume'])
+    n_p_volume = float(data.iloc[-2]['volume'])
     if r_high_price > n_high_price:
         return False
     r = (n_high_price - r_low_price)/r_low_price * 100
+
     if r_days < 0:
         return False
     if r > 30:
         return False
+    if n_volume < n_p_volume * 2:
+        return False
+    close_price = float(data.iloc[-1]['close'])
+    open_price = float(data.iloc[-1]['open'])
+    # pct_chg = d['pctChg']
+    # if not close_price or not open_price or not pct_chg:
+    #     return False
+    r_1 = (float(close_price) - float(open_price)) / float(open_price) * 100
+    if r_1 < 0:
+        return False
     print('code: {}, r_days: {}, r: {}'.format(code, r_days, r))
+
     # if r < 20:
     #     return False
     return True
@@ -102,6 +116,7 @@ def cond_1(latest_data):
     prev_close_price = 0
     t_n_day = 0
     r_n_day = 0
+    n_price = 3
     for _, d in latest_data.iterrows():
         close_price = d['close']
         open_price = d['open']
@@ -109,15 +124,16 @@ def cond_1(latest_data):
         if not close_price or not open_price or not pct_chg:
             continue
         r_1 = (float(close_price) - float(open_price)) / float(open_price) * 100
-        if r_1 >= 3 or float(pct_chg) >= 3:
+        if r_1 >= n_price or float(pct_chg) >= n_price:
             r_n_day += 1
         if prev_close_price != 0:
             t_price = float(close_price) - prev_close_price
             # if t_price < 0:
             #     return False
             t_ratio = abs((float(close_price) - prev_close_price) / prev_close_price) * 100
-            if t_price < 0 and t_ratio > 0.1:
-                return False
+            # if t_price < 0 and t_ratio > 0.1:
+            #     return False
+
             # t_ratio = abs((float(close_price) - prev_close_price) / prev_close_price) * 100
             # if t_ratio > 0.15 and float(close_price) - prev_close_price < 0:
             #     t_n_day += 1
