@@ -26,9 +26,29 @@ def get_end_date():
 
 
 def cond(code, data, min_up_days=6):   # 5天内涨了5次
-    l_up_days = []
     p_days = 30
     p_data = data[-p_days:]
+    close_price = float(data.iloc[-1]['close'])
+    open_price = float(data.iloc[-1]['open'])
+    if float(close_price) < float(open_price):
+        return False
+
+    n_volume = float(data.iloc[-1]['volume'])
+    n_avg_volume = get_avg_volume(p_data[0:p_days - 3])
+    if n_volume < n_avg_volume * 2:
+        return False
+
+    r_high_price = get_max_high_price(p_data)
+    r_low_price = get_min_low_price(p_data)
+    n_high_price = float(data.iloc[-1]['high'])
+
+    if r_high_price > n_high_price:
+        return False
+    r = (n_high_price - r_low_price) / r_low_price * 100
+    if r > 30:
+        return False
+
+    l_up_days = []
     for _, d in p_data.iterrows():
         close_price = d['close']
         open_price = d['open']
@@ -39,11 +59,11 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
         # if r_1 >= 0:
         #     l_up_days.append(1)
         #     continue
-        if r_1 >= 0 or (r_1 < 0 and abs(r_1) <= 0.1):
+        if r_1 > 0 or (r_1 < 0 and abs(r_1) <= 0.1):
             l_up_days.append(1)
             continue
         r_2 = float(pct_chg)
-        if r_2 >= 0 and abs(r_1) <= 0.1:
+        if r_2 > 0 and abs(r_1) <= 0.1:
             l_up_days.append(1)
             continue
         l_up_days.append(0)
@@ -78,37 +98,13 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
 
     end_index = start_index + i + min_up_days - 1
     r_days = p_days - end_index
-    # if r_days < 3:
-    #     return False
-    l_data = p_data[start_index:end_index]
-    l_high_price = get_max_high_price(l_data)
-    r_high_price = get_max_high_price(p_data)
-    r_low_price = get_min_low_price(p_data)
-    n_high_price = float(data.iloc[-1]['high'])
-    n_volume = float(data.iloc[-1]['volume'])
-    n_p_volume = float(data.iloc[-2]['volume'])
-    if r_high_price > n_high_price:
-        return False
-    r = (n_high_price - r_low_price)/r_low_price * 100
-
     if r_days < 0:
         return False
-    if r > 30:
-        return False
-    if n_volume < n_p_volume * 2:
-        return False
-    close_price = float(data.iloc[-1]['close'])
-    open_price = float(data.iloc[-1]['open'])
-    # pct_chg = d['pctChg']
-    # if not close_price or not open_price or not pct_chg:
-    #     return False
-    r_1 = (float(close_price) - float(open_price)) / float(open_price) * 100
-    if r_1 < 0:
-        return False
-    print('code: {}, r_days: {}, r: {}'.format(code, r_days, r))
 
-    # if r < 20:
-    #     return False
+    p = get_high_close_ratio(data.iloc[-1])
+    if p == 0 or p >= 0.7:
+        return False
+    print('code: {}, r_days: {}, r: {}, p: {}'.format(code, r_days, r, p))
     return True
 
 
@@ -116,7 +112,7 @@ def cond_1(latest_data):
     prev_close_price = 0
     t_n_day = 0
     r_n_day = 0
-    n_price = 3
+    n_price = 2
     for _, d in latest_data.iterrows():
         close_price = d['close']
         open_price = d['open']
@@ -161,6 +157,27 @@ def get_min_low_price(data):
     return min_price
 
 
+def get_avg_volume(data):
+    sum_volume = 0
+    count = data.shape[0]
+    for vol in data['volume']:
+        if not vol:
+            count -= 1
+            continue
+        sum_volume += float(vol)
+    return sum_volume/count
+
+def get_high_close_ratio(one_data):
+    try:
+        close_price = float(one_data['close'])
+        high_price = float(one_data['high'])
+        open_price = float(one_data['open'])
+        return (high_price-close_price)/(close_price-open_price)
+    except Exception as e:
+        print(e)
+        return 0
+
+
 def run():
     bs.login()
     end_date = get_end_date()
@@ -194,7 +211,7 @@ def run():
         # # if not code.startswith('sz.300'):
         #     continue
         # # print(code)
-        # if '000534' not in code:  #600731  600733
+        # if '601179' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
