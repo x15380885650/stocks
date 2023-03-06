@@ -33,10 +33,10 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
     if float(close_price) < float(open_price):
         return False
 
-    n_volume = float(data.iloc[-1]['volume'])
-    n_avg_volume = get_avg_volume(p_data[0:p_days - 3])
-    if n_volume < n_avg_volume * 2:
-        return False
+    # n_volume = float(data.iloc[-1]['volume'])
+    # n_avg_volume = get_avg_volume(p_data[0:p_days - 3])
+    # if n_volume > n_avg_volume * 2:
+    #     return False
 
     r_high_price = get_max_high_price(p_data)
     r_low_price = get_min_low_price(p_data)
@@ -59,11 +59,11 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
         # if r_1 >= 0:
         #     l_up_days.append(1)
         #     continue
-        if r_1 > 0 or (r_1 < 0 and abs(r_1) <= 0.1):
+        if r_1 >= 0 or (r_1 < 0 and abs(r_1) <= 0.1):
             l_up_days.append(1)
             continue
         r_2 = float(pct_chg)
-        if r_2 > 0 and abs(r_1) <= 0.1:
+        if r_2 >= 0 and abs(r_1) <= 0.1:
             l_up_days.append(1)
             continue
         l_up_days.append(0)
@@ -98,7 +98,7 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
 
     end_index = start_index + i + min_up_days - 1
     r_days = p_days - end_index
-    if r_days < 0:
+    if r_days < 10:
         return False
 
     p = get_high_close_ratio(data.iloc[-1])
@@ -175,7 +175,7 @@ def get_high_close_ratio(one_data):
         return (high_price-close_price)/(close_price-open_price)
     except Exception as e:
         print(e)
-        return 0
+        return -1
 
 
 def run():
@@ -211,7 +211,7 @@ def run():
         # # if not code.startswith('sz.300'):
         #     continue
         # # print(code)
-        # if '601179' not in code:  #600731  600733
+        # if '300962' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
