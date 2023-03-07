@@ -5,7 +5,7 @@ from dumper_loader import FileDataDumper, load_data_append_simple
 # http://baostock.com/baostock/index.php/Python_API%E6%96%87%E6%A1%A3
 
 format_date = '%Y-%m-%d'
-minus_days = 30*12
+minus_days = 30*2
 ratio_min = 20
 pct_change_min = 3
 pct_change_h = 9.5
@@ -43,8 +43,10 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
 
     aaa = (n_high_price-r_high_price)/r_high_price * 100
     # print(aaa)
-    if aaa < -0.25:
+    if aaa >= 0 or aaa < -4:
         return False
+    # if aaa < -0.25:
+    #     return False
 
     # if r_high_price > n_high_price:
     #     return False
@@ -107,8 +109,8 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
         return False
 
     p = get_high_close_ratio(data.iloc[-1])
-    if p == 0 or p >= 0.7:
-        return False
+    # if p == 0 or p >= 0.7:
+    #     return False
     print('code: {}, r_days: {}, r: {}, p: {}, aaa: {}'.format(code, r_days, r, p, aaa))
     return True
 
