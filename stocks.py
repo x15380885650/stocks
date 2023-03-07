@@ -39,11 +39,16 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
     #     return False
 
     r_high_price = get_max_high_price(p_data)
-    r_low_price = get_min_low_price(p_data)
     n_high_price = float(data.iloc[-1]['high'])
 
-    if r_high_price > n_high_price:
+    aaa = (n_high_price-r_high_price)/r_high_price * 100
+    # print(aaa)
+    if aaa < -0.25:
         return False
+
+    # if r_high_price > n_high_price:
+    #     return False
+    r_low_price = get_min_low_price(p_data)
     r = (n_high_price - r_low_price) / r_low_price * 100
     if r > 30:
         return False
@@ -104,7 +109,7 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
     p = get_high_close_ratio(data.iloc[-1])
     if p == 0 or p >= 0.7:
         return False
-    print('code: {}, r_days: {}, r: {}, p: {}'.format(code, r_days, r, p))
+    print('code: {}, r_days: {}, r: {}, p: {}, aaa: {}'.format(code, r_days, r, p, aaa))
     return True
 
 
@@ -191,8 +196,8 @@ def run():
     stock_rs = bs.query_all_stock(end_date_str)
     stock_df = stock_rs.get_data()
     count = 0
-    file_path = 'stocks.txt'
-    target_stocks_list = load_data_append_simple(file_path, ret_type=[])
+    # file_path = 'stocks.txt'
+    # target_stocks_list = load_data_append_simple(file_path, ret_type=[])
     # dumper = FileDataDumper(file_path, mode='a+')
     for code in stock_df["code"]:
         # print(code)
@@ -201,7 +206,7 @@ def run():
             print(count)
         if not (code.startswith('sh') or code.startswith('sz')):
             continue
-        if code.startswith('sh.000'):
+        if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
 
         # if not code.startswith('sz.300') and not code.startswith('sz.00'):
