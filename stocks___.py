@@ -5,7 +5,7 @@ from dumper_loader import FileDataDumper, load_data_append_simple
 # http://baostock.com/baostock/index.php/Python_API%E6%96%87%E6%A1%A3
 
 format_date = '%Y-%m-%d'
-minus_days = 30*12
+minus_days = 30*2
 ratio_min = 20
 pct_change_min = 3
 pct_change_h = 9.5
@@ -26,122 +26,38 @@ def get_end_date():
 
 
 def cond(code, data, min_up_days=6):   # 5天内涨了5次
-    p_days = 30
+    from collections import OrderedDict
+    p_days = 15
     p_data = data[-p_days:]
     close_price = float(data.iloc[-1]['close'])
     open_price = float(data.iloc[-1]['open'])
-    if float(close_price) < float(open_price):
+    pct_chg = float(data.iloc[-1]['pctChg'])
+    pct_chg_max = 9.5
+    if pct_chg < pct_chg_max:
         return False
 
-    # n_volume = float(data.iloc[-1]['volume'])
-    # n_avg_volume = get_avg_volume(p_data[0:p_days - 3])
-    # if n_volume > n_avg_volume * 2:
-    #     return False
-
-    r_high_price = get_max_high_price(p_data)
-    n_high_price = float(data.iloc[-1]['high'])
-
-    aaa = (n_high_price-r_high_price)/r_high_price * 100
-    # print(aaa)
-    if aaa < -0.25:
-        return False
-
-    # if r_high_price > n_high_price:
-    #     return False
-    r_low_price = get_min_low_price(p_data)
-    r = (n_high_price - r_low_price) / r_low_price * 100
-    if r > 50:
-        return False
-
-    l_up_days = []
-    for _, d in p_data.iterrows():
-        close_price = d['close']
-        open_price = d['open']
-        pct_chg = d['pctChg']
-        if not close_price or not open_price or not pct_chg:
-            return False
-        r_1 = (float(close_price) - float(open_price)) / float(open_price) * 100
-        # if r_1 >= 0:
-        #     l_up_days.append(1)
-        #     continue
-        if r_1 >= 0 or (r_1 < 0 and abs(r_1) <= 0.1):
-            l_up_days.append(1)
+    date_pct_chg_dict = OrderedDict()
+    for row in p_data[['date', 'pctChg']].itertuples(index=False):
+        chg = row[1]
+        date = row[0]
+        if not chg or not date:
             continue
-        r_2 = float(pct_chg)
-        if r_2 >= 0 and abs(r_1) <= 0.1:
-            l_up_days.append(1)
-            continue
-        l_up_days.append(0)
-    # print(l_up_days)
-    l_range_up_days_ok = False
-    for start_index in range(0, p_days):
-        l_range_up_days = l_up_days[start_index:min_up_days+start_index]
-        if len(l_range_up_days) < min_up_days:
-            break
-        if all(l_range_up_days):
-            l_range_up_days_ok = True
-            k = p_days - start_index
-            for i in range(0, k):
-                l_range_up_days = l_up_days[start_index:min_up_days + start_index + i]
-                # print(l_range_up_days)
-                if not all(l_range_up_days):
-                    break
-            break
-    if not l_range_up_days_ok:
+        date_pct_chg_dict[datetime.strptime(date, format_date)] = float(chg)
+    if not date_pct_chg_dict:
         return False
-
-    cond_1_ok = False
-    for j in range(start_index, start_index+i):
-        # print(l_up_days[j:min_up_days + j])
-        latest_data = p_data[j:min_up_days + j]
-        cond_1_ok = cond_1(latest_data)
-        if cond_1_ok:
-            break
-    if not cond_1_ok:
+    ptc_chg_list = list(date_pct_chg_dict.values())
+    m_chg_list = list(filter(lambda x: x > pct_chg_max, ptc_chg_list))
+    if len(m_chg_list) != 2:
         return False
-    # print('code: {}, noticed'.format(code))
-
-    end_index = start_index + i + min_up_days - 1
-    r_days = p_days - end_index
-    if r_days < 10:
-        return False
-
-    p = get_high_close_ratio(data.iloc[-1])
-    if p == 0 or p >= 0.7:
-        return False
-    print('code: {}, r_days: {}, r: {}, p: {}, aaa: {}'.format(code, r_days, r, p, aaa))
-    return True
-
-
-def cond_1(latest_data):
-    prev_close_price = 0
-    t_n_day = 0
-    r_n_day = 0
-    n_price = 2
-    for _, d in latest_data.iterrows():
-        close_price = d['close']
-        open_price = d['open']
-        pct_chg = d['pctChg']
-        if not close_price or not open_price or not pct_chg:
-            continue
-        r_1 = (float(close_price) - float(open_price)) / float(open_price) * 100
-        if r_1 >= n_price or float(pct_chg) >= n_price:
-            r_n_day += 1
-        if prev_close_price != 0:
-            t_price = float(close_price) - prev_close_price
-            # if t_price < 0:
-            #     return False
-            t_ratio = abs((float(close_price) - prev_close_price) / prev_close_price) * 100
-            # if t_price < 0 and t_ratio > 0.1:
-            #     return False
-
-            # t_ratio = abs((float(close_price) - prev_close_price) / prev_close_price) * 100
-            # if t_ratio > 0.15 and float(close_price) - prev_close_price < 0:
-            #     t_n_day += 1
-        prev_close_price = float(close_price)
-    # if t_n_day > 1:
-    #     return False
-    if r_n_day < 1:
+    start_index = -1
+    end_index = -1
+    for i, val in enumerate(ptc_chg_list):
+        if start_index == -1 and val > pct_chg_max:
+            start_index = i
+        if start_index != -1 and val > pct_chg_max:
+            end_index = i
+    # print(start_index, end_index)
+    if end_index - start_index < 3:
         return False
     return True
 
@@ -152,6 +68,14 @@ def get_max_high_price(data):
         if max_price < float(price):
             max_price = float(price)
     return max_price
+
+
+def get_max_pct_chg(data):
+    max_pct_chg = float(data['pctChg'].iloc[0])
+    for pch_chg in data['pctChg']:
+        if max_pct_chg < float(pch_chg):
+            max_pct_chg = float(pch_chg)
+    return max_pct_chg
 
 
 def get_min_low_price(data):
@@ -206,7 +130,7 @@ def run():
             print(count)
         if not (code.startswith('sh') or code.startswith('sz')):
             continue
-        if code.startswith('sh.000') or code.startswith('sh.688'):
+        if code.startswith('sh.000'):
             continue
 
         # if not code.startswith('sz.300') and not code.startswith('sz.00'):
@@ -242,7 +166,7 @@ def run():
         # if latest_close_price < 0 or latest_close_price > 30:
         #     continue
 
-        cond_ok = cond(code, data[-60:], min_up_days=6)
+        cond_ok = cond(code, data[-60:], min_up_days=15)
         if not cond_ok:
             continue
         # if code not in target_stocks_list:
