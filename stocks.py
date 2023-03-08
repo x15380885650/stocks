@@ -43,7 +43,7 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
 
     aaa = (n_high_price-r_high_price)/r_high_price * 100
     # print(aaa)
-    if aaa >= 0 or aaa < -4:
+    if aaa >= 0 or aaa < -2:
         return False
     # if aaa < -0.25:
     #     return False
@@ -211,14 +211,14 @@ def run():
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
 
-        # if not code.startswith('sz.300') and not code.startswith('sz.00'):
-        #     continue
+        if not code.startswith('sz.300') and not code.startswith('sz.00'):
+            continue
         # if code in target_stocks_list:
         #     continue
-        # # if not code.startswith('sz.300'):
+        # if not code.startswith('sz.300'):
         #     continue
         # # print(code)
-        # if '300962' not in code:  #600731  600733
+        # if '300480' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -239,7 +239,7 @@ def run():
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
-        if latest_close_price < 4 or latest_close_price > 25:
+        if latest_close_price < 5 or latest_close_price > 20:
             continue
         # if latest_close_price < 0 or latest_close_price > 30:
         #     continue
