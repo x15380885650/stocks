@@ -211,12 +211,12 @@ def run():
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
 
-        if not code.startswith('sz.300') and not code.startswith('sz.00'):
-            continue
+        # if not code.startswith('sz.300') and not code.startswith('sz.00'):
+        #     continue
         # if code in target_stocks_list:
         #     continue
-        # if not code.startswith('sz.300'):
-        #     continue
+        if not code.startswith('sz.300'):
+            continue
         # # print(code)
         # if '300480' not in code:  #600731  600733
         #     continue
