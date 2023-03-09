@@ -38,12 +38,12 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
     # if n_volume > n_avg_volume * 2:
     #     return False
 
-    r_high_price = get_max_high_price(p_data)
+    r_high_price = get_max_high_price(p_data[:-1])
     n_high_price = float(data.iloc[-1]['high'])
 
     aaa = (n_high_price-r_high_price)/r_high_price * 100
     # print(aaa)
-    if aaa >= 0 or aaa < -2:
+    if aaa > 0 or aaa < -2:
         return False
     # if aaa < -0.25:
     #     return False
