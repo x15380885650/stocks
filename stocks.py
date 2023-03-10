@@ -42,14 +42,11 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
     n_high_price = float(data.iloc[-1]['high'])
 
     aaa = (n_high_price-r_high_price)/r_high_price * 100
-    # print(aaa)
-    if aaa > 0 or aaa < -2:
-        return False
-    # if aaa < -0.25:
+    # if aaa > 0 or aaa < -2:
     #     return False
 
-    # if r_high_price > n_high_price:
-    #     return False
+    if r_high_price > n_high_price:
+        return False
     r_low_price = get_min_low_price(p_data)
     r = (n_high_price - r_low_price) / r_low_price * 100
     if r > 50:
@@ -109,8 +106,8 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
         return False
 
     p = get_high_close_ratio(data.iloc[-1])
-    # if p == 0 or p >= 0.7:
-    #     return False
+    if p == 0 or p >= 0.7:
+        return False
     print('code: {}, r_days: {}, r: {}, p: {}, aaa: {}'.format(code, r_days, r, p, aaa))
     return True
 
@@ -215,8 +212,8 @@ def run():
         #     continue
         # if code in target_stocks_list:
         #     continue
-        if not code.startswith('sz.300'):
-            continue
+        # if not code.startswith('sz.300'):
+        #     continue
         # # print(code)
         # if '300480' not in code:  #600731  600733
         #     continue
