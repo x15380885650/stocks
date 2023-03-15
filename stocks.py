@@ -26,7 +26,7 @@ def get_end_date():
 
 
 def cond(code, data, min_up_days=6):   # 5天内涨了5次
-    p_days = 30
+    p_days = 45
     p_data = data[-p_days:]
     close_price = float(data.iloc[-1]['close'])
     open_price = float(data.iloc[-1]['open'])
@@ -212,8 +212,8 @@ def run():
         #     continue
         # if code in target_stocks_list:
         #     continue
-        # if not code.startswith('sz.300'):
-        #     continue
+        if not code.startswith('sz.300'):
+            continue
         # # print(code)
         # if '300480' not in code:  #600731  600733
         #     continue
