@@ -5,7 +5,7 @@ from dumper_loader import FileDataDumper, load_data_append_simple
 # http://baostock.com/baostock/index.php/Python_API%E6%96%87%E6%A1%A3
 
 format_date = '%Y-%m-%d'
-minus_days = 30*2
+minus_days = 30*3
 ratio_min = 20
 pct_change_min = 3
 pct_change_h = 9.5
