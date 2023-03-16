@@ -106,7 +106,7 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
         return False
 
     p = get_high_close_ratio(data.iloc[-1])
-    if p == 0 or p >= 0.75:
+    if p == 0 or p >= 0.6:
         return False
     print('code: {}, r_days: {}, r: {}, p: {}, aaa: {}'.format(code, r_days, r, p, aaa))
     return True
