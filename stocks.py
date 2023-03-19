@@ -5,7 +5,7 @@ from dumper_loader import FileDataDumper, load_data_append_simple
 # http://baostock.com/baostock/index.php/Python_API%E6%96%87%E6%A1%A3
 
 format_date = '%Y-%m-%d'
-minus_days = 30*2
+minus_days = 30*3
 ratio_min = 20
 pct_change_min = 3
 pct_change_h = 9.5
@@ -26,7 +26,7 @@ def get_end_date():
 
 
 def cond(code, data, min_up_days=6):   # 5天内涨了5次
-    p_days = 30
+    p_days = 45
     p_data = data[-p_days:]
     close_price = float(data.iloc[-1]['close'])
     open_price = float(data.iloc[-1]['open'])
@@ -106,7 +106,7 @@ def cond(code, data, min_up_days=6):   # 5天内涨了5次
         return False
 
     p = get_high_close_ratio(data.iloc[-1])
-    if p == 0 or p >= 0.7:
+    if p == 0 or p >= 0.6:
         return False
     print('code: {}, r_days: {}, r: {}, p: {}, aaa: {}'.format(code, r_days, r, p, aaa))
     return True
@@ -208,14 +208,13 @@ def run():
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
 
-        # if not code.startswith('sz.300') and not code.startswith('sz.00'):
-        #     continue
-        # if code in target_stocks_list:
-        #     continue
-        # if not code.startswith('sz.300'):
+        if not code.startswith('sz.30') and not code.startswith('sz.00'):
+            continue
+
+        # if not code.startswith('sz.30'):
         #     continue
         # # print(code)
-        # if '300480' not in code:  #600731  600733
+        # if '300307' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
