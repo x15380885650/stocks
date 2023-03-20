@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 # http://baostock.com/baostock/index.php/Python_API%E6%96%87%E6%A1%A3
 
 format_date = '%Y-%m-%d'
-minus_days = 30*12
+minus_days = 30*6
 ratio_min = 20
 pct_change_min = 3
 pct_change_h = 9.5
@@ -197,87 +197,47 @@ def get_latest_low_index(data, low_price):
             latest_index = index
     return latest_index
 
+def get_avg_volume(volumes):
+    sum_volume = 0
+    count = len(volumes)
+    for vol in volumes:
+        sum_volume += float(vol)
+    return int(sum_volume/count)
 
-def cond_5(code, data, latest_days=5):
-    volume_up_ratio_min = 40
-    volume_down_ratio_min = 50
-    count = data.shape[0]
-    scope_interval_days_min = 5
-    volume_date_dict = {}
+
+def cond_5(code, data):
+    total_count = data.shape[0]
+    volume_list = []
+    date_list = []
     for row in data[['date', 'volume']].itertuples(index=False):
         vol = row[1]
         date = row[0]
-        if not vol or not date:
+        if not vol:
             continue
-        volume_date_dict[int(vol)] = datetime.strptime(date, format_date)
-    if not volume_date_dict:
-        return False
-    sorted_date_volume = sorted(volume_date_dict.items(), key=lambda x: x[0], reverse=True)
-    date_list = []
-    sorted_volume_list = []
-    for item in sorted_date_volume:
-        date_list.append(item[1])
-        sorted_volume_list.append(item[0])
-    sorted_date_list = sorted(date_list)
-    max_vol_date_index = sorted_date_list.index(date_list[0])
-    if (count-max_vol_date_index) > latest_days:  # 最大量必须在最近的时间内
-        return False
-    pivot_vol = get_max_high_volume(data[0:count-latest_days])
-    q_date_vol_dict = {}
-    for index, vol in enumerate(sorted_volume_list):
-        volume_up_ratio = (vol-pivot_vol) / pivot_vol * 100
-        if volume_up_ratio >= volume_up_ratio_min:
-            q_date_vol_dict[volume_date_dict[vol]] = vol
-    if not q_date_vol_dict:
-        return False
-    sorted_q_date_list = sorted(list(q_date_vol_dict.keys()))
-    f_date_index = sorted_date_list.index(sorted_q_date_list[0])
-    l_scope_days = count-f_date_index
-    # if l_scope_days < scope_interval_days_min:
-    #     return False
-    if l_scope_days not in [3, 4, 5]:
-        return False
-    f_max_vol = q_date_vol_dict[sorted_q_date_list[0]]
-    volume_down_days_min = int(l_scope_days / 2)
-    volume_down_days = 0
-    l_scope_volumes = list(volume_date_dict.keys())[f_date_index:]
-    for vol in l_scope_volumes:
-        volume_down_ratio = (vol - f_max_vol) / f_max_vol * 100
-        if volume_down_ratio >= -volume_down_ratio_min:
-            volume_down_days += 1
-    if volume_down_days < volume_down_days_min:
-        return False
-
-    latest_days_max_price = get_max_high_price(data[-latest_days:])
-    max_price_ok = False
-    for price in data[-3:]['high']:
-        if float(price) == latest_days_max_price:
-            max_price_ok = True
-            break
-    if not max_price_ok:
-        return False
-
-    red_days = 0
-    for i in range(f_date_index, count):
-        one_data = data.iloc[i]
-        red = is_red(one_data)
-        if red:
-            red_days += 1
-    if (red_days/l_scope_days) <= 0.5:
-        return False
-    pch_chg_count = 0
-    pch_chg_sum = 0
-    for pct_chg in data[f_date_index:]['pctChg']:
-        if not pct_chg:
+        volume_list.append(int(vol))
+        date_list.append(date)
+    f_avg_volume = 0
+    f_l_count = 0
+    f_index = 0
+    for index, volume in enumerate(volume_list):
+        if index == 0:
             continue
-        if float(pct_chg) > 6:
-            pch_chg_count += 1
-        pch_chg_sum += float(pct_chg)
-    if pch_chg_count < 1:
+        avg_volume = f_avg_volume if f_avg_volume else get_avg_volume(volume_list[:index])
+        if volume >= avg_volume*5:
+            if f_index == 0:
+                f_index = index
+            f_avg_volume = avg_volume
+            f_l_count += 1
+    if f_index == 0:
         return False
-    if pch_chg_sum >= 20:
-        # print(pch_chg_sum)
+    l_f_count = total_count - f_index
+    ra = (f_l_count / l_f_count) * 100
+    # print(code, l_f_count, ra)
+    if l_f_count < 10 or l_f_count > 15:
         return False
+    if ra < 70:
+        return False
+    print(code, l_f_count, ra)
     return True
 
 
@@ -364,12 +324,13 @@ def run():
             print(count)
         if not (code.startswith('sh') or code.startswith('sz')):
             continue
-        if code.startswith('sh.000'):
+        if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
-        # if not code.startswith('sz.300'):
+
+        # if not code.startswith('sz.30'):
         #     continue
         # # print(code)
-        # if '300024' not in code:  #600731  600733
+        # if '300459' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -392,7 +353,7 @@ def run():
         latest_close_price = float(data['close'].iloc[-1])
         # if latest_close_price < 5 or latest_close_price > 25:
         #     continue
-        if latest_close_price < 5 or latest_close_price > 15:
+        if latest_close_price < 5 or latest_close_price > 20:
             continue
 
         # red = is_red(data.iloc[-1])
