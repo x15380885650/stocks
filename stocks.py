@@ -208,8 +208,8 @@ def run():
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
 
-        if not code.startswith('sz.30') and not code.startswith('sz.00'):
-            continue
+        # if not code.startswith('sz.30') and not code.startswith('sz.00'):
+        #     continue
 
         # if not code.startswith('sz.30'):
         #     continue
