@@ -223,7 +223,7 @@ def cond_5(code, data):
         if index == 0:
             continue
         avg_volume = f_avg_volume if f_avg_volume else get_avg_volume(volume_list[:index])
-        if volume >= avg_volume*5:
+        if volume >= avg_volume*4:
             if f_index == 0:
                 f_index = index
             f_avg_volume = avg_volume
@@ -233,11 +233,29 @@ def cond_5(code, data):
     l_f_count = total_count - f_index
     ra = (f_l_count / l_f_count) * 100
     # print(code, l_f_count, ra)
-    if l_f_count < 10 or l_f_count > 15:
+    if l_f_count < 10 or l_f_count > 20:
         return False
     if ra < 70:
         return False
-    print(code, l_f_count, ra)
+    l_f_data = data[-l_f_count:]
+    red_count = 0
+    for _, _d in l_f_data.iterrows():
+        close_price = _d['close']
+        open_price = _d['open']
+        if not close_price or not open_price:
+            continue
+        if float(close_price) > float(open_price):
+            red_count += 1
+    rb = (red_count / l_f_count) * 100
+    if rb < 40:
+        return False
+    r_high_price = get_max_high_price(l_f_data[:-1])
+    n_high_price = float(data.iloc[-1]['high'])
+    rc = (n_high_price - r_high_price) / n_high_price * 100
+    # print(code, l_f_count, ra, rb, rc)
+    if rc < -5:
+        return False
+    print(code, l_f_count, ra, rb, rc)
     return True
 
 
@@ -330,7 +348,7 @@ def run():
         # if not code.startswith('sz.30'):
         #     continue
         # # print(code)
-        # if '300459' not in code:  #600731  600733
+        # if '603108' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -353,28 +371,8 @@ def run():
         latest_close_price = float(data['close'].iloc[-1])
         # if latest_close_price < 5 or latest_close_price > 25:
         #     continue
-        if latest_close_price < 5 or latest_close_price > 20:
+        if latest_close_price > 25:
             continue
-
-        # red = is_red(data.iloc[-1])
-        # if not red:
-        #     continue
-
-        # cond_2_ok = cond_2(data, half_count)
-        # if not cond_2_ok:
-        #     continue
-        #
-        # cond_1_ok = cond_1(data[-5:], min_max_day=1)
-        # if not cond_1_ok:
-        #     continue
-
-        # cond_3_ok = cond_3(code, data[-60:], min_up_days=7)
-        # if not cond_3_ok:
-        #     continue
-
-        # cond_4_ok = cond_4(data[-60:])
-        # if not cond_4_ok:
-        #     continue
 
         cond_5_ok = cond_5(code, data[-60:])
         if not cond_5_ok:
