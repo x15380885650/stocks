@@ -206,6 +206,7 @@ def get_avg_volume(volumes):
 
 
 def cond_5(code, data):
+    volume_times = 3
     total_count = data.shape[0]
     volume_list = []
     date_list = []
@@ -223,7 +224,7 @@ def cond_5(code, data):
         if index == 0:
             continue
         avg_volume = f_avg_volume if f_avg_volume else get_avg_volume(volume_list[:index])
-        if volume >= avg_volume*4:
+        if volume >= avg_volume * volume_times:
             if f_index == 0:
                 f_index = index
             f_avg_volume = avg_volume
@@ -233,9 +234,9 @@ def cond_5(code, data):
     l_f_count = total_count - f_index
     ra = (f_l_count / l_f_count) * 100
     # print(code, l_f_count, ra)
-    if l_f_count < 9 or l_f_count > 20:
+    if l_f_count < 8 or l_f_count > 12:
         return False
-    if ra < 70:
+    if ra < 50:
         return False
     l_f_data = data[-l_f_count:]
     red_count = 0
@@ -244,16 +245,16 @@ def cond_5(code, data):
         open_price = _d['open']
         if not close_price or not open_price:
             continue
-        if float(close_price) > float(open_price):
+        if float(close_price) >= float(open_price):
             red_count += 1
     rb = (red_count / l_f_count) * 100
-    if rb < 65:
+    if rb < 60:
         return False
     r_high_price = get_max_high_price(l_f_data[:-1])
     n_high_price = float(data.iloc[-1]['high'])
     rc = (n_high_price - r_high_price) / n_high_price * 100
     # print(code, l_f_count, ra, rb, rc)
-    if rc < -5:
+    if rc < -2:
         return False
     print(code, l_f_count, ra, rb, rc)
     return True
@@ -348,7 +349,7 @@ def run():
         # if not code.startswith('sz.30'):
         #     continue
         # # print(code)
-        # if '603108' not in code:  #600731  600733
+        # if '002351' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
