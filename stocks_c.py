@@ -247,7 +247,7 @@ def cond_5(code, data):
         if float(close_price) > float(open_price):
             red_count += 1
     rb = (red_count / l_f_count) * 100
-    if rb < 40:
+    if rb < 65:
         return False
     r_high_price = get_max_high_price(l_f_data[:-1])
     n_high_price = float(data.iloc[-1]['high'])
