@@ -205,8 +205,27 @@ def get_avg_volume(volumes):
     return int(sum_volume/count)
 
 
+# def get_s(volume_list, volume_times, total_count):
+#     f_avg_volume = 0
+#     f_l_count = 0
+#     f_index = 0
+#     for index, volume in enumerate(volume_list):
+#         if index == 0:
+#             continue
+#         avg_volume = f_avg_volume if f_avg_volume else get_avg_volume(volume_list[:index])
+#         if volume >= avg_volume * volume_times:
+#             if f_index == 0:
+#                 f_index = index
+#             f_avg_volume = avg_volume
+#             f_l_count += 1
+#     if f_index == 0:
+#         return False
+#     l_f_count = total_count - f_index
+
+
 def cond_5(code, data):
     volume_times = 3
+    days = 20
     total_count = data.shape[0]
     volume_list = []
     date_list = []
@@ -219,22 +238,20 @@ def cond_5(code, data):
         date_list.append(date)
     f_avg_volume = 0
     f_l_count = 0
-    f_index = 0
-    for index, volume in enumerate(volume_list):
-        if index == 0:
-            continue
-        avg_volume = f_avg_volume if f_avg_volume else get_avg_volume(volume_list[:index])
+    s_index = total_count-days
+    l_f_count = 0
+    for index, volume in enumerate(volume_list[s_index:]):
+        avg_volume = f_avg_volume if f_avg_volume else get_avg_volume(volume_list[:index+s_index])
         if volume >= avg_volume * volume_times:
-            if f_index == 0:
-                f_index = index
+            if l_f_count == 0:
+                l_f_count = days - index
             f_avg_volume = avg_volume
             f_l_count += 1
-    if f_index == 0:
+    if l_f_count == 0:
         return False
-    l_f_count = total_count - f_index
     ra = (f_l_count / l_f_count) * 100
     # print(code, l_f_count, ra)
-    if l_f_count < 8 or l_f_count > 12:
+    if l_f_count < 8 or l_f_count > 15:
         return False
     if ra < 50:
         return False
@@ -349,7 +366,7 @@ def run():
         # if not code.startswith('sz.30'):
         #     continue
         # # print(code)
-        # if '002351' not in code:  #600731  600733
+        # if '002222' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
