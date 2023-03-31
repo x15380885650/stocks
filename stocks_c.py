@@ -251,7 +251,7 @@ def cond_5(code, data):
         return False
     ra = (f_l_count / l_f_count) * 100
     # print(code, l_f_count, ra)
-    if l_f_count < 8 or l_f_count > 15:
+    if l_f_count < 8 or l_f_count > 12:
         return False
     if ra < 50:
         return False
