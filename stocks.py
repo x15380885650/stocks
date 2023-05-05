@@ -1,11 +1,10 @@
 import baostock as bs
 from datetime import datetime, timedelta
-from dumper_loader import FileDataDumper, load_data_append_simple
 
 # http://baostock.com/baostock/index.php/Python_API%E6%96%87%E6%A1%A3
 
 format_date = '%Y-%m-%d'
-minus_days = 30*3
+minus_days = 30*6
 ratio_min = 20
 pct_change_min = 3
 pct_change_h = 9.5
@@ -25,123 +24,141 @@ def get_end_date():
     return None
 
 
-def cond(code, data, min_up_days=6):   # 5天内涨了5次
-    p_days = 45
-    p_data = data[-p_days:]
-    close_price = float(data.iloc[-1]['close'])
-    open_price = float(data.iloc[-1]['open'])
-    if float(close_price) < float(open_price):
-        return False
+def cond_1(data, min_max_day):  # 例如5天内有2天涨停
+    day = 0
+    for chg in data['pctChg']:
+        if not chg:
+            return False
+        if float(chg) >= pct_change_h:
+            day += 1
+        if day >= min_max_day:
+            return True
+    return False
 
-    # n_volume = float(data.iloc[-1]['volume'])
-    # n_avg_volume = get_avg_volume(p_data[0:p_days - 3])
-    # if n_volume > n_avg_volume * 2:
-    #     return False
 
-    r_high_price = get_max_high_price(p_data[:-1])
-    n_high_price = float(data.iloc[-1]['high'])
+def cond_2(data, half_count):   # 近期最高点，且涨幅在0-10
+    last_half_max_price = get_max_high_price(data[0:half_count])
+    next_half_max_price = get_max_high_price(data[half_count:])
+    latest_some_days_max_price = get_max_high_price(data[-1:])
+    if latest_some_days_max_price == next_half_max_price:
+        i_ratio = ((latest_some_days_max_price-last_half_max_price)/last_half_max_price)*100
+        if 0 <= i_ratio <= 20:
+            return True
+    return False
 
-    aaa = (n_high_price-r_high_price)/r_high_price * 100
-    # if aaa > 0 or aaa < -2:
-    #     return False
 
-    if r_high_price > n_high_price:
-        return False
-    r_low_price = get_min_low_price(p_data)
-    r = (n_high_price - r_low_price) / r_low_price * 100
-    if r > 50:
-        return False
-
+def cond_3(code, data, min_up_days):   # 5天内涨了5次
     l_up_days = []
-    for _, d in p_data.iterrows():
+    for _, d in data[-10:].iterrows():
         close_price = d['close']
         open_price = d['open']
-        pct_chg = d['pctChg']
-        if not close_price or not open_price or not pct_chg:
+        if not close_price or not open_price:
             return False
-        r_1 = (float(close_price) - float(open_price)) / float(open_price) * 100
-        # if r_1 >= 0:
-        #     l_up_days.append(1)
-        #     continue
-        if r_1 >= 0 or (r_1 < 0 and abs(r_1) <= 0.1):
+        r = (float(close_price) - float(open_price)) / float(open_price) * 100
+        if r >= -0.1:
             l_up_days.append(1)
-            continue
-        r_2 = float(pct_chg)
-        if r_2 >= 0 and abs(r_1) <= 0.1:
-            l_up_days.append(1)
-            continue
-        l_up_days.append(0)
-    # print(l_up_days)
-    l_range_up_days_ok = False
-    for start_index in range(0, p_days):
-        l_range_up_days = l_up_days[start_index:min_up_days+start_index]
-        if len(l_range_up_days) < min_up_days:
-            break
-        if all(l_range_up_days):
-            l_range_up_days_ok = True
-            k = p_days - start_index
-            for i in range(0, k):
-                l_range_up_days = l_up_days[start_index:min_up_days + start_index + i]
-                # print(l_range_up_days)
-                if not all(l_range_up_days):
-                    break
-            break
-    if not l_range_up_days_ok:
+        else:
+            l_up_days.append(0)
+    t_flag_days = l_up_days[-min_up_days:]
+    if not all(t_flag_days):
         return False
 
-    cond_1_ok = False
-    for j in range(start_index, start_index+i):
-        # print(l_up_days[j:min_up_days + j])
-        latest_data = p_data[j:min_up_days + j]
-        cond_1_ok = cond_1(latest_data)
-        if cond_1_ok:
-            break
-    if not cond_1_ok:
-        return False
-    # print('code: {}, noticed'.format(code))
+    # t_flag = l_up_days[-8]
+    # if t_flag == 1:
+    #     return False
 
-    end_index = start_index + i + min_up_days - 1
-    r_days = p_days - end_index
-    if r_days < 10:
+    flag_days = l_up_days[-(min_up_days + 1):]
+    if all(flag_days):
         return False
 
-    p = get_high_close_ratio(data.iloc[-1])
-    if p == 0 or p >= 0.6:
-        return False
-    print('code: {}, r_days: {}, r: {}, p: {}, aaa: {}'.format(code, r_days, r, p, aaa))
-    return True
-
-
-def cond_1(latest_data):
     prev_close_price = 0
+    latest_data = data[-min_up_days:]
     t_n_day = 0
-    r_n_day = 0
-    n_price = 2
     for _, d in latest_data.iterrows():
         close_price = d['close']
         open_price = d['open']
-        pct_chg = d['pctChg']
-        if not close_price or not open_price or not pct_chg:
+        if not close_price or not open_price:
             continue
-        r_1 = (float(close_price) - float(open_price)) / float(open_price) * 100
-        if r_1 >= n_price or float(pct_chg) >= n_price:
-            r_n_day += 1
+        # r = (float(close_price) - float(open_price))/float(open_price) * 100
+        # if r < -0.1 or r > 3.5:
+        #     return False
         if prev_close_price != 0:
-            t_price = float(close_price) - prev_close_price
-            # if t_price < 0:
-            #     return False
             t_ratio = abs((float(close_price) - prev_close_price) / prev_close_price) * 100
-            # if t_price < 0 and t_ratio > 0.1:
-            #     return False
+            # if t_ratio <= 0.15:
+            #     print(t_ratio)
 
-            # t_ratio = abs((float(close_price) - prev_close_price) / prev_close_price) * 100
-            # if t_ratio > 0.15 and float(close_price) - prev_close_price < 0:
-            #     t_n_day += 1
+            if t_ratio > 0.15 and float(close_price) - prev_close_price < 0:
+                t_n_day += 1
         prev_close_price = float(close_price)
-    # if t_n_day > 1:
-    #     return False
-    if r_n_day < 1:
+    if t_n_day > 0:
         return False
+    min_low_price = get_min_low_price(data)
+    r = (float(data.iloc[-1]['close']) - min_low_price)/min_low_price * 100
+    # if r < 20:
+    #     return False
+
+    return True
+
+
+def cond_8(code, data, min_up_days=5):   # 5天内涨了5次
+    print(code)
+    l_up_days = []
+    for _, d in data[-10:].iterrows():
+        close_price = d['close']
+        open_price = d['open']
+        pct_change = d['pctChg']
+        if not close_price or not open_price or not pct_change:
+            continue
+        # r_1 = float(pct_change)
+        r_2 = (float(close_price) - float(open_price)) / float(open_price) * 100
+        r_1 = r_2
+        if r_1 >= -0.1 or r_2 >= -0.1:
+            l_up_days.append(1)
+        else:
+            l_up_days.append(0)
+    t_flag_days = l_up_days[-min_up_days:]
+    if sum(t_flag_days) not in [min_up_days-1, min_up_days]:
+        return False
+    # print(sum(t_flag_days))
+    # if not all(t_flag_days):
+    #     return False
+
+    # t_flag = l_up_days[-8]
+    # if t_flag == 1:
+    #     return False
+
+    flag_days = l_up_days[-(min_up_days + 1):]
+    if all(flag_days):
+        return False
+
+    prev_close_price = 0
+    latest_data = data[-min_up_days:]
+    t_n_day = 0
+    for _, d in latest_data.iterrows():
+        close_price = d['close']
+        open_price = d['open']
+        pct_change = d['pctChg']
+        if not close_price or not open_price or not pct_change:
+            continue
+        # r = float(pct_change)
+        r = (float(close_price) - float(open_price)) / float(open_price) * 100
+        if r < -0.1 or r > 2.5:
+            return False
+        if prev_close_price != 0:
+            t_ratio = abs((float(close_price) - prev_close_price) / prev_close_price) * 100
+            # if t_ratio <= 0.15:
+            #     print(t_ratio)
+
+            if t_ratio > 0.15 and float(close_price) - prev_close_price < 0:
+                t_n_day += 1
+        prev_close_price = float(close_price)
+    if t_n_day > 1:
+        return False
+    min_low_price = get_min_low_price(data)
+    r = (float(data.iloc[-1]['close']) - min_low_price)/min_low_price * 100
+    # if r < 20:
+    #     return False
+
     return True
 
 
@@ -161,25 +178,167 @@ def get_min_low_price(data):
     return min_price
 
 
-def get_avg_volume(data):
-    sum_volume = 0
-    count = data.shape[0]
-    for vol in data['volume']:
-        if not vol:
-            count -= 1
+def get_max_high_volume(data):
+    max_volume = 0
+    for volume in data['volume']:
+        if not volume:
             continue
-        sum_volume += float(vol)
-    return sum_volume/count
+        if max_volume < int(volume):
+            max_volume = int(volume)
+    return max_volume
 
-def get_high_close_ratio(one_data):
-    try:
-        close_price = float(one_data['close'])
-        high_price = float(one_data['high'])
-        open_price = float(one_data['open'])
-        return (high_price-close_price)/(close_price-open_price)
-    except Exception as e:
-        print(e)
-        return -1
+
+def get_latest_low_index(data, low_price):
+    latest_index = -1
+    for index, price in enumerate(data['low']):
+        if not low_price:
+            continue
+        if float(price) == low_price:
+            latest_index = index
+    return latest_index
+
+def get_avg_volume(volumes):
+    sum_volume = 0
+    count = len(volumes)
+    for vol in volumes:
+        sum_volume += float(vol)
+    return int(sum_volume/count)
+
+
+# def get_s(volume_list, volume_times, total_count):
+#     f_avg_volume = 0
+#     f_l_count = 0
+#     f_index = 0
+#     for index, volume in enumerate(volume_list):
+#         if index == 0:
+#             continue
+#         avg_volume = f_avg_volume if f_avg_volume else get_avg_volume(volume_list[:index])
+#         if volume >= avg_volume * volume_times:
+#             if f_index == 0:
+#                 f_index = index
+#             f_avg_volume = avg_volume
+#             f_l_count += 1
+#     if f_index == 0:
+#         return False
+#     l_f_count = total_count - f_index
+
+
+def cond_5(code, data):
+    volume_times = 3
+    days = 20
+    total_count = data.shape[0]
+    volume_list = []
+    date_list = []
+    for row in data[['date', 'volume']].itertuples(index=False):
+        vol = row[1]
+        date = row[0]
+        if not vol:
+            continue
+        volume_list.append(int(vol))
+        date_list.append(date)
+    f_avg_volume = 0
+    f_l_count = 0
+    s_index = total_count-days
+    l_f_count = 0
+    for index, volume in enumerate(volume_list[s_index:]):
+        avg_volume = f_avg_volume if f_avg_volume else get_avg_volume(volume_list[:index+s_index])
+        if volume >= avg_volume * volume_times:
+            if l_f_count == 0:
+                l_f_count = days - index
+            f_avg_volume = avg_volume
+            f_l_count += 1
+    if l_f_count == 0:
+        return False
+    ra = (f_l_count / l_f_count) * 100
+    # print(code, l_f_count, ra)
+    if l_f_count < 7 or l_f_count > 12:
+        return False
+    if ra < 50:
+        return False
+    l_f_data = data[-l_f_count:]
+    red_count = 0
+    for _, _d in l_f_data.iterrows():
+        close_price = _d['close']
+        open_price = _d['open']
+        if not close_price or not open_price:
+            continue
+        if float(close_price) >= float(open_price):
+            red_count += 1
+    rb = (red_count / l_f_count) * 100
+    if rb < 75:
+        return False
+    r_high_price = get_max_high_price(l_f_data[:-1])
+    n_high_price = float(data.iloc[-1]['high'])
+    rc = (n_high_price - r_high_price) / n_high_price * 100
+    # print(code, l_f_count, ra, rb, rc)
+    if rc < -2:
+        return False
+    print(code, l_f_count, ra, rb, rc)
+    return True
+
+
+def cond_6(code, data, latest_days=30):
+    count = data.shape[0]
+    date_low_price_dict = {}
+    for row in data[['date', 'low']].itertuples(index=False):
+        low_price = row[1]
+        date = row[0]
+        if not low_price or not date:
+            continue
+        date_low_price_dict[datetime.strptime(date, format_date)] = float(low_price)
+    if not date_low_price_dict:
+        return False
+    sorted_date_low_price = sorted(date_low_price_dict.items(), key=lambda x: x[1], reverse=False)
+    date_list = []
+    sorted_price_list = []
+    for item in sorted_date_low_price:
+        date_list.append(item[0])
+        sorted_price_list.append(item[1])
+    # sorted_date_list = sorted(date_list)
+    min_low_price = get_min_low_price(data[-latest_days:])
+    for row in data[['date', 'low']].itertuples(index=False):
+        low_price = row[1]
+        date = row[0]
+        if not low_price or not date:
+            continue
+        date_low_price_dict[datetime.strptime(date, format_date)] = float(low_price)
+    # min_low_price_date_index = sorted_date_list.index(date_list[0])
+    # if (count-min_low_price_date_index) > latest_days:  # 最大量必须在最近的时间内
+    #     return False
+    min_low_price_date_index = get_latest_low_index(data, min_low_price)
+    max_high_price = get_max_high_price(data)
+    now_date_close_price = float(data.iloc[-1]['close'])
+    min_date_open_price = float(data.iloc[min_low_price_date_index]['open'])
+    # min_low_price = sorted_price_list[0]
+    down_ratio = (max_high_price-min_low_price)/max_high_price * 100
+    if down_ratio < 45:
+        return False
+    up_ratio = (now_date_close_price-min_date_open_price)/min_date_open_price * 100
+    if up_ratio < 0 or up_ratio > 15:
+        return False
+    print(code, down_ratio, up_ratio, max_high_price)
+    return True
+
+
+def cond_7(code, data, min_up_days=5):
+    days = 0
+    for _, d in data.iterrows():
+        close_price = d['close']
+        open_price = d['open']
+        if not close_price or not open_price:
+            return False
+        r = (float(close_price) - float(open_price)) / float(open_price) * 100
+        if r >= 0:
+            days += 1
+    if days >= min_up_days:
+        r = (float(data.iloc[-1]['close']) - float(data.iloc[0]['open'])) / float(data.iloc[0]['open']) * 100
+        if 10 <= r <= 15:
+            return True
+
+    return False
+
+def is_red(one_data):
+    return float(one_data['close']) > float(one_data['open'])
 
 
 def run():
@@ -195,11 +354,7 @@ def run():
     stock_rs = bs.query_all_stock(end_date_str)
     stock_df = stock_rs.get_data()
     count = 0
-    # file_path = 'stocks.txt'
-    # target_stocks_list = load_data_append_simple(file_path, ret_type=[])
-    # dumper = FileDataDumper(file_path, mode='a+')
     for code in stock_df["code"]:
-        # print(code)
         count += 1
         if count % 1000 == 0:
             print(count)
@@ -208,13 +363,10 @@ def run():
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
 
-        # if not code.startswith('sz.30') and not code.startswith('sz.00'):
-        #     continue
-
         # if not code.startswith('sz.30'):
         #     continue
         # # print(code)
-        # if '300307' not in code:  #600731  600733
+        # if '002222' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -235,16 +387,23 @@ def run():
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
-        if latest_close_price < 5 or latest_close_price > 20:
+        # if latest_close_price < 5 or latest_close_price > 25:
+        #     continue
+        if latest_close_price > 25:
             continue
-        # if latest_close_price < 0 or latest_close_price > 30:
+
+        cond_5_ok = cond_5(code, data[-60:])
+        if not cond_5_ok:
+            continue
+
+        # cond_6_ok = cond_6(code, data[-180:])
+        # if not cond_6_ok:
         #     continue
 
-        cond_ok = cond(code, data[-60:], min_up_days=6)
-        if not cond_ok:
-            continue
-        # if code not in target_stocks_list:
-        #     dumper.dump_data_by_append(code, json_dumps=False)
+        # cond_8_ok = cond_8(code, data[-180:])
+        # if not cond_8_ok:
+        #     continue
+
         print(code)
     bs.logout()
 
