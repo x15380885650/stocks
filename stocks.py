@@ -8,6 +8,7 @@ minus_days = 30*6
 ratio_min = 20
 pct_change_min = 3
 pct_change_h = 9.5
+pct_change_i = 19
 close_price_max = 25
 
 
@@ -24,38 +25,68 @@ def get_end_date():
     return None
 
 
-def cond_1(code, data, chg_day=2):  # 例如5天内有2天涨停
-    m_day = 5
+def cond_1(code, data, m_day):  # 例如5天内有2天涨停
+    chg_day = 1
     data_x = data[-m_day:]
     day_x = 0
     for chg in data_x['pctChg']:
         if not chg:
             continue
-        if float(chg) >= pct_change_h:
-            day_x += 1
+        if not code.startswith('sz.30'):
+            if float(chg) >= pct_change_h:
+                day_x += 1
+        else:
+            if float(chg) >= pct_change_i:
+                day_x += 1
     if day_x != chg_day:
         return False
-    day_y = 0
-    data_y = data[-m_day*2:]
-    for chg in data_y['pctChg']:
-        if not chg:
+    prev_close_price = 0
+    t_n_day = 0
+    for _, d in data_x.iterrows():
+        close_price = d['close']
+        open_price = d['open']
+        pct_change = d['pctChg']
+        if not close_price or not open_price or not pct_change:
             continue
-        if float(chg) >= pct_change_h:
-            day_y += 1
-    if day_y != chg_day:
+        # r = float(pct_change)
+        r = (float(close_price) - float(open_price)) / float(open_price) * 100
+        if r < -0.1:
+            return False
+        if prev_close_price != 0:
+            t_ratio = abs((float(close_price) - prev_close_price) / prev_close_price) * 100
+            # if t_ratio <= 0.15:
+            #     print(t_ratio)
+
+            if t_ratio > 0.15 and float(close_price) - prev_close_price < 0:
+                t_n_day += 1
+        prev_close_price = float(close_price)
+    if t_n_day > 1:
         return False
-    red_count = 0
-    for _, _d in data_x.iterrows():
-        close_price = _d['close']
-        open_price = _d['open']
-        if not close_price or not open_price:
-            continue
-        if float(close_price) >= float(open_price):
-            red_count += 1
-    rb = (red_count / m_day) * 100
-    if rb < 75:
-        # print('code: {}, rb: {}'.format(code, rb))
-        return False
+    # day_y = 0
+    # data_y = data[-m_day*2:]
+    # for chg in data_y['pctChg']:
+    #     if not chg:
+    #         continue
+    #     if not code.startswith('sz.30'):
+    #         if float(chg) >= pct_change_h:
+    #             day_y += 1
+    #     else:
+    #         if float(chg) >= pct_change_i:
+    #             day_y += 1
+    # if day_y != chg_day:
+    #     return False
+    # red_count = 0
+    # for _, _d in data_x.iterrows():
+    #     close_price = _d['close']
+    #     open_price = _d['open']
+    #     if not close_price or not open_price:
+    #         continue
+    #     if float(close_price) >= float(open_price):
+    #         red_count += 1
+    # rb = (red_count / m_day) * 100
+    # if rb < 75:
+    #     # print('code: {}, rb: {}'.format(code, rb))
+    #     return False
     return True
 
 
@@ -296,7 +327,7 @@ def cond_5(code, data):
     # print(code, l_f_count, ra, rb, rc)
     if rc < -2:
         return False
-    print(code, l_f_count, ra, rb, rc)
+    # print(code, l_f_count, ra, rb, rc)
     return True
 
 
@@ -385,8 +416,8 @@ def run():
             continue
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
-        if code.startswith('sz.30'):
-            continue
+        # if code.startswith('sz.30'):
+        #     continue
         # # print(code)
         # if '603029' not in code:  #600731  600733
         #     continue
@@ -414,22 +445,12 @@ def run():
         if latest_close_price > 40:
             continue
 
-        cond_1_ok = cond_1(code, data[-30:], 2)
-        if not cond_1_ok:
-            continue
+        cond_1_ok = cond_1(code, data[-30:], m_day=5)
+        if cond_1_ok:
+            print('code: {}, cond_1_ok'.format(code))
         # cond_5_ok = cond_5(code, data[-60:])
-        # if not cond_5_ok:
-        #     continue
-
-        # cond_6_ok = cond_6(code, data[-180:])
-        # if not cond_6_ok:
-        #     continue
-
-        # cond_8_ok = cond_8(code, data[-180:])
-        # if not cond_8_ok:
-        #     continue
-
-        print(code)
+        # if cond_5_ok:
+        #     print('code: {}, cond_5_ok'.format(code))
     bs.logout()
 
 
