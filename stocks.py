@@ -24,16 +24,39 @@ def get_end_date():
     return None
 
 
-def cond_1(data, min_max_day):  # 例如5天内有2天涨停
-    day = 0
-    for chg in data['pctChg']:
+def cond_1(code, data, chg_day=2):  # 例如5天内有2天涨停
+    m_day = 5
+    data_x = data[-m_day:]
+    day_x = 0
+    for chg in data_x['pctChg']:
         if not chg:
-            return False
+            continue
         if float(chg) >= pct_change_h:
-            day += 1
-        if day >= min_max_day:
-            return True
-    return False
+            day_x += 1
+    if day_x != chg_day:
+        return False
+    day_y = 0
+    data_y = data[-m_day*2:]
+    for chg in data_y['pctChg']:
+        if not chg:
+            continue
+        if float(chg) >= pct_change_h:
+            day_y += 1
+    if day_y != chg_day:
+        return False
+    red_count = 0
+    for _, _d in data_x.iterrows():
+        close_price = _d['close']
+        open_price = _d['open']
+        if not close_price or not open_price:
+            continue
+        if float(close_price) >= float(open_price):
+            red_count += 1
+    rb = (red_count / m_day) * 100
+    if rb < 75:
+        # print('code: {}, rb: {}'.format(code, rb))
+        return False
+    return True
 
 
 def cond_2(data, half_count):   # 近期最高点，且涨幅在0-10
@@ -362,11 +385,10 @@ def run():
             continue
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
-
-        # if not code.startswith('sz.30'):
-        #     continue
+        if code.startswith('sz.30'):
+            continue
         # # print(code)
-        # if '002222' not in code:  #600731  600733
+        # if '603029' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -389,12 +411,15 @@ def run():
         latest_close_price = float(data['close'].iloc[-1])
         # if latest_close_price < 5 or latest_close_price > 25:
         #     continue
-        if latest_close_price > 25:
+        if latest_close_price > 40:
             continue
 
-        cond_5_ok = cond_5(code, data[-60:])
-        if not cond_5_ok:
+        cond_1_ok = cond_1(code, data[-30:], 2)
+        if not cond_1_ok:
             continue
+        # cond_5_ok = cond_5(code, data[-60:])
+        # if not cond_5_ok:
+        #     continue
 
         # cond_6_ok = cond_6(code, data[-180:])
         # if not cond_6_ok:
