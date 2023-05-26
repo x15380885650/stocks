@@ -52,15 +52,14 @@ def cond_1(code, data, m_day):  # 例如5天内有2天涨停
         r = (float(close_price) - float(open_price)) / float(open_price) * 100
         if r < -0.1:
             return False
-        if prev_close_price != 0:
-            t_ratio = abs((float(close_price) - prev_close_price) / prev_close_price) * 100
-            # if t_ratio <= 0.15:
-            #     print(t_ratio)
-
-            if t_ratio > 0.15 and float(close_price) - prev_close_price < 0:
-                t_n_day = 0
-                # t_n_day += 1
-        prev_close_price = float(close_price)
+        # if prev_close_price != 0:
+        #     t_ratio = abs((float(close_price) - prev_close_price) / prev_close_price) * 100
+        #     # if t_ratio <= 0.15:
+        #     #     print(t_ratio)
+        #
+        #     if t_ratio > 0.15 and float(close_price) - prev_close_price < 0:
+        #         t_n_day += 1
+        # prev_close_price = float(close_price)
     if t_n_day > 1:
         return False
     # day_y = 0
@@ -417,8 +416,8 @@ def run():
             continue
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
-        if code.startswith('sz.30'):
-            continue
+        # if code.startswith('sz.30'):
+        #     continue
         # # print(code)
         # if '603029' not in code:  #600731  600733
         #     continue

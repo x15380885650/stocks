@@ -125,7 +125,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/stocks.py</url>
-          <line>129</line>
+          <line>128</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
