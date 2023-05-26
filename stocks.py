@@ -448,9 +448,9 @@ def run():
         cond_1_ok = cond_1(code, data[-30:], m_day=4)
         if cond_1_ok:
             print('code: {}, cond_1_ok'.format(code))
-        # cond_5_ok = cond_5(code, data[-60:])
-        # if cond_5_ok:
-        #     print('code: {}, cond_5_ok'.format(code))
+        cond_5_ok = cond_5(code, data[-60:])
+        if cond_5_ok:
+            print('code: {}, cond_5_ok'.format(code))
     bs.logout()
 
 
