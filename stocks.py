@@ -417,8 +417,8 @@ def run():
             continue
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
-        # if code.startswith('sz.30'):
-        #     continue
+        if code.startswith('sz.30'):
+            continue
         # # print(code)
         # if '600560' not in code:  #600731  600733
         #     continue
