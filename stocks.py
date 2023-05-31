@@ -417,10 +417,10 @@ def run():
             continue
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
-        if code.startswith('sz.30'):
-            continue
+        # if code.startswith('sz.30'):
+        #     continue
         # # print(code)
-        # if '600310' not in code:  #600731  600733
+        # if '600560' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -441,10 +441,10 @@ def run():
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
-        # if latest_close_price < 5 or latest_close_price > 25:
-        #     continue
-        if latest_close_price > 40:
+        if latest_close_price < 5 or latest_close_price > 25:
             continue
+        # if latest_close_price > 40:
+        #     continue
 
         cond_1_ok = cond_1(code, data[-30:], m_day=4)
         if cond_1_ok:
