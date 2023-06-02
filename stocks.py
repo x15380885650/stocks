@@ -70,7 +70,7 @@ def cond_1(code, data, m_day):  # 例如5天内有2天涨停
                 t_n_day += 1
         prev_close_price = float(close_price)
     if t_n_day >= 1:
-        print('code: {}, t_n_day={}'.format(code, t_n_day))
+        # print('code: {}, t_n_day={}'.format(code, t_n_day))
         return False
     # day_y = 0
     # data_y = data[-m_day*2:]
