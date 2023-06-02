@@ -8,7 +8,7 @@ minus_days = 30*6
 ratio_min = 20
 pct_change_min = 3
 pct_change_h = 9.9
-pct_change_i = 19
+pct_change_i = 19.5
 close_price_max = 25
 
 
@@ -26,19 +26,21 @@ def get_end_date():
 
 
 def cond_1(code, data, m_day):  # 例如5天内有2天涨停
-    # last_pct_chg = data.iloc[-1]['pctChg']
-    # if float(last_pct_chg) >= pct_change_h:
-    #     return False
-    # chg_day = 1
     data_x = data[-m_day:]
     chg_list = []
     for chg in data_x['pctChg']:
         if not chg:
             continue
-        if float(chg) >= pct_change_h:
-            chg_list.append(1)
+        if not code.startswith('sz.30'):
+            if float(chg) >= pct_change_h:
+                chg_list.append(1)
+            else:
+                chg_list.append(0)
         else:
-            chg_list.append(0)
+            if float(chg) >= pct_change_i:
+                chg_list.append(1)
+            else:
+                chg_list.append(0)
     if all(chg_list):
         return False
     if not any(chg_list):
@@ -424,8 +426,8 @@ def run():
             continue
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
-        if code.startswith('sz.30'):
-            continue
+        # if code.startswith('sz.30'):
+        #     continue
         # # print(code)
         # if '600560' not in code:  #600731  600733
         #     continue
@@ -456,9 +458,9 @@ def run():
         cond_1_ok = cond_1(code, data[-30:], m_day=4)
         if cond_1_ok:
             print('code: {}, cond_1_ok'.format(code))
-        cond_5_ok = cond_5(code, data[-60:])
-        if cond_5_ok:
-            print('code: {}, cond_5_ok'.format(code))
+        # cond_5_ok = cond_5(code, data[-60:])
+        # if cond_5_ok:
+        #     print('code: {}, cond_5_ok'.format(code))
     bs.logout()
 
 
