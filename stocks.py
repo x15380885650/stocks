@@ -54,7 +54,7 @@ def cond_1(code, data, m_day, p_day):  # 例如5天内有2天涨停
     p_chg_list = chg_list[:p_day]
     if not any(p_chg_list):
         return False
-    if chg_list[-1]:
+    if chg_list[-1] or chg_list[-2]:
         return False
     prev_close_price = 0
     t_n_day = 0
