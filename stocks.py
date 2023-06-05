@@ -1,5 +1,6 @@
 import baostock as bs
 from datetime import datetime, timedelta
+from collections import Counter
 
 # http://baostock.com/baostock/index.php/Python_API%E6%96%87%E6%A1%A3
 
@@ -25,7 +26,7 @@ def get_end_date():
     return None
 
 
-def cond_1(code, data, m_day):  # 例如5天内有2天涨停
+def cond_1(code, data, m_day, p_day):  # 例如5天内有2天涨停
     data_x = data[-m_day:]
     chg_list = []
     for chg in data_x['pctChg']:
@@ -45,7 +46,13 @@ def cond_1(code, data, m_day):  # 例如5天内有2天涨停
         return False
     if not any(chg_list):
         return False
-    if chg_list[0] == 0 and chg_list[1] == 0:
+    res = Counter(chg_list)
+    up_days = res[1]
+    if up_days > m_day - 3:
+        return False
+
+    p_chg_list = chg_list[:p_day]
+    if not any(p_chg_list):
         return False
     if chg_list[-1]:
         return False
@@ -70,7 +77,7 @@ def cond_1(code, data, m_day):  # 例如5天内有2天涨停
                 t_n_day += 1
         prev_close_price = float(close_price)
     if t_n_day >= 1:
-        # print('code: {}, t_n_day={}'.format(code, t_n_day))
+        print('code: {}, t_n_day={}'.format(code, t_n_day))
         return False
     # day_y = 0
     # data_y = data[-m_day*2:]
@@ -429,7 +436,7 @@ def run():
         # if code.startswith('sz.30'):
         #     continue
         # # print(code)
-        # if '600560' not in code:  #600731  600733
+        # if '603869' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -450,12 +457,12 @@ def run():
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
-        if latest_close_price < 10 or latest_close_price > 25:
+        if latest_close_price < 5 or latest_close_price > 30:
             continue
         # if latest_close_price > 40:
         #     continue
 
-        cond_1_ok = cond_1(code, data[-30:], m_day=4)
+        cond_1_ok = cond_1(code, data[-30:], m_day=5, p_day=3)
         if cond_1_ok:
             print('code: {}, cond_1_ok'.format(code))
         # cond_5_ok = cond_5(code, data[-60:])
