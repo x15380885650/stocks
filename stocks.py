@@ -143,9 +143,9 @@ def cond_3(code, data, m_day, p_day):
     for i, v in enumerate(chg_list):
         if v == 1:
             index_list.append(i)
-    if len(index_list) != 2:
+    if len(index_list) < 2:
         return False
-    gap = index_list[1] - index_list[0] - 1
+    gap = index_list[-1] - index_list[-2] - 1
     if gap < 3:
         return False
     return True
@@ -175,7 +175,7 @@ def run():
         # if code.startswith('sz.30'):
         #     continue
         # # print(code)
-        # if '603680' not in code:  #600731  600733
+        # if '603918' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -196,7 +196,7 @@ def run():
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
-        if latest_close_price < 1 or latest_close_price > 30:
+        if latest_close_price < 1 or latest_close_price > 35:
             continue
         # if latest_close_price > 40:
         #     continue
