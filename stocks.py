@@ -146,7 +146,7 @@ def cond_3(code, data, m_day, p_day):
     if len(index_list) != 2:
         return False
     gap = index_list[1] - index_list[0] - 1
-    if gap < 2:
+    if gap < 3:
         return False
     return True
 
