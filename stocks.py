@@ -26,7 +26,7 @@ def get_end_date():
     return None
 
 
-def is_stock_continue_up(data):
+def is_stock_continue_up(data, t_n_day_max):
     prev_close_price = 0
     t_n_day = 0
     for _, d in data.iterrows():
@@ -47,7 +47,7 @@ def is_stock_continue_up(data):
             if t_ratio > 0.15 and float(close_price) - prev_close_price < 0:
                 t_n_day += 1
         prev_close_price = float(close_price)
-    if t_n_day >= 1:
+    if t_n_day >= t_n_day_max:
         return False
     return True
 
@@ -108,25 +108,24 @@ def cond_1(code, data, m_day, p_day):  # 例如5天内有2天涨停
     return True
 
 
-def cond_2(code, data, m_day, p_day):   # 近期最高点，且涨幅在0-10
+def cond_2(code, data, m_day, p_day):
     data_x = data[-m_day:]
-    is_continue = is_stock_continue_up(data_x)
-    if not is_continue:
-        return False
     chg_list = []
     for chg in data_x['pctChg']:
         if not chg:
             continue
-        chg_list.append(float(chg))
-    pct_change_x = pct_change_h if not code.startswith('sz.30') else pct_change_i
-    if chg_list[-1] > pct_change_x:
+        pct_change_x = pct_change_h if not code.startswith('sz.30') else pct_change_i
+        if float(chg) >= pct_change_x:
+            chg_list.append(1)
+        else:
+            chg_list.append(0)
+    if sum(chg_list) not in [1, 2]:
         return False
-    t_up_day = 0
-    for chg in chg_list:
-        if chg >= 8:
-            t_up_day += 1
-    if t_up_day != 1:
+
+    is_continue = is_stock_continue_up(data_x, t_n_day_max=2)
+    if not is_continue:
         return False
+
     return True
 
 
@@ -151,8 +150,8 @@ def run():
             continue
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
-        if code.startswith('sz.30'):
-            continue
+        # if code.startswith('sz.30'):
+        #     continue
         # # print(code)
         # if '000066' not in code:  #600731  600733
         #     continue
@@ -183,7 +182,7 @@ def run():
         # cond_1_ok = cond_1(code, data[-30:], m_day=5, p_day=3)
         # if cond_1_ok:
         #     print('code: {}, cond_1_ok'.format(code))
-        cond_2_ok = cond_2(code, data[-30:], m_day=5, p_day=3)
+        cond_2_ok = cond_2(code, data[-30:], m_day=6, p_day=3)
         if cond_2_ok:
             print('code: {}, cond_2_ok'.format(code))
         # cond_5_ok = cond_5(code, data[-60:])

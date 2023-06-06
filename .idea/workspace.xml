@@ -203,12 +203,12 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/stocks.py</url>
+          <url>file://$PROJECT_DIR$/stocks__.py</url>
           <line>172</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/stocks.py</url>
+          <url>file://$PROJECT_DIR$/stocks__.py</url>
           <line>113</line>
           <option name="timeStamp" value="11" />
         </line-breakpoint>
