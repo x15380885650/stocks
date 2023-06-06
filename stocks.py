@@ -119,7 +119,7 @@ def cond_2(code, data, m_day, p_day):
             chg_list.append(1)
         else:
             chg_list.append(0)
-    if sum(chg_list) not in [1, 2]:
+    if sum(chg_list) not in [1]:
         return False
 
     is_continue = is_stock_continue_up(data_x, t_n_day_max=2)
