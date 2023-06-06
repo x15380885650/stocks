@@ -5,7 +5,7 @@ from collections import Counter
 # http://baostock.com/baostock/index.php/Python_API%E6%96%87%E6%A1%A3
 
 format_date = '%Y-%m-%d'
-minus_days = 30*6
+minus_days = 30*2
 ratio_min = 20
 pct_change_min = 3
 pct_change_h = 9.9
@@ -128,6 +128,28 @@ def cond_2(code, data, m_day, p_day):
 
     return True
 
+def cond_3(code, data, m_day, p_day):
+    data_x = data[-m_day:]
+    chg_list = []
+    for chg in data_x['pctChg']:
+        if not chg:
+            continue
+        pct_change_x = pct_change_h if not code.startswith('sz.30') else pct_change_i
+        if float(chg) >= pct_change_x:
+            chg_list.append(1)
+        else:
+            chg_list.append(0)
+    index_list = []
+    for i, v in enumerate(chg_list):
+        if v == 1:
+            index_list.append(i)
+    if len(index_list) != 2:
+        return False
+    gap = index_list[1] - index_list[0] - 1
+    if gap < 2:
+        return False
+    return True
+
 
 def run():
     bs.login()
@@ -153,7 +175,7 @@ def run():
         # if code.startswith('sz.30'):
         #     continue
         # # print(code)
-        # if '000066' not in code:  #600731  600733
+        # if '603680' not in code:  #600731  600733
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -174,17 +196,21 @@ def run():
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
-        if latest_close_price < 5 or latest_close_price > 30:
+        if latest_close_price < 1 or latest_close_price > 30:
             continue
         # if latest_close_price > 40:
         #     continue
 
+        cond_3_ok = cond_3(code, data[-30:], m_day=10, p_day=3)
+        if cond_3_ok:
+            print('code: {}, cond_3_ok'.format(code))
+
         # cond_1_ok = cond_1(code, data[-30:], m_day=5, p_day=3)
         # if cond_1_ok:
         #     print('code: {}, cond_1_ok'.format(code))
-        cond_2_ok = cond_2(code, data[-30:], m_day=6, p_day=3)
-        if cond_2_ok:
-            print('code: {}, cond_2_ok'.format(code))
+        # cond_2_ok = cond_2(code, data[-30:], m_day=6, p_day=3)
+        # if cond_2_ok:
+        #     print('code: {}, cond_2_ok'.format(code))
         # cond_5_ok = cond_5(code, data[-60:])
         # if cond_5_ok:
         #     print('code: {}, cond_5_ok'.format(code))
