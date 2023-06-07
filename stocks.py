@@ -69,6 +69,23 @@ def is_stock_continue_up(data, t_n_day_max):
     return True
 
 
+def get_up_and_down_num(data):
+    up_num = down_num = 0
+    for _, d in data.iterrows():
+        close_price = d['close']
+        open_price = d['open']
+        pct_change = d['pctChg']
+        if not close_price or not open_price or not pct_change:
+            continue
+        # r = float(pct_change)
+        r = float(close_price) - float(open_price)
+        if r >= 0:
+            up_num += 1
+        else:
+            down_num += 1
+    return up_num, down_num
+
+
 def cond_1(code, data, m_day, p_day):  # 例如5天内有2天涨停
     data_x = data[-m_day:]
     chg_list = []
@@ -146,7 +163,7 @@ def cond_2(code, data, m_day, p_day):
     return True
 
 
-def cond_3(code, data, m_day, p_day):
+def cond_3(code, data, m_day):
     data_x = data[-m_day:]
     chg_list = []
     for chg in data_x['pctChg']:
@@ -163,17 +180,11 @@ def cond_3(code, data, m_day, p_day):
             index_list.append(i)
     if len(index_list) < 2 or len(index_list) > 4:
         return False
-    # index_list_ = index_list[:-1].copy()
-    # index_list_.insert(0, index_list[0])
-    # index_list_gap = np.subtract(np.array(index_list), np.array(index_list_))
-    # max_gap = np.max(index_list_gap)
-    # if max_gap - 1 < 3:
-    #     return False
     l_index = None
     r_index = index_list[-1]
     for i in index_list[-2::-1]:
         gap = r_index - i - 1
-        if gap > 3:
+        if 2 < gap < 8:
             l_index = i
             break
         r_index = i
@@ -189,11 +200,15 @@ def cond_3(code, data, m_day, p_day):
         print('code: {}, l_high_price: {} < l_high_price: {}'.format(code, l_high_price, r_high_price))
         return False
     data_l_r = data_x[l_index+1:r_index]
-    l_r_max_high_price = get_max_high_price(data_l_r)
-    r = 100 * (l_r_max_high_price - r_high_price) / float(r_high_price)
-    if r > 5:
-        print('code: {}, r: {}, not ok'.format(code, r))
+    up_num, down_num = get_up_and_down_num(data_l_r)
+    up_ratio = 100 * up_num/float(up_num+down_num)
+    if up_ratio < 25:
         return False
+    # l_r_max_high_price = get_max_high_price(data_l_r)
+    # r = 100 * (l_r_max_high_price - r_high_price) / float(r_high_price)
+    # if r > 5:
+    #     print('code: {}, r: {}, not ok'.format(code, r))
+    #     return False
     return True
 
 
@@ -221,7 +236,7 @@ def run():
         # if code.startswith('sz.30'):
         #     continue
         # # print(code)
-        # if '603683' not in code:  #605028
+        # if '605298' not in code:  #605028
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -242,12 +257,12 @@ def run():
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
-        if latest_close_price < 5 or latest_close_price > 25:
+        if latest_close_price < 5 or latest_close_price > 35:
             continue
         # if latest_close_price > 40:
         #     continue
 
-        cond_3_ok = cond_3(code, data[-60:], m_day=10, p_day=3)
+        cond_3_ok = cond_3(code, data[-60:], m_day=9)
         if cond_3_ok:
             print('code: {}, cond_3_ok'.format(code))
 
