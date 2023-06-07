@@ -202,7 +202,7 @@ def cond_3(code, data, m_day):
     data_l_r = data_x[l_index+1:r_index]
     up_num, down_num = get_up_and_down_num(data_l_r)
     up_ratio = 100 * up_num/float(up_num+down_num)
-    if up_ratio < 25:
+    if up_ratio < 33:
         return False
     # l_r_max_high_price = get_max_high_price(data_l_r)
     # r = 100 * (l_r_max_high_price - r_high_price) / float(r_high_price)
@@ -257,7 +257,7 @@ def run():
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
-        if latest_close_price < 5 or latest_close_price > 35:
+        if latest_close_price < 5 or latest_close_price > 40:
             continue
         # if latest_close_price > 40:
         #     continue
