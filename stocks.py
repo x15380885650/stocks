@@ -1,11 +1,12 @@
 import baostock as bs
+import numpy as np
 from datetime import datetime, timedelta
 from collections import Counter
 
 # http://baostock.com/baostock/index.php/Python_API%E6%96%87%E6%A1%A3
 
 format_date = '%Y-%m-%d'
-minus_days = 30*2
+minus_days = 30*3
 ratio_min = 20
 pct_change_min = 3
 pct_change_h = 9.9
@@ -24,6 +25,22 @@ def get_end_date():
         else:
             end_date_t = end_date_t - timedelta(days=1)
     return None
+
+
+def get_max_high_price(data):
+    max_price = float(data['high'].iloc[0])
+    for price in data['high']:
+        if max_price < float(price):
+            max_price = float(price)
+    return max_price
+
+
+def get_max_close_price(data):
+    max_price = float(data['close'].iloc[0])
+    for price in data['close']:
+        if max_price < float(price):
+            max_price = float(price)
+    return max_price
 
 
 def is_stock_continue_up(data, t_n_day_max):
@@ -128,6 +145,7 @@ def cond_2(code, data, m_day, p_day):
 
     return True
 
+
 def cond_3(code, data, m_day, p_day):
     data_x = data[-m_day:]
     chg_list = []
@@ -143,10 +161,38 @@ def cond_3(code, data, m_day, p_day):
     for i, v in enumerate(chg_list):
         if v == 1:
             index_list.append(i)
-    if len(index_list) < 2:
+    if len(index_list) < 2 or len(index_list) > 4:
         return False
-    gap = index_list[-1] - index_list[-2] - 1
-    if gap < 3:
+    # index_list_ = index_list[:-1].copy()
+    # index_list_.insert(0, index_list[0])
+    # index_list_gap = np.subtract(np.array(index_list), np.array(index_list_))
+    # max_gap = np.max(index_list_gap)
+    # if max_gap - 1 < 3:
+    #     return False
+    l_index = None
+    r_index = index_list[-1]
+    for i in index_list[-2::-1]:
+        gap = r_index - i - 1
+        if gap > 3:
+            l_index = i
+            break
+        r_index = i
+    if l_index is None:
+        return False
+    x_max_high_price = get_max_high_price(data_x)
+    y_max_high_price = get_max_high_price(data)
+    if x_max_high_price < y_max_high_price:
+        return False
+    l_high_price = float(data_x.iloc[l_index]['high'])
+    r_high_price = float(data_x.iloc[r_index]['high'])
+    if r_high_price < l_high_price:
+        print('code: {}, l_high_price: {} < l_high_price: {}'.format(code, l_high_price, r_high_price))
+        return False
+    data_l_r = data_x[l_index+1:r_index]
+    l_r_max_high_price = get_max_high_price(data_l_r)
+    r = 100 * (l_r_max_high_price - r_high_price) / float(r_high_price)
+    if r > 5:
+        print('code: {}, r: {}, not ok'.format(code, r))
         return False
     return True
 
@@ -175,7 +221,7 @@ def run():
         # if code.startswith('sz.30'):
         #     continue
         # # print(code)
-        # if '603918' not in code:  #600731  600733
+        # if '603683' not in code:  #605028
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
@@ -196,12 +242,12 @@ def run():
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
-        if latest_close_price < 1 or latest_close_price > 35:
+        if latest_close_price < 5 or latest_close_price > 25:
             continue
         # if latest_close_price > 40:
         #     continue
 
-        cond_3_ok = cond_3(code, data[-30:], m_day=10, p_day=3)
+        cond_3_ok = cond_3(code, data[-60:], m_day=10, p_day=3)
         if cond_3_ok:
             print('code: {}, cond_3_ok'.format(code))
 
