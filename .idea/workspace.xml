@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ecff8f1d-44a9-4e56-b498-230a8e79ec63" name="Changes" comment="Changes">
-      <change beforePath="$PROJECT_DIR$/stocks.py" beforeDir="false" afterPath="$PROJECT_DIR$/stocks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -168,7 +168,6 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.stocks (1)" />
-        <item itemvalue="Python.stocks_" />
         <item itemvalue="Python.stocks__" />
         <item itemvalue="Python.stocks_2" />
         <item itemvalue="Python.stocks_aux" />
