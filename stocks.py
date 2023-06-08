@@ -233,8 +233,8 @@ def run():
             continue
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
-        if code.startswith('sz.30'):
-            continue
+        # if not code.startswith('sz.30'):
+        #     continue
         # # print(code)
         # if '605298' not in code:  #605028
         #     continue
