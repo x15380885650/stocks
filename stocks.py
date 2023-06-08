@@ -197,12 +197,12 @@ def cond_3(code, data, m_day):
     l_high_price = float(data_x.iloc[l_index]['high'])
     r_high_price = float(data_x.iloc[r_index]['high'])
     if r_high_price < l_high_price:
-        print('code: {}, l_high_price: {} < l_high_price: {}'.format(code, l_high_price, r_high_price))
+        # print('code: {}, l_high_price: {} < l_high_price: {}'.format(code, l_high_price, r_high_price))
         return False
     data_l_r = data_x[l_index+1:r_index]
     up_num, down_num = get_up_and_down_num(data_l_r)
     up_ratio = 100 * up_num/float(up_num+down_num)
-    if up_ratio < 33:
+    if up_ratio < 25:
         return False
     # l_r_max_high_price = get_max_high_price(data_l_r)
     # r = 100 * (l_r_max_high_price - r_high_price) / float(r_high_price)
@@ -233,8 +233,8 @@ def run():
             continue
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
-        # if code.startswith('sz.30'):
-        #     continue
+        if code.startswith('sz.30'):
+            continue
         # # print(code)
         # if '605298' not in code:  #605028
         #     continue
@@ -257,7 +257,7 @@ def run():
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
-        if latest_close_price < 5 or latest_close_price > 40:
+        if latest_close_price < 5 or latest_close_price > 25:
             continue
         # if latest_close_price > 40:
         #     continue
