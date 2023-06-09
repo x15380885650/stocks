@@ -14,8 +14,16 @@ pct_change_i = 19.5
 close_price_max = 25
 
 
+test_dict = [
+    # {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
+    # {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    # {'code': '601949', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    # {'code': '603918', 'end_date': datetime.strptime('2023-05-26', '%Y-%m-%d')},
+]
+
+
 def get_end_date():
-    end_date_t = datetime.now().date()
+    end_date_t = test_dict[0]['end_date'] if test_dict else datetime.now().date()
     for _ in range(10):
         end_date_str = end_date_t.strftime(format_date)
         stock_rs = bs.query_all_stock(end_date_str)
@@ -184,7 +192,7 @@ def cond_3(code, data, m_day):
     r_index = index_list[-1]
     for i in index_list[-2::-1]:
         gap = r_index - i - 1
-        if 2 < gap < 8:
+        if 2 < gap < 7:
             l_index = i
             break
         r_index = i
@@ -204,19 +212,13 @@ def cond_3(code, data, m_day):
     up_ratio = 100 * up_num/float(up_num+down_num)
     if up_ratio < 25:
         return False
-    # l_r_max_high_price = get_max_high_price(data_l_r)
-    # r = 100 * (l_r_max_high_price - r_high_price) / float(r_high_price)
-    # if r > 5:
-    #     print('code: {}, r: {}, not ok'.format(code, r))
-    #     return False
-    # x_total_count = data_x.shape[0]
-    # if r_index == x_total_count - 1:
-    #     return False
-    data_r = data_x.iloc[r_index]
+    x_total_count = data_x.shape[0]
+    if r_index == x_total_count - 1:
+        return False
     data_n = data_x.iloc[-1]
-    data_r_close_price = float(data_r['close'])
     data_n_close_price = float(data_n['close'])
-    if data_n_close_price <= data_r_close_price:
+    max_close_price = get_max_close_price(data_x)
+    if data_n_close_price < max_close_price:
         return False
     return True
 
@@ -245,8 +247,12 @@ def run():
         # if not code.startswith('sz.30'):
         #     continue
         # # print(code)
-        # if '603829' not in code:  #605028
+        # if '603918' not in code:  #605028
         #     continue
+        test_code = test_dict[0]['code'] if test_dict else None
+        if test_code and test_code not in code:
+            # print('test_code: {}'.format(test_code))
+            continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
         data = k_rs.get_data()
@@ -271,7 +277,7 @@ def run():
         # if latest_close_price > 40:
         #     continue
 
-        cond_3_ok = cond_3(code, data[-60:], m_day=9)
+        cond_3_ok = cond_3(code, data[-60:], m_day=12)
         if cond_3_ok:
             print('code: {}, cond_3_ok'.format(code))
 
