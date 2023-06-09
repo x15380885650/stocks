@@ -266,7 +266,7 @@ def run():
         if trade_status == '0':
             continue
         latest_close_price = float(data['close'].iloc[-1])
-        if latest_close_price < 5 or latest_close_price > 25:
+        if latest_close_price < 5 or latest_close_price > 30:
             continue
         # if latest_close_price > 40:
         #     continue
