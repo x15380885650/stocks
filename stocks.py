@@ -209,6 +209,15 @@ def cond_3(code, data, m_day):
     # if r > 5:
     #     print('code: {}, r: {}, not ok'.format(code, r))
     #     return False
+    # x_total_count = data_x.shape[0]
+    # if r_index == x_total_count - 1:
+    #     return False
+    data_r = data_x.iloc[r_index]
+    data_n = data_x.iloc[-1]
+    data_r_close_price = float(data_r['close'])
+    data_n_close_price = float(data_n['close'])
+    if data_n_close_price <= data_r_close_price:
+        return False
     return True
 
 
@@ -236,7 +245,7 @@ def run():
         # if not code.startswith('sz.30'):
         #     continue
         # # print(code)
-        # if '605298' not in code:  #605028
+        # if '603829' not in code:  #605028
         #     continue
         k_rs = bs.query_history_k_data_plus(code, "date,code,open,high,low,close,pctChg,tradestatus,isST,volume,amount,turn,peTTM",
                                             start_date_str, end_date_str)
