@@ -178,7 +178,7 @@ def cond_3(code, data, m_day):
     for i, v in enumerate(chg_list):
         if v == 1:
             index_list.append(i)
-    if len(index_list) < 2 or len(index_list) > 6:
+    if len(index_list) < 2 or len(index_list) > 5:
         return False
     l_index = None
     r_index = index_list[-1]
