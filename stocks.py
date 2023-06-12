@@ -51,6 +51,18 @@ def get_max_close_price(data):
     return max_price
 
 
+def get_max_turn(data):
+    max_turn = float(data['turn'].iloc[0])
+    for turn in data['turn']:
+        if max_turn < float(turn):
+            max_turn = float(turn)
+    return max_turn
+
+
+def is_red(one_data):
+    return float(one_data['close']) > float(one_data['open'])
+
+
 def is_stock_continue_up(data, t_n_day_max):
     prev_close_price = 0
     t_n_day = 0
@@ -172,6 +184,9 @@ def cond_2(code, data, m_day, p_day):
 
 
 def cond_3(code, data, m_day):
+    # red = is_red(data.iloc[-1])
+    # if not red:
+    #     return False
     data_x = data[-m_day:]
     chg_list = []
     for chg in data_x['pctChg']:
@@ -220,6 +235,9 @@ def cond_3(code, data, m_day):
     max_close_price = get_max_close_price(data_x)
     if data_n_close_price < max_close_price:
         return False
+    max_turn = get_max_turn(data_x)
+    if max_turn >= 40:
+        return False
     return True
 
 
@@ -244,10 +262,10 @@ def run():
             continue
         if code.startswith('sh.000') or code.startswith('sh.688'):
             continue
-        # if not code.startswith('sz.30'):
-        #     continue
+        if code.startswith('sz.30'):
+            continue
         # # print(code)
-        # if '603918' not in code:  #605028
+        # if '603097' not in code:  #605028
         #     continue
         test_code = test_dict[0]['code'] if test_dict else None
         if test_code and test_code not in code:
@@ -274,8 +292,6 @@ def run():
         latest_close_price = float(data['close'].iloc[-1])
         if latest_close_price < 5 or latest_close_price > 30:
             continue
-        # if latest_close_price > 40:
-        #     continue
 
         cond_3_ok = cond_3(code, data[-60:], m_day=12)
         if cond_3_ok:
