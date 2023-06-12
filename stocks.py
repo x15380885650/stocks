@@ -236,7 +236,8 @@ def cond_3(code, data, m_day):
     if data_n_close_price < max_close_price:
         return False
     max_turn = get_max_turn(data_x)
-    if max_turn >= 35:
+    # print('max_turn: {}'.format(max_turn))
+    if max_turn >= 30:
         return False
     return True
 
