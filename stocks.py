@@ -184,9 +184,6 @@ def cond_2(code, data, m_day, p_day):
 
 
 def cond_3(code, data, m_day):
-    # red = is_red(data.iloc[-1])
-    # if not red:
-    #     return False
     data_x = data[-m_day:]
     chg_list = []
     for chg in data_x['pctChg']:
@@ -207,7 +204,7 @@ def cond_3(code, data, m_day):
     r_index = index_list[-1]
     for i in index_list[-2::-1]:
         gap = r_index - i - 1
-        if 2 < gap < 7:
+        if 3 <= gap <= 8:
             l_index = i
             break
         r_index = i
@@ -236,8 +233,16 @@ def cond_3(code, data, m_day):
     if data_n_close_price < max_close_price:
         return False
     max_turn = get_max_turn(data_x)
-    # print('max_turn: {}'.format(max_turn))
-    if max_turn >= 30:
+    if max_turn >= 25:
+        print('max_turn: {} >= 25'.format(max_turn))
+        return False
+    data_r_p = data_x.iloc[r_index+1]
+    data_r = data_x.iloc[r_index]
+    turn_r_p = float(data_r_p['turn'])
+    turn_r = float(data_r['turn'])
+    r_turn = 1.8
+    if turn_r_p >= turn_r * r_turn:
+        print('turn_r_p: {} >= turn_r: {} * {} not ok, code: {}'.format(turn_r_p, turn_r, r_turn, code))
         return False
     return True
 
@@ -266,7 +271,7 @@ def run():
         if code.startswith('sz.30'):
             continue
         # # print(code)
-        # if '603097' not in code:  #605028
+        # if '600410' not in code:  #605028
         #     continue
         test_code = test_dict[0]['code'] if test_dict else None
         if test_code and test_code not in code:
