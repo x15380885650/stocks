@@ -242,7 +242,7 @@ def cond_3(code, data, m_day):
     turn_r = float(data_r['turn'])
     r_turn = 1.8
     if turn_r_p >= turn_r * r_turn:
-        print('turn_r_p: {} >= turn_r: {} * {} not ok, code: {}'.format(turn_r_p, turn_r, r_turn, code))
+        # print('turn_r_p: {} >= turn_r: {} * {} not ok, code: {}'.format(turn_r_p, turn_r, r_turn, code))
         return False
     return True
 
