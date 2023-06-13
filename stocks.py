@@ -215,7 +215,7 @@ def cond_3(code, data, m_day):
     r_index = index_list[-1]
     for i in index_list[-2::-1]:
         gap = r_index - i - 1
-        if 3 <= gap <= 8:
+        if 3 <= gap <= 7:
             l_index = i
             break
         r_index = i
@@ -285,7 +285,7 @@ def run():
         if code.startswith('sz.30'):
             continue
         # # print(code)
-        # if '603829' not in code:  #605028
+        # if '002261' not in code:  #605028
         #     continue
         test_code = test_dict[0]['code'] if test_dict else None
         if test_code and test_code not in code:
