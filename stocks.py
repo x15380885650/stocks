@@ -59,6 +59,17 @@ def get_max_turn(data):
     return max_turn
 
 
+def get_avg_turn(data):
+    sum_turn = 0
+    count = data.shape[0]
+    for turn in data['turn']:
+        if not turn:
+            count -= 1
+            continue
+        sum_turn += float(turn)
+    return sum_turn/count
+
+
 def is_red(one_data):
     return float(one_data['close']) > float(one_data['open'])
 
@@ -237,13 +248,16 @@ def cond_3(code, data, m_day):
         print('max_turn: {} >= 25'.format(max_turn))
         return False
     data_r_p = data_x.iloc[r_index+1]
-    data_r = data_x.iloc[r_index]
+    # data_r = data_x.iloc[r_index]
     turn_r_p = float(data_r_p['turn'])
-    turn_r = float(data_r['turn'])
-    r_turn = 1.8
-    if turn_r_p >= turn_r * r_turn:
-        # print('turn_r_p: {} >= turn_r: {} * {} not ok, code: {}'.format(turn_r_p, turn_r, r_turn, code))
+    data_a_b = data_x[l_index:r_index+1]
+    avg_turn = get_avg_turn(data_a_b)
+    # turn_r = float(data_r['turn'])
+    r_turn = 2
+    if turn_r_p >= avg_turn * r_turn:
+        print('turn_r_p: {} >= avg_turn: {} * {} not ok, code: {}'.format(turn_r_p, avg_turn, r_turn, code))
         return False
+    # print(turn_r_p, turn_r, avg_turn)
     return True
 
 
@@ -271,7 +285,7 @@ def run():
         if code.startswith('sz.30'):
             continue
         # # print(code)
-        # if '600410' not in code:  #605028
+        # if '603829' not in code:  #605028
         #     continue
         test_code = test_dict[0]['code'] if test_dict else None
         if test_code and test_code not in code:
