@@ -51,6 +51,14 @@ def get_max_close_price(data):
     return max_price
 
 
+def get_min_low_price(data):
+    min_price = float(data['low'].iloc[0])
+    for price in data['low']:
+        if min_price > float(price):
+            min_price = float(price)
+    return min_price
+
+
 def get_max_turn(data):
     max_turn = float(data['turn'].iloc[0])
     for turn in data['turn']:
@@ -264,6 +272,11 @@ def cond_3(code, data, m_day):
         print('f_turn_dict: {}, alarm_turn: {}, code: {}, not ok'.format(f_turn_dict, alarm_turn, code))
         return False
     print('code: {}, avg_turn: {}, alarm_turn: {}, cond_3_ok'.format(code, avg_turn, alarm_turn))
+    # data_30 = data[-30:]
+    # min_low_price = get_min_low_price(data_30)
+    # max_high_price = get_max_high_price(data_30)
+    # r_price = 100 * (max_high_price - min_low_price)/min_low_price
+    # print(r_price)
     return True
 
 
@@ -290,8 +303,8 @@ def run():
             continue
         if code.startswith('sz.30'):
             continue
-        # if '603829' not in code and not test_dict:  #605028
-        #     continue
+        if '000917' not in code and not test_dict:  #605028
+            continue
         test_code = test_dict[-1]['code'] if test_dict else None
         if test_code and test_code not in code:
             # print('test_code: {}'.format(test_code))
