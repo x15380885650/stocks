@@ -12,7 +12,7 @@ class EfDataSource(DataSource):
         end_date_t = self.test_stock_dict[-1]['end_date'] if self.test_stock_dict else datetime.now().date()
         return end_date_t
 
-    def get_all_stock_list(self):
+    def get_all_stock_code_list(self):
         stock_list = []
         df = ef.stock.get_realtime_quotes()
         for s in df.iterrows():
@@ -38,10 +38,5 @@ class EfDataSource(DataSource):
                                   'volume': volume, 'amount': amount, 'pct_chg': pct_chg, 'turn': turn})
         return kline_history
 
-
-if __name__ == '__main__':
-    s = EfDataSource()
-    # s.get_all_stock_list()
-    s.get_stock_kline_history('000917', start_date='20230614', end_date='20230614')
 
 
