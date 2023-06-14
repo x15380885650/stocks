@@ -23,7 +23,7 @@ test_dict = [
 
 
 def get_end_date():
-    end_date_t = test_dict[0]['end_date'] if test_dict else datetime.now().date()
+    end_date_t = test_dict[-1]['end_date'] if test_dict else datetime.now().date()
     for _ in range(10):
         end_date_str = end_date_t.strftime(format_date)
         stock_rs = bs.query_all_stock(end_date_str)
@@ -215,7 +215,7 @@ def cond_3(code, data, m_day):
     r_index = index_list[-1]
     for i in index_list[-2::-1]:
         gap = r_index - i - 1
-        if 3 <= gap <= 7:
+        if 3 <= gap <= 6:
             l_index = i
             break
         r_index = i
@@ -228,7 +228,6 @@ def cond_3(code, data, m_day):
     l_high_price = float(data_x.iloc[l_index]['high'])
     r_high_price = float(data_x.iloc[r_index]['high'])
     if r_high_price < l_high_price:
-        # print('code: {}, l_high_price: {} < l_high_price: {}'.format(code, l_high_price, r_high_price))
         return False
     data_l_r = data_x[l_index+1:r_index]
     up_num, down_num = get_up_and_down_num(data_l_r)
@@ -247,17 +246,24 @@ def cond_3(code, data, m_day):
     if max_turn >= 25:
         print('max_turn: {} >= 25'.format(max_turn))
         return False
-    data_r_p = data_x.iloc[r_index+1]
+    data_r_p = data_x.iloc[r_index+1:]
     # data_r = data_x.iloc[r_index]
-    turn_r_p = float(data_r_p['turn'])
+    # turn_r_p = float(data_r_p['turn'])
     data_a_b = data_x[l_index:r_index+1]
     avg_turn = get_avg_turn(data_a_b)
     # turn_r = float(data_r['turn'])
-    r_turn = 2
-    if turn_r_p >= avg_turn * r_turn:
-        print('turn_r_p: {} >= avg_turn: {} * {} not ok, code: {}'.format(turn_r_p, avg_turn, r_turn, code))
+    r_turn = 1.8
+    f_turn_dict = {}
+    alarm_turn = avg_turn*r_turn
+    for _, d in data_r_p.iterrows():
+        turn_r_p = float(d['turn'])
+        if turn_r_p >= alarm_turn:
+            date = d['date']
+            f_turn_dict[date] = {'turn': turn_r_p}
+    if len(f_turn_dict) > 0:
+        print('f_turn_dict: {}, alarm_turn: {}, code: {}, not ok'.format(f_turn_dict, alarm_turn, code))
         return False
-    # print(turn_r_p, turn_r, avg_turn)
+    print('code: {}, avg_turn: {}, alarm_turn: {}, cond_3_ok'.format(code, avg_turn, alarm_turn))
     return True
 
 
@@ -284,10 +290,9 @@ def run():
             continue
         if code.startswith('sz.30'):
             continue
-        # # print(code)
-        # if '002261' not in code:  #605028
+        # if '603829' not in code and not test_dict:  #605028
         #     continue
-        test_code = test_dict[0]['code'] if test_dict else None
+        test_code = test_dict[-1]['code'] if test_dict else None
         if test_code and test_code not in code:
             # print('test_code: {}'.format(test_code))
             continue
@@ -314,8 +319,8 @@ def run():
             continue
 
         cond_3_ok = cond_3(code, data[-60:], m_day=12)
-        if cond_3_ok:
-            print('code: {}, cond_3_ok'.format(code))
+        # if cond_3_ok:
+        #     print('code: {}, cond_3_ok'.format(code))
 
         # cond_1_ok = cond_1(code, data[-30:], m_day=5, p_day=3)
         # if cond_1_ok:
