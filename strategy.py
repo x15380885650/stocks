@@ -260,14 +260,6 @@ class Strategy(object):
         print('code: {},  strategy_2_ok'.format(code))
         return True
 
-        # for i in index_list[-2::-1]:
-        #     gap = r_index - i - 1
-        #     if 3 <= gap <= 6:
-        #         l_index = i
-        #         break
-        #     r_index = i
-        # if l_index is None:
-        #     return False
         # x_max_high_price = self.get_max_high_price(k_line_list_m_day)
         # y_max_high_price = self.get_max_high_price(k_line_list)
         # if x_max_high_price < y_max_high_price:
@@ -313,6 +305,6 @@ class Strategy(object):
         # # max_high_price = get_max_high_price(data_30)
         # # r_price = 100 * (max_high_price - min_low_price)/min_low_price
         # # print(r_price)
-        return True
+        # return True
 
 

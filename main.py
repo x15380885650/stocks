@@ -12,6 +12,7 @@ test_stock_dict = [
     # {'code': '603918', 'end_date': datetime.strptime('2023-05-26', '%Y-%m-%d')},
     # {'code': '603918', 'end_date': datetime.strptime('2023-05-16', '%Y-%m-%d')},
     # {'code': '000917', 'end_date': datetime.strptime('2023-06-09', '%Y-%m-%d')},
+    #   {'code': '600410', 'end_date': datetime.strptime('2023-06-08', '%Y-%m-%d')},
 ]
 
 format_date = '%Y-%m-%d'
@@ -40,7 +41,7 @@ class Chooser(object):
             filtered = ds.is_code_filtered(code)
             if filtered:
                 continue
-            # if '000917' not in code and not test_stock_dict:  # 605028
+            # if '600410' not in code and not test_stock_dict:  # 605028
             #     continue
             test_code = test_stock_dict[-1]['code'] if test_stock_dict else None
             if test_code and test_code not in code:
@@ -52,7 +53,7 @@ class Chooser(object):
             latest_close_price = float(k_line_list[-1]['close'])
             if latest_close_price < 5 or latest_close_price > 30:
                 continue
-            strategy.strategy_2(code, k_line_list, m_day=8)
+            strategy.strategy_2(code, k_line_list, m_day=10)
 
 
 if __name__ == '__main__':
