@@ -1,12 +1,10 @@
-from datetime import datetime, timedelta
 
 
 class DataSource(object):
-    def __init__(self, test_stock_dict):
-        self.test_stock_dict = test_stock_dict
-        self.format_date = '%Y-%m-%d'
+    def __init__(self):
+        pass
 
-    def get_all_stock_code_list(self):
+    def get_all_stock_code_list(self, end_date_str):
         raise NotImplementedError
 
     def get_stock_kline_history(self, code, start_date, end_date):

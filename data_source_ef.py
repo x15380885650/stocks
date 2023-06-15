@@ -5,14 +5,28 @@ from data_source import DataSource
 
 
 class EfDataSource(DataSource):
-    def __init__(self, test_stock_dict):
-        super(EfDataSource, self).__init__(test_stock_dict)
+    def __init__(self):
+        super(EfDataSource, self).__init__()
 
-    def get_end_date(self):
-        end_date_t = self.test_stock_dict[-1]['end_date'] if self.test_stock_dict else datetime.now().date()
-        return end_date_t
+    def get_end_date(self, test_stock_dict):
+        if test_stock_dict:
+            return test_stock_dict[-1]['end_date']
+        now_hour = datetime.now().hour
+        if now_hour >= 15:
+            return datetime.now().date()
+        else:
+            return datetime.now().date() - timedelta(days=1)
 
-    def get_all_stock_code_list(self):
+    def is_code_filtered(self, code):
+        if not code.startswith('00') and not code.startswith('60'):
+            return True
+        # if code.startswith('000') or code.startswith('sh.688'):
+        #     return True
+        # if code.startswith('300') or code.startswith('688'):
+        #     return True
+        return False
+
+    def get_all_stock_code_list(self, end_date_str):
         stock_list = []
         df = ef.stock.get_realtime_quotes()
         for s in df.iterrows():
@@ -21,6 +35,8 @@ class EfDataSource(DataSource):
 
     def get_stock_kline_history(self, code, start_date, end_date):
         kline_history = []
+        start_date = start_date.replace('-', '')
+        end_date = end_date.replace('-', '')
         df = ef.stock.get_quote_history(code, beg=start_date, end=end_date)
         for s in df.iterrows():
             arr = s[1]

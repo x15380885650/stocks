@@ -4,14 +4,14 @@ from data_source import DataSource
 
 
 class BaoDataSource(DataSource):
-    def __init__(self, test_stock_dict):
-        super(BaoDataSource, self).__init__(test_stock_dict)
+    def __init__(self):
+        super(BaoDataSource, self).__init__()
         bs.login()
 
-    def get_end_date(self):
-        end_date_t = self.test_stock_dict[-1]['end_date'] if self.test_stock_dict else datetime.now().date()
+    def get_end_date(self, test_stock_dict):
+        end_date_t = test_stock_dict[-1]['end_date'] if test_stock_dict else datetime.now().date()
         for _ in range(10):
-            end_date_str = end_date_t.strftime(self.format_date)
+            end_date_str = end_date_t.strftime('%Y-%m-%d')
             stock_rs = bs.query_all_stock(end_date_str)
             stock_df = stock_rs.get_data()
             if not stock_df.empty:
@@ -29,9 +29,9 @@ class BaoDataSource(DataSource):
             return True
         return False
 
-    def get_all_stock_code_list(self):
+    def get_all_stock_code_list(self, end_date_str):
         stock_list = []
-        stock_rs = bs.query_all_stock()
+        stock_rs = bs.query_all_stock(end_date_str)
         stock_df = stock_rs.get_data()
         for code in stock_df["code"]:
             stock_list.append(code)

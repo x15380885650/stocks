@@ -15,10 +15,10 @@ close_price_max = 25
 
 
 test_dict = [
-    # {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
-    # {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-    # {'code': '601949', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-    # {'code': '603918', 'end_date': datetime.strptime('2023-05-26', '%Y-%m-%d')},
+    {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
+    {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    {'code': '601949', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    {'code': '603918', 'end_date': datetime.strptime('2023-05-26', '%Y-%m-%d')},
 ]
 
 
@@ -303,7 +303,7 @@ def run():
             continue
         if code.startswith('sz.30'):
             continue
-        if '000917' not in code and not test_dict:  #605028
+        if '600257' not in code and not test_dict:  #605028
             continue
         test_code = test_dict[-1]['code'] if test_dict else None
         if test_code and test_code not in code:
