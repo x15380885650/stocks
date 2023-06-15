@@ -52,6 +52,7 @@ class Chooser(object):
             latest_close_price = float(k_line_list[-1]['close'])
             if latest_close_price < 5 or latest_close_price > 30:
                 continue
+            strategy.strategy_1(code, k_line_list, m_day=12)
             strategy.strategy_2(code, k_line_list, m_day=8)
 
 

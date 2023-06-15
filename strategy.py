@@ -183,7 +183,7 @@ class Strategy(object):
             return False
         max_turn = self.get_max_turn(k_line_list_m_day)
         if max_turn >= turn_max:
-            print('max_turn: {} >= {}'.format(max_turn, turn_max))
+            # print('max_turn: {} >= {}'.format(max_turn, turn_max))
             return False
         data_r_p = k_line_list_m_day[r_index+1:]
         data_a_b = k_line_list_m_day[l_index:r_index + 1]
@@ -197,9 +197,9 @@ class Strategy(object):
                 date = d['date']
                 f_turn_dict[date] = {'turn': turn_r_p}
         if len(f_turn_dict) > 0:
-            print('f_turn_dict: {}, alarm_turn: {}, code: {}, not ok'.format(f_turn_dict, alarm_turn, code))
+            print('f_turn_dict: {}, alarm_turn: {}, code: {}, not strategy_1_ok'.format(f_turn_dict, alarm_turn, code))
             return False
-        print('code: {}, avg_turn: {}, alarm_turn: {}, cond_3_ok'.format(code, avg_turn, alarm_turn))
+        print('code: {}, avg_turn: {}, alarm_turn: {}, strategy_1_ok'.format(code, avg_turn, alarm_turn))
         # data_30 = data[-30:]
         # min_low_price = get_min_low_price(data_30)
         # max_high_price = get_max_high_price(data_30)
