@@ -14,7 +14,7 @@ test_stock_dict = [
     # {'code': '000917', 'end_date': datetime.strptime('2023-06-09', '%Y-%m-%d')},
 
     # strategy_3
-    {'code': '002866', 'end_date': datetime.strptime('2022-06-21', '%Y-%m-%d')},
+    # {'code': '002866', 'end_date': datetime.strptime('2022-06-21', '%Y-%m-%d')},
     # {'code': '000736', 'end_date': datetime.strptime('2022-03-24', '%Y-%m-%d')},
     # {'code': '600629', 'end_date': datetime.strptime('2023-04-17', '%Y-%m-%d')},
     # {'code': '601595', 'end_date': datetime.strptime('2023-03-10', '%Y-%m-%d')},
@@ -40,6 +40,7 @@ class Chooser(object):
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
+        end_date_str = '2023-06-15'
         print('{}--->{}'.format(start_date_str, end_date_str))
         code_list = ds.get_all_stock_code_list(end_date_str)
         count = 0
@@ -50,7 +51,7 @@ class Chooser(object):
             filtered = ds.is_code_filtered(code)
             if filtered:
                 continue
-            # if '603159' not in code and not test_stock_dict:  # 605028
+            # if '002164' not in code and not test_stock_dict:  # 605028
             #     continue
             test_code = test_stock_dict[-1]['code'] if test_stock_dict else None
             if test_code and test_code not in code:
@@ -60,7 +61,7 @@ class Chooser(object):
             if total_count < int(minus_days / 2):
                 continue
             latest_close_price = float(k_line_list[-1]['close'])
-            if latest_close_price < 5 or latest_close_price > 20:
+            if latest_close_price < 4 or latest_close_price > 15:
                 continue
             # strategy.strategy_1(code, k_line_list, m_day=12)
             # strategy.strategy_2(code, k_line_list, m_day=8)

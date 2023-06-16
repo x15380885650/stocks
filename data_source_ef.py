@@ -37,7 +37,7 @@ class EfDataSource(DataSource):
         kline_history = []
         start_date = start_date.replace('-', '')
         end_date = end_date.replace('-', '')
-        df = ef.stock.get_quote_history(code, beg=start_date, end=end_date)
+        df = ef.stock.get_quote_history(code, beg=start_date, end=end_date, fqt=0)
         for s in df.iterrows():
             arr = s[1]
             code = arr[1]
