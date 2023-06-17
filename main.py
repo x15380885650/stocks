@@ -18,6 +18,7 @@ test_stock_dict = [
     # {'code': '000736', 'end_date': datetime.strptime('2022-03-24', '%Y-%m-%d')},
     # {'code': '600629', 'end_date': datetime.strptime('2023-04-17', '%Y-%m-%d')},
     # {'code': '601595', 'end_date': datetime.strptime('2023-03-10', '%Y-%m-%d')},
+    # {'code': '600602', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
 
     # strategy_4
     # {'code': '601138', 'end_date': datetime.strptime('2023-03-13', '%Y-%m-%d')},
@@ -40,7 +41,7 @@ class Chooser(object):
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
-        end_date_str = '2023-06-15'
+        # end_date_str = '2023-06-15'
         print('{}--->{}'.format(start_date_str, end_date_str))
         code_list = ds.get_all_stock_code_list(end_date_str)
         count = 0
@@ -65,7 +66,7 @@ class Chooser(object):
                 continue
             # strategy.strategy_1(code, k_line_list, m_day=12)
             # strategy.strategy_2(code, k_line_list, m_day=8)
-            strategy.strategy_3(code, k_line_list, m_day=12)
+            strategy.strategy_3(code, k_line_list, m_day=11)
 
 
 if __name__ == '__main__':

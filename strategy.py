@@ -1,5 +1,5 @@
 pct_change_max = 9.9
-turn_max = 30
+turn_max = 16
 
 
 class Strategy(object):
@@ -295,8 +295,6 @@ class Strategy(object):
             # r_3 = 100 * (high - close) / high
             if r_1 <= 0 or r_2 <= 0:
                 continue
-            # if r_1 <= 0 or r_2 <= 0:
-            #     continue
             date = k_line['date']
             close_price_list.append({'date': date, 'close': close, 'r_1': r_1, 'r_2': r_2})
         if len(close_price_list) < day_gap:
