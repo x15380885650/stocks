@@ -18,7 +18,7 @@ test_stock_dict = [
     # {'code': '000736', 'end_date': datetime.strptime('2022-03-24', '%Y-%m-%d')},
     # {'code': '600629', 'end_date': datetime.strptime('2023-04-17', '%Y-%m-%d')},
     # {'code': '601595', 'end_date': datetime.strptime('2023-03-10', '%Y-%m-%d')},
-    # {'code': '600602', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
+    # {'code': '600602', 'end_date': datetime.strptime('2023-06-14', '%Y-%m-%d')},
 
     # strategy_4
     # {'code': '601138', 'end_date': datetime.strptime('2023-03-13', '%Y-%m-%d')},
@@ -52,8 +52,8 @@ class Chooser(object):
             filtered = ds.is_code_filtered(code)
             if filtered:
                 continue
-            # if '002164' not in code and not test_stock_dict:  # 605028
-            #     continue
+            if '600616' not in code and not test_stock_dict:  # 605028
+                continue
             test_code = test_stock_dict[-1]['code'] if test_stock_dict else None
             if test_code and test_code not in code:
                 continue

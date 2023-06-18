@@ -284,21 +284,24 @@ class Strategy(object):
         r_index = m_day - 1
         k_line_list_l_r = k_line_list_m_day[l_index:r_index + 1]
         close_t = float(k_line_list_m_day[index_list[-1]]['close'])
-        # open_t = float(k_line_list_m_day[index_list[-1]]['open'])
+        open_t = float(k_line_list_m_day[index_list[-1]]['open'])
         close_price_list = []
         for k_line in k_line_list_l_r:
             close = float(k_line['close'])
             _open = float(k_line['open'])
             high = float(k_line['high'])
-            r_1 = 100 * (close - close_t) / close_t
+            _pct_chg = float(k_line['pct_chg'])
+            r_1 = 100 * (close - open_t) / open_t
             r_2 = 100 * (close - _open) / _open
-            # r_3 = 100 * (high - close) / high
-            if r_1 <= 0 or r_2 <= 0:
+            if r_1 < 0:
+                print('code: {},  was give up'.format(code))
+                return False
+            if r_2 < 0 or _pct_chg < 0:
                 continue
             date = k_line['date']
             close_price_list.append({'date': date, 'close': close, 'r_1': r_1, 'r_2': r_2})
         if len(close_price_list) < day_gap:
-            print('code: {},  not strategy_3_ok'.format(code))
+            print('code: {},  was beated to lenggong'.format(code))
             return False
 
         print('code: {},  strategy_3_ok'.format(code))
