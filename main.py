@@ -27,6 +27,8 @@ test_stock_dict = [
 
 format_date = '%Y-%m-%d'
 minus_days = 30 * 3
+latest_close_price_min = 4
+latest_close_price_max = 15
 
 
 class Chooser(object):
@@ -63,7 +65,7 @@ class Chooser(object):
             if total_count < int(minus_days / 2):
                 continue
             latest_close_price = float(k_line_list[-1]['close'])
-            if latest_close_price < 4 or latest_close_price > 15:
+            if latest_close_price < latest_close_price_min or latest_close_price > latest_close_price_max:
                 continue
             e_count += 1
             # strategy.strategy_1(code, k_line_list, m_day=12)
