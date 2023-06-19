@@ -50,7 +50,7 @@ class Chooser(object):
         e_count = 0
         for code in code_list:
             count += 1
-            if count % 1000 == 0:
+            if count % 2000 == 0:
                 print('count: {}, e_count: {}'.format(count, e_count))
             filtered = ds.is_code_filtered(code)
             if filtered:

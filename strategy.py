@@ -1,5 +1,7 @@
-pct_change_max = 9.9
-turn_max = 16.05
+pct_change_max_i = 9.9
+pct_change_max_j = 19.0
+turn_max_i = 16.01
+turn_max_j = 25.01
 
 
 class Strategy(object):
@@ -249,6 +251,9 @@ class Strategy(object):
             return False
 
         max_turn = self.get_max_turn(k_line_list_m_day)
+        turn_max = turn_max_i
+        if code.startswith('sz.30') or code.startswith('30'):
+            turn_max = turn_max_j
         if max_turn >= turn_max:
             return False
         # x_max_close_price = self.get_max_close_price(k_line_list_m_day)
@@ -260,7 +265,10 @@ class Strategy(object):
             pct_chg = k_line['pct_chg']
             if isinstance(pct_chg, str) and not pct_chg:
                 continue
-            if float(pct_chg) >= pct_change_max:
+            pct_chg_max = pct_change_max_i
+            if code.startswith('sz.30') or code.startswith('30'):
+                pct_chg_max = pct_change_max_j
+            if float(pct_chg) >= pct_chg_max:
                 pct_chg_list.append(1)
             else:
                 pct_chg_list.append(0)
