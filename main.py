@@ -45,15 +45,16 @@ class Chooser(object):
         print('{}--->{}'.format(start_date_str, end_date_str))
         code_list = ds.get_all_stock_code_list(end_date_str)
         count = 0
+        e_count = 0
         for code in code_list:
             count += 1
             if count % 1000 == 0:
-                print(count)
+                print('count: {}, e_count: {}'.format(count, e_count))
             filtered = ds.is_code_filtered(code)
             if filtered:
                 continue
-            if '600616' not in code and not test_stock_dict:  # 605028
-                continue
+            # if '000917' not in code and not test_stock_dict:  # 605028
+            #     continue
             test_code = test_stock_dict[-1]['code'] if test_stock_dict else None
             if test_code and test_code not in code:
                 continue
@@ -64,6 +65,7 @@ class Chooser(object):
             latest_close_price = float(k_line_list[-1]['close'])
             if latest_close_price < 4 or latest_close_price > 15:
                 continue
+            e_count += 1
             # strategy.strategy_1(code, k_line_list, m_day=12)
             # strategy.strategy_2(code, k_line_list, m_day=8)
             strategy.strategy_3(code, k_line_list, m_day=11)

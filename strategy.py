@@ -1,5 +1,5 @@
 pct_change_max = 9.9
-turn_max = 16
+turn_max = 16.05
 
 
 class Strategy(object):
@@ -51,6 +51,8 @@ class Strategy(object):
         max_turn = float(data_list[0]['turn'])
         for data in data_list:
             turn = data['turn']
+            if not turn:
+                continue
             if max_turn < float(turn):
                 max_turn = float(turn)
         return max_turn
@@ -256,6 +258,8 @@ class Strategy(object):
         pct_chg_list = []
         for k_line in k_line_list_m_day:
             pct_chg = k_line['pct_chg']
+            if isinstance(pct_chg, str) and not pct_chg:
+                continue
             if float(pct_chg) >= pct_change_max:
                 pct_chg_list.append(1)
             else:

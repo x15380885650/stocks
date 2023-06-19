@@ -31,6 +31,7 @@ class EfDataSource(DataSource):
         df = ef.stock.get_realtime_quotes()
         for s in df.iterrows():
             stock_list.append(s[1][0])
+        stock_list.sort(reverse=True)
         return stock_list
 
     def get_stock_kline_history(self, code, start_date, end_date):
