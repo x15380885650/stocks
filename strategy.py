@@ -306,7 +306,7 @@ class Strategy(object):
             r_1 = 100 * (close - open_t) / open_t
             r_2 = 100 * (close - _open) / _open
             if r_1 < 0:
-                print('code: {},  was give up'.format(code))
+                # print('code: {},  was give up'.format(code))
                 return False
             if r_2 < 0 or _pct_chg < 0:
                 continue
