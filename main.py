@@ -18,17 +18,18 @@ test_stock_dict = [
     # {'code': '000736', 'end_date': datetime.strptime('2022-03-24', '%Y-%m-%d')},
     # {'code': '600629', 'end_date': datetime.strptime('2023-04-17', '%Y-%m-%d')},
     # {'code': '601595', 'end_date': datetime.strptime('2023-03-10', '%Y-%m-%d')},
-    # {'code': '600602', 'end_date': datetime.strptime('2023-06-14', '%Y-%m-%d')},
-
-    # strategy_4
-    # {'code': '601138', 'end_date': datetime.strptime('2023-03-13', '%Y-%m-%d')},
-    # {'code': '601949', 'end_date': datetime.strptime('2023-04-14', '%Y-%m-%d')},
+    # {'code': '600860', 'end_date': datetime.strptime('2021-11-24', '%Y-%m-%d')},
+    # {'code': '002992', 'end_date': datetime.strptime('2022-06-23', '%Y-%m-%d')},
+    # {'code': '603322', 'end_date': datetime.strptime('2022-05-23', '%Y-%m-%d')},
+    # {'code': '601138', 'end_date': datetime.strptime('2023-03-08', '%Y-%m-%d')},
+    # {'code': '601858', 'end_date': datetime.strptime('2023-03-31', '%Y-%m-%d')},
+    # {'code': '601949', 'end_date': datetime.strptime('2023-04-19', '%Y-%m-%d')},
 ]
 
 format_date = '%Y-%m-%d'
 minus_days = 30 * 3
 latest_close_price_min = 4
-latest_close_price_max = 15
+latest_close_price_max = 20
 
 
 class Chooser(object):
@@ -55,7 +56,7 @@ class Chooser(object):
             filtered = ds.is_code_filtered(code)
             if filtered:
                 continue
-            # if '000917' not in code and not test_stock_dict:  # 605028
+            # if '002456' not in code and not test_stock_dict:  # 605028
             #     continue
             test_code = test_stock_dict[-1]['code'] if test_stock_dict else None
             if test_code and test_code not in code:
@@ -70,6 +71,7 @@ class Chooser(object):
             e_count += 1
             # strategy.strategy_1(code, k_line_list, m_day=12)
             # strategy.strategy_2(code, k_line_list, m_day=8)
+            # k_line_list = k_line_list[-30:]
             strategy.strategy_3(code, k_line_list, m_day=11)
 
 

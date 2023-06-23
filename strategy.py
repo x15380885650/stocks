@@ -1,4 +1,4 @@
-pct_change_max_i = 9.9
+pct_change_max_i = 9.8
 pct_change_max_j = 19.0
 turn_max_i = 16.01
 turn_max_j = 25.01
@@ -11,15 +11,32 @@ class Strategy(object):
     def is_red(self, data):
         return float(data['close']) > float(data['open'])
 
-    def get_up_and_down_num(self, data_list):
-        up_num = down_num = 0
+    def is_data_list_all_green(self, data_list):
+        green_tag_list = []
         for data in data_list:
             close_price = data['close']
             open_price = data['open']
             if not close_price or not open_price:
                 continue
             r = float(close_price) - float(open_price)
-            if r >= 0:
+            if r <= 0:
+                green_tag_list.append(1)
+            else:
+                green_tag_list.append(0)
+        if all(green_tag_list):
+            return True
+        return False
+
+    def get_up_and_down_num(self, data_list):
+        up_num = down_num = 0
+        for data in data_list:
+            close_price = data['close']
+            open_price = data['open']
+            pct_chg = data['pct_chg']
+            if not close_price or not open_price:
+                continue
+            r = (float(close_price) - float(open_price)) / float(open_price) * 100
+            if r > 0 or (r < 0 and abs(r) < 0.15):
                 up_num += 1
             else:
                 down_num += 1
@@ -71,8 +88,19 @@ class Strategy(object):
         return sum_turn / count
 
     def is_stock_whole_up(self, data_list):
-        pct_chg_list = [float(d['pct_chg']) for d in data_list]
-        pct_chg_list_tag = [0 if pct_chg < 0 else 1 for pct_chg in pct_chg_list]
+        pct_chg_list = []
+        for d in data_list:
+            pct_chg = float(d['pct_chg'])
+            if pct_chg < 0:
+                close_price = d['close']
+                open_price = d['open']
+                r = (float(close_price) - float(open_price)) / float(open_price) * 100
+                if r > pct_chg:
+                    pct_chg = r
+            pct_chg_list.append(pct_chg)
+
+        # pct_chg_list = [float(d['pct_chg']) for d in data_list]
+        pct_chg_list_tag = [0 if pct_chg < 0 and abs(pct_chg) > 0.2 else 1 for pct_chg in pct_chg_list]
         if sum(pct_chg_list_tag) < len(pct_chg_list_tag) - 1:
             return False
         if not pct_chg_list_tag[0]:
@@ -91,28 +119,30 @@ class Strategy(object):
         # t_n_day = 0
         # t_n_day_max = 1
         # for d in data_list:
-        #     pct_change = float(d['pct_chg'])
-        #     if pct_change < 0 and abs(pct_change) > 1:
-        #         t_n_day += 1
-        #     if pct_change < 0:
-        #         close_price = d['close']
-        #         open_price = d['open']
-        #         r = (float(close_price) - float(open_price)) / float(open_price) * 100
-        #         print(pct_change, r)
-        #     # if not close_price or not open_price or not pct_change:
-        #     #     continue
-        #     # # r = float(pct_change)
-        #     # r = (float(close_price) - float(open_price)) / float(open_price) * 100
-        #     # if r < -0.1:
-        #     #     return False
-        #     # if prev_close_price != 0:
-        #     #     t_ratio = abs((float(close_price) - prev_close_price) / prev_close_price) * 100
-        #     #     # if t_ratio <= 0.15:
-        #     #     #     print(t_ratio)
-        #     #
-        #     #     if t_ratio > 0.15 and float(close_price) - prev_close_price < 0:
-        #     #         t_n_day += 1
-        #     # prev_close_price = float(close_price)
+        #     # pct_change = float(d['pct_chg'])
+        #     # if pct_change < 0 and abs(pct_change) > 1:
+        #     #     t_n_day += 1
+        #     # if pct_change < 0:
+        #     #     close_price = d['close']
+        #     #     open_price = d['open']
+        #     #     r = (float(close_price) - float(open_price)) / float(open_price) * 100
+        #     #     print(pct_change, r)
+        #     close_price = d['close']
+        #     open_price = d['open']
+        #     if not close_price or not open_price:
+        #         continue
+        #     # r = float(pct_change)
+        #     r = (float(close_price) - float(open_price)) / float(open_price) * 100
+        #     if r < -0.1:
+        #         return False
+        #     if prev_close_price != 0:
+        #         t_ratio = abs((float(close_price) - prev_close_price) / prev_close_price) * 100
+        #         # if t_ratio <= 0.15:
+        #         #     print(t_ratio)
+        #
+        #         if t_ratio > 0.15 and float(close_price) - prev_close_price < 0:
+        #             t_n_day += 1
+        #     prev_close_price = float(close_price)
         # if t_n_day >= t_n_day_max:
         #     return False
         # return True
@@ -247,7 +277,10 @@ class Strategy(object):
         last_data = k_line_list_m_day[-1]
         x_max_high_price = self.get_max_high_price(k_line_list_m_day)
         y_max_high_price = self.get_max_high_price(k_line_list)
-        if x_max_high_price < y_max_high_price:
+        max_price_ratio = (x_max_high_price - y_max_high_price) / x_max_high_price * 100
+        # if x_max_high_price < y_max_high_price:
+        #     return False
+        if max_price_ratio < -8:
             return False
 
         max_turn = self.get_max_turn(k_line_list_m_day)
@@ -276,7 +309,7 @@ class Strategy(object):
         for i, v in enumerate(pct_chg_list):
             if v == 1:
                 index_list.append(i)
-        if len(index_list) not in [1, 2]:
+        if len(index_list) not in [1, 2, 3]:
             return False
 
         l_index = index_list[-1] + 1
@@ -295,8 +328,12 @@ class Strategy(object):
             return False
         r_index = m_day - 1
         k_line_list_l_r = k_line_list_m_day[l_index:r_index + 1]
+        all_green = self.is_data_list_all_green(k_line_list_l_r)
+        if all_green:
+            return False
         close_t = float(k_line_list_m_day[index_list[-1]]['close'])
         open_t = float(k_line_list_m_day[index_list[-1]]['open'])
+        close_t_l = float(k_line_list_m_day[index_list[-1]-1]['close'])
         close_price_list = []
         for k_line in k_line_list_l_r:
             close = float(k_line['close'])
@@ -305,7 +342,8 @@ class Strategy(object):
             _pct_chg = float(k_line['pct_chg'])
             r_1 = 100 * (close - open_t) / open_t
             r_2 = 100 * (close - _open) / _open
-            if r_1 < 0:
+            r_3 = 100 * (close - close_t_l) / close
+            if r_1 < 0 and r_3 < 0:
                 # print('code: {},  was give up'.format(code))
                 return False
             if r_2 < 0 or _pct_chg < 0:
