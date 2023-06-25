@@ -8,9 +8,7 @@ class EfDataSource(DataSource):
     def __init__(self):
         super(EfDataSource, self).__init__()
 
-    def get_end_date(self, test_stock_dict):
-        if test_stock_dict:
-            return test_stock_dict[-1]['end_date']
+    def get_end_date(self):
         now_hour = datetime.now().hour
         if now_hour >= 15:
             return datetime.now().date()

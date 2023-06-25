@@ -67,7 +67,7 @@ class Strategy(object):
         return min_low
 
     def get_max_turn(self, data_list):
-        max_turn = float(data_list[0]['turn'])
+        max_turn = 0
         for data in data_list:
             turn = data['turn']
             if not turn:
@@ -274,13 +274,12 @@ class Strategy(object):
 
     def strategy_3(self, code, k_line_list, m_day):
         k_line_list_m_day = k_line_list[-m_day:]
-        last_data = k_line_list_m_day[-1]
         x_max_high_price = self.get_max_high_price(k_line_list_m_day)
         y_max_high_price = self.get_max_high_price(k_line_list)
         max_price_ratio = (x_max_high_price - y_max_high_price) / x_max_high_price * 100
         # if x_max_high_price < y_max_high_price:
         #     return False
-        if max_price_ratio < -8:
+        if max_price_ratio < -5:
             return False
 
         max_turn = self.get_max_turn(k_line_list_m_day)
@@ -355,63 +354,6 @@ class Strategy(object):
             return False
 
         print('code: {},  strategy_3_ok'.format(code))
-
-        # l_data = k_line_list_m_day[-1]
-        # red = self.is_red(l_data)
-        # if not red:
-        #     return False
-        # print(code)
-        # l_index = None
-        # r_index = index_list[-1]
-        # for i in index_list[-2::-1]:
-        #     gap = r_index - i - 1
-        #     if 3 <= gap <= 6:
-        #         l_index = i
-        #         break
-        #     r_index = i
-        # if l_index is None:
-        #     return False
-        # l_high_price = float(k_line_list_m_day[l_index]['high'])
-        # r_high_price = float(k_line_list_m_day[r_index]['high'])
-        # if r_high_price < l_high_price:
-        #     return False
-        # k_line_list_l_r = k_line_list_m_day[l_index + 1:r_index]
-        # up_num, down_num = self.get_up_and_down_num(k_line_list_l_r)
-        # up_ratio = 100 * up_num / float(up_num + down_num)
-        # if up_ratio < 25:
-        #     return False
-        # x_total_count = len(k_line_list_m_day)
-        # if r_index == x_total_count - 1:
-        #     return False
-        # data_n = k_line_list_m_day[-1]
-        # data_n_close_price = float(data_n['close'])
-        # max_close_price = self.get_max_close_price(k_line_list_m_day)
-        # if data_n_close_price < max_close_price:
-        #     return False
-        # max_turn = self.get_max_turn(k_line_list_m_day)
-        # if max_turn >= turn_max:
-        #     # print('max_turn: {} >= {}'.format(max_turn, turn_max))
-        #     return False
-        # data_r_p = k_line_list_m_day[r_index + 1:]
-        # data_a_b = k_line_list_m_day[l_index:r_index + 1]
-        # avg_turn = self.get_avg_turn(data_a_b)
-        # r_turn = 1.8
-        # f_turn_dict = {}
-        # alarm_turn = avg_turn * r_turn
-        # for d in data_r_p:
-        #     turn_r_p = float(d['turn'])
-        #     if turn_r_p >= alarm_turn:
-        #         date = d['date']
-        #         f_turn_dict[date] = {'turn': turn_r_p}
-        # if len(f_turn_dict) > 0:
-        #     print('f_turn_dict: {}, alarm_turn: {}, code: {}, not strategy_1_ok'.format(f_turn_dict, alarm_turn, code))
-        #     return False
-        # print('code: {}, avg_turn: {}, alarm_turn: {}, strategy_1_ok'.format(code, avg_turn, alarm_turn))
-        # data_30 = data[-30:]
-        # min_low_price = get_min_low_price(data_30)
-        # max_high_price = get_max_high_price(data_30)
-        # r_price = 100 * (max_high_price - min_low_price)/min_low_price
-        # print(r_price)
         return True
 
 

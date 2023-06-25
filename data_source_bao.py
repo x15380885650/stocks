@@ -8,8 +8,8 @@ class BaoDataSource(DataSource):
         super(BaoDataSource, self).__init__()
         bs.login()
 
-    def get_end_date(self, test_stock_dict):
-        end_date_t = test_stock_dict[-1]['end_date'] if test_stock_dict else datetime.now().date()
+    def get_end_date(self):
+        end_date_t = datetime.now().date()
         for _ in range(10):
             end_date_str = end_date_t.strftime('%Y-%m-%d')
             stock_rs = bs.query_all_stock(end_date_str)

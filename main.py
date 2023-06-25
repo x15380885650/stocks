@@ -3,7 +3,7 @@ from data_source_bao import BaoDataSource
 from data_source_ef import EfDataSource
 from strategy import Strategy
 
-test_stock_dict = [
+test_stock_list = [
     # {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
     # {'code': '601595', 'end_date': datetime.strptime('2023-03-17', '%Y-%m-%d')},
     # {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
@@ -14,33 +14,46 @@ test_stock_dict = [
     # {'code': '000917', 'end_date': datetime.strptime('2023-06-09', '%Y-%m-%d')},
 
     # strategy_3
-    # {'code': '002866', 'end_date': datetime.strptime('2022-06-21', '%Y-%m-%d')},
-    # {'code': '000736', 'end_date': datetime.strptime('2022-03-24', '%Y-%m-%d')},
-    # {'code': '600629', 'end_date': datetime.strptime('2023-04-17', '%Y-%m-%d')},
-    # {'code': '601595', 'end_date': datetime.strptime('2023-03-10', '%Y-%m-%d')},
-    # {'code': '600860', 'end_date': datetime.strptime('2021-11-24', '%Y-%m-%d')},
-    # {'code': '002992', 'end_date': datetime.strptime('2022-06-23', '%Y-%m-%d')},
-    # {'code': '603322', 'end_date': datetime.strptime('2022-05-23', '%Y-%m-%d')},
-    # {'code': '601138', 'end_date': datetime.strptime('2023-03-08', '%Y-%m-%d')},
-    # {'code': '601858', 'end_date': datetime.strptime('2023-03-31', '%Y-%m-%d')},
-    # {'code': '601949', 'end_date': datetime.strptime('2023-04-19', '%Y-%m-%d')},
+    {'code': '002866', 'end_date': datetime.strptime('2022-06-21', '%Y-%m-%d')},
+    {'code': '000736', 'end_date': datetime.strptime('2022-03-24', '%Y-%m-%d')},
+    {'code': '600629', 'end_date': datetime.strptime('2023-04-17', '%Y-%m-%d')},
+    {'code': '601595', 'end_date': datetime.strptime('2023-03-10', '%Y-%m-%d')},
+    {'code': '600860', 'end_date': datetime.strptime('2021-11-24', '%Y-%m-%d')},
+    {'code': '002992', 'end_date': datetime.strptime('2022-06-23', '%Y-%m-%d')},
+    {'code': '603322', 'end_date': datetime.strptime('2022-05-25', '%Y-%m-%d')},
+    {'code': '601138', 'end_date': datetime.strptime('2023-03-08', '%Y-%m-%d')},
+    {'code': '601949', 'end_date': datetime.strptime('2023-04-19', '%Y-%m-%d')},
 ]
 
 format_date = '%Y-%m-%d'
 minus_days = 30 * 3
 latest_close_price_min = 4
-latest_close_price_max = 20
+latest_close_price_max = 15
+is_test_code = False
 
 
 class Chooser(object):
     def __init__(self):
         pass
 
+    def run(self, code, ds, strategy, start_date_str, end_date_str):
+        filtered = ds.is_code_filtered(code)
+        if filtered:
+            return False
+        k_line_list = ds.get_stock_kline_history(code, start_date_str, end_date_str)
+        total_count = len(k_line_list)
+        if total_count < int(minus_days / 2):
+            return False
+        latest_close_price = float(k_line_list[-1]['close'])
+        if latest_close_price < latest_close_price_min or latest_close_price > latest_close_price_max:
+            return False
+        strategy.strategy_3(code, k_line_list, m_day=11)
+
     def choose(self):
         # ds = BaoDataSource()
         ds = EfDataSource()
         strategy = Strategy()
-        end_date = ds.get_end_date(test_stock_dict)
+        end_date = ds.get_end_date()
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
@@ -50,29 +63,24 @@ class Chooser(object):
         count = 0
         e_count = 0
         for code in code_list:
-            count += 1
-            if count % 2000 == 0:
-                print('count: {}, e_count: {}'.format(count, e_count))
-            filtered = ds.is_code_filtered(code)
-            if filtered:
-                continue
-            # if '002456' not in code and not test_stock_dict:  # 605028
-            #     continue
-            test_code = test_stock_dict[-1]['code'] if test_stock_dict else None
-            if test_code and test_code not in code:
-                continue
-            k_line_list = ds.get_stock_kline_history(code, start_date_str, end_date_str)
-            total_count = len(k_line_list)
-            if total_count < int(minus_days / 2):
-                continue
-            latest_close_price = float(k_line_list[-1]['close'])
-            if latest_close_price < latest_close_price_min or latest_close_price > latest_close_price_max:
-                continue
-            e_count += 1
-            # strategy.strategy_1(code, k_line_list, m_day=12)
-            # strategy.strategy_2(code, k_line_list, m_day=8)
-            # k_line_list = k_line_list[-30:]
-            strategy.strategy_3(code, k_line_list, m_day=11)
+            if is_test_code:
+                for test_stock in test_stock_list:
+                    test_code = test_stock['code']
+                    if test_code not in code:
+                        continue
+                    test_end_date = test_stock['end_date']
+                    test_start_date = test_end_date - timedelta(days=minus_days)
+                    test_start_date_str = test_start_date.strftime(format_date)
+                    test_end_date_str = test_end_date.strftime(format_date)
+                    print('test code: {}...'.format(code))
+                    self.run(code, ds, strategy, test_start_date_str, test_end_date_str)
+            else:
+                count += 1
+                if count % 1000 == 0:
+                    print('count: {}, e_count: {}'.format(count, e_count))
+                # if '603118' not in code:  # 605028
+                #     continue
+                self.run(code, ds, strategy, start_date_str, end_date_str)
 
 
 if __name__ == '__main__':
