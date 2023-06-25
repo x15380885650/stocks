@@ -76,7 +76,7 @@ class Chooser(object):
                     self.run(code, ds, strategy, test_start_date_str, test_end_date_str)
             else:
                 count += 1
-                if count % 1000 == 0:
+                if count % 2000 == 0:
                     print('count: {}, e_count: {}'.format(count, e_count))
                 # if '603118' not in code:  # 605028
                 #     continue
