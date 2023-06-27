@@ -1,6 +1,6 @@
 pct_change_max_i = 9.2
 pct_change_max_j = 19.0
-turn_max_i = 19
+turn_max_i = 15.5
 turn_max_j = 25
 
 
@@ -109,7 +109,7 @@ class Strategy(object):
         t_n_day = 0
         t_n_day_max = 1
         for pct_chg in pct_chg_list:
-            if pct_chg < 0 and abs(pct_chg) > 1:
+            if pct_chg < 0 and abs(pct_chg) > 1.5:
                 t_n_day += 1
         if t_n_day >= t_n_day_max:
             return False
@@ -256,6 +256,7 @@ class Strategy(object):
             return False
 
         max_turn = self.get_max_turn(k_line_list_m_day)
+        print('max_turn: {}'.format(max_turn))
         turn_max = turn_max_i
         if code.startswith('sz.30') or code.startswith('30'):
             turn_max = turn_max_j
