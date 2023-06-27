@@ -45,8 +45,8 @@ test_stock_list = [
 format_date = '%Y-%m-%d'
 minus_days = 30 * 3
 latest_close_price_min = 4
-latest_close_price_max = 25
-is_test_code = False
+latest_close_price_max = 22
+is_test_code = True
 
 
 class Chooser(object):
