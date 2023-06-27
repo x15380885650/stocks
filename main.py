@@ -67,7 +67,7 @@ class Chooser(object):
         if latest_close_price < latest_close_price_min or latest_close_price > latest_close_price_max:
             return False
         self.e_count += 1
-        # strategy.strategy_3(code, k_line_list, m_day=5)
+        strategy.strategy_3(code, k_line_list, m_day=5)
         strategy.strategy_4(code, k_line_list, m_day=12)
 
     def choose(self):
@@ -78,7 +78,7 @@ class Chooser(object):
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
-        end_date_str = '2023-06-20'
+        # end_date_str = '2023-06-26'
         print('{}--->{}'.format(start_date_str, end_date_str))
         code_list = ds.get_all_stock_code_list(end_date_str)
         for code in code_list:
@@ -97,7 +97,7 @@ class Chooser(object):
                 self.count += 1
                 if self.count % 1000 == 0:
                     print('count: {}, e_count: {}'.format(self.count, self.e_count))
-                # if '000837' not in code:
+                # if '600592' not in code:
                 #     continue
                 self.run(code, ds, strategy, start_date_str, end_date_str)
         print('count: {}, e_count: {}'.format(self.count, self.e_count))
