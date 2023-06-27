@@ -1,7 +1,7 @@
 pct_change_max_i = 9.2
 pct_change_max_j = 19.0
-turn_max_i = 25
-turn_max_j = 30
+turn_max_i = 19
+turn_max_j = 25
 
 
 class Strategy(object):
