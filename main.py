@@ -26,7 +26,7 @@ test_stock_list = [
     # # {'code': '002703', 'end_date': datetime.strptime('2022-06-07', '%Y-%m-%d')},
     # {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
 
-    {'code': '600602', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},  # temp test
+    # {'code': '600602', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},  # temp test
 
     # # strategy_4
     # {'code': '601595', 'end_date': datetime.strptime('2023-03-20', '%Y-%m-%d')},
@@ -38,12 +38,14 @@ test_stock_list = [
     # {'code': '601858', 'end_date': datetime.strptime('2023-04-11', '%Y-%m-%d')},
     # {'code': '002703', 'end_date': datetime.strptime('2022-06-13', '%Y-%m-%d')},
     # {'code': '603918', 'end_date': datetime.strptime('2023-05-17', '%Y-%m-%d')},
+    #  {'code': '601698', 'end_date': datetime.strptime('2023-03-02', '%Y-%m-%d')},
+    #     {'code': '002896', 'end_date': datetime.strptime('2022-07-18', '%Y-%m-%d')},
 ]
 
 format_date = '%Y-%m-%d'
 minus_days = 30 * 3
 latest_close_price_min = 4
-latest_close_price_max = 21
+latest_close_price_max = 25
 is_test_code = False
 
 
@@ -97,6 +99,7 @@ class Chooser(object):
                 # if '000037' not in code:  # 605028
                 #     continue
                 self.run(code, ds, strategy, start_date_str, end_date_str)
+        print('count: {}, e_count: {}'.format(self.count, self.e_count))
 
 
 if __name__ == '__main__':

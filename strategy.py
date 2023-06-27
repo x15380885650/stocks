@@ -1,4 +1,4 @@
-pct_change_max_i = 9.8
+pct_change_max_i = 9.2
 pct_change_max_j = 19.0
 turn_max_i = 25
 turn_max_j = 30
@@ -386,12 +386,12 @@ class Strategy(object):
         # print('pct_chg_sum: {}'.format(pct_chg_sum))
         if pct_chg_sum <= 0:
             return False
-        up_num, down_num = self.get_up_and_down_num(w_list)
-        if down_num > 1:
-            return False
-        whole_up = self.is_stock_whole_up(w_list)
-        if not whole_up:
-            return False
+        # up_num, down_num = self.get_up_and_down_num(w_list)
+        # if down_num > 1:
+        #     return False
+        # whole_up = self.is_stock_whole_up(w_list)
+        # if not whole_up:
+        #     return False
         k_line_list_l_r = k_line_list_m_day[l_index+1:r_index]
         all_green = self.is_data_list_all_green(k_line_list_l_r)
         if all_green:
