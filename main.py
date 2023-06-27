@@ -13,22 +13,37 @@ test_stock_list = [
     # {'code': '603918', 'end_date': datetime.strptime('2023-05-16', '%Y-%m-%d')},
     # {'code': '000917', 'end_date': datetime.strptime('2023-06-09', '%Y-%m-%d')},
 
-    # strategy_3
-    {'code': '002866', 'end_date': datetime.strptime('2022-06-21', '%Y-%m-%d')},
-    {'code': '000736', 'end_date': datetime.strptime('2022-03-24', '%Y-%m-%d')},
-    {'code': '600629', 'end_date': datetime.strptime('2023-04-17', '%Y-%m-%d')},
-    {'code': '601595', 'end_date': datetime.strptime('2023-03-10', '%Y-%m-%d')},
-    {'code': '600860', 'end_date': datetime.strptime('2021-11-24', '%Y-%m-%d')},
-    {'code': '002992', 'end_date': datetime.strptime('2022-06-23', '%Y-%m-%d')},
-    {'code': '603322', 'end_date': datetime.strptime('2022-05-25', '%Y-%m-%d')},
-    {'code': '601138', 'end_date': datetime.strptime('2023-03-08', '%Y-%m-%d')},
-    {'code': '601949', 'end_date': datetime.strptime('2023-04-19', '%Y-%m-%d')},
+    # # strategy_3    603918
+    # {'code': '601595', 'end_date': datetime.strptime('2023-03-10', '%Y-%m-%d')},
+    # {'code': '600629', 'end_date': datetime.strptime('2023-04-17', '%Y-%m-%d')},
+    # # {'code': '601949', 'end_date': datetime.strptime('2023-04-14', '%Y-%m-%d')},
+    # {'code': '000736', 'end_date': datetime.strptime('2022-03-24', '%Y-%m-%d')},
+    # {'code': '002866', 'end_date': datetime.strptime('2022-06-21', '%Y-%m-%d')},
+    # # {'code': '601138', 'end_date': datetime.strptime('2023-03-06', '%Y-%m-%d')},
+    # {'code': '603322', 'end_date': datetime.strptime('2022-05-23', '%Y-%m-%d')},
+    # {'code': '600860', 'end_date': datetime.strptime('2021-11-24', '%Y-%m-%d')},
+    # # {'code': '601858', 'end_date': datetime.strptime('2023-03-30', '%Y-%m-%d')},
+    # # {'code': '002703', 'end_date': datetime.strptime('2022-06-07', '%Y-%m-%d')},
+    # {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
+
+    {'code': '600602', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},  # temp test
+
+    # # strategy_4
+    # {'code': '601595', 'end_date': datetime.strptime('2023-03-20', '%Y-%m-%d')},
+    # #{'code': '600629', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
+    # {'code': '601949', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
+    # ##{'code': '000736', 'end_date': datetime.strptime('2022-03-25', '%Y-%m-%d')},
+    # #{'code': '603322', 'end_date': datetime.strptime('2022-05-26', '%Y-%m-%d')},
+    # {'code': '600860', 'end_date': datetime.strptime('2021-12-01', '%Y-%m-%d')},
+    # {'code': '601858', 'end_date': datetime.strptime('2023-04-11', '%Y-%m-%d')},
+    # {'code': '002703', 'end_date': datetime.strptime('2022-06-13', '%Y-%m-%d')},
+    # {'code': '603918', 'end_date': datetime.strptime('2023-05-17', '%Y-%m-%d')},
 ]
 
 format_date = '%Y-%m-%d'
 minus_days = 30 * 3
 latest_close_price_min = 4
-latest_close_price_max = 15
+latest_close_price_max = 21
 is_test_code = False
 
 
@@ -47,7 +62,8 @@ class Chooser(object):
         latest_close_price = float(k_line_list[-1]['close'])
         if latest_close_price < latest_close_price_min or latest_close_price > latest_close_price_max:
             return False
-        strategy.strategy_3(code, k_line_list, m_day=11)
+        strategy.strategy_3(code, k_line_list, m_day=5)
+        # strategy.strategy_4(code, k_line_list, m_day=12)
 
     def choose(self):
         # ds = BaoDataSource()
@@ -78,7 +94,7 @@ class Chooser(object):
                 count += 1
                 if count % 2000 == 0:
                     print('count: {}, e_count: {}'.format(count, e_count))
-                # if '603118' not in code:  # 605028
+                # if '000037' not in code:  # 605028
                 #     continue
                 self.run(code, ds, strategy, start_date_str, end_date_str)
 
