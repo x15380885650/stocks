@@ -46,7 +46,7 @@ format_date = '%Y-%m-%d'
 minus_days = 30 * 3
 latest_close_price_min = 4
 latest_close_price_max = 22
-is_test_code = True
+is_test_code = False
 
 
 class Chooser(object):
