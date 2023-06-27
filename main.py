@@ -63,6 +63,7 @@ class Chooser(object):
         if total_count < int(minus_days / 2):
             return False
         latest_close_price = float(k_line_list[-1]['close'])
+        # print('latest_close_price: {}'.format(latest_close_price))
         if latest_close_price < latest_close_price_min or latest_close_price > latest_close_price_max:
             return False
         self.e_count += 1

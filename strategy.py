@@ -340,6 +340,7 @@ class Strategy(object):
             return False
 
         max_turn = self.get_max_turn(k_line_list_m_day)
+        # print('max_turn: {}'.format(max_turn))
         turn_max = turn_max_i
         if code.startswith('sz.30') or code.startswith('30'):
             turn_max = turn_max_j
