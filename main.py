@@ -49,7 +49,8 @@ is_test_code = False
 
 class Chooser(object):
     def __init__(self):
-        pass
+        self.count = 0
+        self.e_count = 0
 
     def run(self, code, ds, strategy, start_date_str, end_date_str):
         filtered = ds.is_code_filtered(code)
@@ -62,8 +63,9 @@ class Chooser(object):
         latest_close_price = float(k_line_list[-1]['close'])
         if latest_close_price < latest_close_price_min or latest_close_price > latest_close_price_max:
             return False
+        self.e_count += 1
         strategy.strategy_3(code, k_line_list, m_day=5)
-        # strategy.strategy_4(code, k_line_list, m_day=12)
+        strategy.strategy_4(code, k_line_list, m_day=12)
 
     def choose(self):
         # ds = BaoDataSource()
@@ -76,8 +78,6 @@ class Chooser(object):
         # end_date_str = '2023-06-15'
         print('{}--->{}'.format(start_date_str, end_date_str))
         code_list = ds.get_all_stock_code_list(end_date_str)
-        count = 0
-        e_count = 0
         for code in code_list:
             if is_test_code:
                 for test_stock in test_stock_list:
@@ -91,9 +91,9 @@ class Chooser(object):
                     print('test code: {}...'.format(code))
                     self.run(code, ds, strategy, test_start_date_str, test_end_date_str)
             else:
-                count += 1
-                if count % 2000 == 0:
-                    print('count: {}, e_count: {}'.format(count, e_count))
+                self.count += 1
+                if self.count % 1000 == 0:
+                    print('count: {}, e_count: {}'.format(self.count, self.e_count))
                 # if '000037' not in code:  # 605028
                 #     continue
                 self.run(code, ds, strategy, start_date_str, end_date_str)
