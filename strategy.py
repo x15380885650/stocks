@@ -1,6 +1,7 @@
 pct_change_max_i = 9.9
 pct_change_max_j = 19.0
-turn_max_i = 18
+turn_max_i = 15.5
+avg_turn_max_i = 8.2
 turn_max_j = 25
 
 
@@ -247,7 +248,7 @@ class Strategy(object):
         print('code: {},  strategy_2_ok'.format(code))
         return True
 
-    def strategy_3(self, code, k_line_list, m_day):
+    def strategy_3(self, code, k_line_list, m_day, is_test=False):
         k_line_list_m_day = k_line_list[-m_day:]
         x_max_high_price = self.get_max_high_price(k_line_list_m_day)
         y_max_high_price = self.get_max_high_price(k_line_list)
@@ -256,11 +257,9 @@ class Strategy(object):
             return False
 
         max_turn = self.get_max_turn(k_line_list_m_day)
-        # print('max_turn: {}'.format(max_turn))
-        turn_max = turn_max_i
-        if code.startswith('sz.30') or code.startswith('30'):
-            turn_max = turn_max_j
-        if max_turn >= turn_max:
+        avg_turn = self.get_avg_turn(k_line_list_m_day)
+        # print('max_turn: {}, avg_turn: {}'.format(max_turn, avg_turn))
+        if max_turn >= turn_max_i or avg_turn >= avg_turn_max_i:
             return False
         pct_chg_list = []
         for k_line in k_line_list_m_day:
@@ -332,7 +331,7 @@ class Strategy(object):
         print('code: {},  strategy_3_ok'.format(code))
         return True
 
-    def strategy_4(self, code, k_line_list, m_day):
+    def strategy_4(self, code, k_line_list, m_day, is_test=False):
         k_line_list_m_day = k_line_list[-m_day:]
         x_max_high_price = self.get_max_high_price(k_line_list_m_day)
         y_max_high_price = self.get_max_high_price(k_line_list)
@@ -341,11 +340,10 @@ class Strategy(object):
             return False
 
         max_turn = self.get_max_turn(k_line_list_m_day)
-        # print('max_turn: {}'.format(max_turn))
-        turn_max = turn_max_i
-        if code.startswith('sz.30') or code.startswith('30'):
-            turn_max = turn_max_j
-        if max_turn >= turn_max:
+        avg_turn = self.get_avg_turn(k_line_list_m_day)
+        if max_turn >= turn_max_i or avg_turn >= avg_turn_max_i:
+            if is_test:
+                print('max_turn: {}, avg_turn: {}'.format(max_turn, avg_turn))
             return False
         pct_chg_list = []
         for k_line in k_line_list_m_day:
@@ -374,7 +372,7 @@ class Strategy(object):
         r_index = pch_chg_zt_index_list[-1]
         for i in pch_chg_zt_index_list[-2::-1]:
             gap = r_index - i - 1
-            if 4 <= gap <= 8:
+            if 4 <= gap <= 7:
                 l_index = i
                 break
             r_index = i
