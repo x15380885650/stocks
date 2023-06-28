@@ -1,6 +1,6 @@
 pct_change_max_i = 9.9
 pct_change_max_j = 19.0
-turn_max_i = 15.5
+turn_max_i = 16.1
 turn_max_j = 25
 
 
@@ -109,7 +109,7 @@ class Strategy(object):
         t_n_day = 0
         t_n_day_max = 1
         for pct_chg in pct_chg_list:
-            if pct_chg < 0 and abs(pct_chg) > 1:
+            if pct_chg < 0 and abs(pct_chg) > 1.5:
                 t_n_day += 1
         if t_n_day >= t_n_day_max:
             return False
@@ -374,7 +374,7 @@ class Strategy(object):
         r_index = pch_chg_zt_index_list[-1]
         for i in pch_chg_zt_index_list[-2::-1]:
             gap = r_index - i - 1
-            if 4 <= gap <= 7:
+            if 4 <= gap <= 8:
                 l_index = i
                 break
             r_index = i
