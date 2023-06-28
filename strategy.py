@@ -1,6 +1,6 @@
 pct_change_max_i = 9.9
 pct_change_max_j = 19.0
-turn_max_i = 16.1
+turn_max_i = 18
 turn_max_j = 25
 
 
