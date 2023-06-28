@@ -32,17 +32,17 @@ test_stock_list = [
     # {'code': '600602', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},  # temp test
 
     # # strategy_4
-    # {'code': '601595', 'end_date': datetime.strptime('2023-03-20', '%Y-%m-%d')},
-    # #{'code': '600629', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
-    # {'code': '601949', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
-    # ##{'code': '000736', 'end_date': datetime.strptime('2022-03-25', '%Y-%m-%d')},
-    # #{'code': '603322', 'end_date': datetime.strptime('2022-05-26', '%Y-%m-%d')},
-    # {'code': '600860', 'end_date': datetime.strptime('2021-12-01', '%Y-%m-%d')},
-    # {'code': '601858', 'end_date': datetime.strptime('2023-04-11', '%Y-%m-%d')},
-    # {'code': '002703', 'end_date': datetime.strptime('2022-06-13', '%Y-%m-%d')},
+    {'code': '601595', 'end_date': datetime.strptime('2023-03-20', '%Y-%m-%d')},
+    #{'code': '600629', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
+    {'code': '601949', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
+    ##{'code': '000736', 'end_date': datetime.strptime('2022-03-25', '%Y-%m-%d')},
+    #{'code': '603322', 'end_date': datetime.strptime('2022-05-26', '%Y-%m-%d')},
+    {'code': '600860', 'end_date': datetime.strptime('2021-12-01', '%Y-%m-%d')},
+    {'code': '601858', 'end_date': datetime.strptime('2023-04-11', '%Y-%m-%d')},
+    {'code': '002703', 'end_date': datetime.strptime('2022-06-13', '%Y-%m-%d')},
     # {'code': '603918', 'end_date': datetime.strptime('2023-05-17', '%Y-%m-%d')},
-    # {'code': '601698', 'end_date': datetime.strptime('2023-03-02', '%Y-%m-%d')},
-    # {'code': '002896', 'end_date': datetime.strptime('2022-07-18', '%Y-%m-%d')},
+    #{'code': '601698', 'end_date': datetime.strptime('2023-03-02', '%Y-%m-%d')},
+    {'code': '002896', 'end_date': datetime.strptime('2022-07-18', '%Y-%m-%d')},
     {'code': '600776', 'end_date': datetime.strptime('2018-12-24', '%Y-%m-%d')},
 ]
 
