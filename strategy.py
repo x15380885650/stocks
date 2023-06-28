@@ -1,6 +1,12 @@
+latest_close_price_min_3_4 = 4
+latest_close_price_max_3_4 = 15
+
+latest_close_price_min_5 = 4
+latest_close_price_max_5 = 10
+
 pct_change_max_i = 9.9
 pct_change_max_j = 19.0
-turn_max_i = 15.5
+turn_max_i = 12
 avg_turn_max_i = 8.2
 turn_max_j = 25
 
@@ -123,132 +129,14 @@ class Strategy(object):
             pct_chg_sum += pct_chg
         return pct_chg_sum
 
-    def strategy_1(self, code, k_line_list, m_day):
-        k_line_list_m_day = k_line_list[-m_day:]
-        pct_chg_list = []
-        for k_line in k_line_list_m_day:
-            pct_chg = k_line['pct_chg']
-            if float(pct_chg) >= pct_change_max:
-                pct_chg_list.append(1)
-            else:
-                pct_chg_list.append(0)
-        index_list = []
-        for i, v in enumerate(pct_chg_list):
-            if v == 1:
-                index_list.append(i)
-        if len(index_list) < 2 or len(index_list) > 5:
-            return False
-        l_index = None
-        r_index = index_list[-1]
-        for i in index_list[-2::-1]:
-            gap = r_index - i - 1
-            if 3 <= gap <= 6:
-                l_index = i
-                break
-            r_index = i
-        if l_index is None:
-            return False
-        x_max_high_price = self.get_max_high_price(k_line_list_m_day)
-        y_max_high_price = self.get_max_high_price(k_line_list)
-        if x_max_high_price < y_max_high_price:
-            return False
-        l_high_price = float(k_line_list_m_day[l_index]['high'])
-        r_high_price = float(k_line_list_m_day[r_index]['high'])
-        if r_high_price < l_high_price:
-            return False
-        k_line_list_l_r = k_line_list_m_day[l_index + 1:r_index]
-        up_num, down_num = self.get_up_and_down_num(k_line_list_l_r)
-        up_ratio = 100 * up_num / float(up_num + down_num)
-        if up_ratio < 25:
-            return False
-        x_total_count = len(k_line_list_m_day)
-        if r_index == x_total_count - 1:
-            return False
-        data_n = k_line_list_m_day[-1]
-        data_n_close_price = float(data_n['close'])
-        max_close_price = self.get_max_close_price(k_line_list_m_day)
-        if data_n_close_price < max_close_price:
-            return False
-        max_turn = self.get_max_turn(k_line_list_m_day)
-        if max_turn >= turn_max:
-            print('max_turn: {} >= {}'.format(max_turn, turn_max))
-            return False
-        data_r_p = k_line_list_m_day[r_index+1:]
-        data_a_b = k_line_list_m_day[l_index:r_index + 1]
-        avg_turn = self.get_avg_turn(data_a_b)
-        r_turn = 1.8
-        f_turn_dict = {}
-        alarm_turn = avg_turn * r_turn
-        for d in data_r_p:
-            turn_r_p = float(d['turn'])
-            if turn_r_p >= alarm_turn:
-                date = d['date']
-                f_turn_dict[date] = {'turn': turn_r_p}
-        if len(f_turn_dict) > 0:
-            print('f_turn_dict: {}, alarm_turn: {}, code: {}, not ok'.format(f_turn_dict, alarm_turn, code))
-            return False
-        print('code: {}, avg_turn: {}, alarm_turn: {}, cond_3_ok'.format(code, avg_turn, alarm_turn))
-        # data_30 = data[-30:]
-        # min_low_price = get_min_low_price(data_30)
-        # max_high_price = get_max_high_price(data_30)
-        # r_price = 100 * (max_high_price - min_low_price)/min_low_price
-        # print(r_price)
-        return True
-
-    def strategy_2(self, code, k_line_list, m_day):
-        day_gap_min = 3
-        con_high_day = 2
-        close_ratio_max = 20
-        k_line_list_m_day = k_line_list[-m_day:]
-        pct_chg_list = []
-        for k_line in k_line_list_m_day:
-            pct_chg = k_line['pct_chg']
-            if isinstance(pct_chg, str) and not pct_chg:
-                continue
-            if float(pct_chg) >= pct_change_max:
-                pct_chg_list.append(1)
-            else:
-                pct_chg_list.append(0)
-        index_list = []
-        for i, v in enumerate(pct_chg_list):
-            if v == 1:
-                index_list.append(i)
-        if len(index_list) != con_high_day:
-            return False
-        if index_list[1] - index_list[0] != 1:
-            return False
-
-        l_index = index_list[1] + 1
-        day_gap = m_day - l_index
-        if day_gap < day_gap_min:
-            return False
-        r_index = m_day - 1
-        k_line_list_l_r = k_line_list_m_day[l_index:r_index+1]
-        close_t = float(k_line_list_m_day[index_list[-2]]['close'])
-        close_price_list = []
-        for k_line in k_line_list_l_r:
-            close = float(k_line['close'])
-            close_ratio = 100 * (close - close_t) / close_t
-            if close_ratio < 0 and abs(close_ratio) > 1:
-                continue
-            date = k_line['date']
-            close_price_list.append({'date': date, 'close': close, 'close_ratio': close_ratio})
-        if len(close_price_list) < day_gap:
-            # print('code: {},  not strategy_2_ok'.format(code))
-            return False
-        for close_p in close_price_list:
-            close_ratio = close_p['close_ratio']
-            if close_ratio > close_ratio_max:
-                # print('code: {},  not strategy_2_ok'.format(code))
-                return False
-        max_turn = self.get_max_turn(k_line_list_m_day)
-        if max_turn >= turn_max:
-            # print('code: {}, max_turn: {} >= {}, not strategy_2_ok'.format(code, max_turn, turn_max))
-            return False
-        print('code: {},  strategy_2_ok'.format(code))
-        return True
-
     def strategy_3(self, code, k_line_list, m_day, is_test=False):
+        latest_close_price = float(k_line_list[-1]['close'])
+        if latest_close_price < latest_close_price_min_3_4 or latest_close_price > latest_close_price_max_3_4:
+            if is_test:
+                print('latest_close_price: {}, latest_close_price_max: {}'
+                      .format(latest_close_price, latest_close_price_max_3_4))
+            return False
+
         k_line_list_m_day = k_line_list[-m_day:]
         x_max_high_price = self.get_max_high_price(k_line_list_m_day)
         y_max_high_price = self.get_max_high_price(k_line_list)
@@ -256,11 +144,6 @@ class Strategy(object):
         if max_price_ratio < -10:
             return False
 
-        max_turn = self.get_max_turn(k_line_list_m_day)
-        avg_turn = self.get_avg_turn(k_line_list_m_day)
-        # print('max_turn: {}, avg_turn: {}'.format(max_turn, avg_turn))
-        if max_turn >= turn_max_i or avg_turn >= avg_turn_max_i:
-            return False
         pct_chg_list = []
         for k_line in k_line_list_m_day:
             pct_chg = k_line['pct_chg']
@@ -303,6 +186,12 @@ class Strategy(object):
         # all_green = self.is_data_list_all_green(k_line_list_l_r)
         # if all_green:
         #     return False
+        k_line_list_l_r_1 = k_line_list_m_day[l_index-1:r_index + 1]
+        max_turn = self.get_max_turn(k_line_list_l_r_1)
+        if is_test:
+            print('max_turn: {}'.format(max_turn))
+        if max_turn >= turn_max_i:
+            return False
         close_t = float(k_line_list_m_day[index_list[-1]]['close'])
         open_t = float(k_line_list_m_day[index_list[-1]]['open'])
         close_t_l = float(k_line_list_m_day[index_list[-1]-1]['close'])
@@ -332,6 +221,13 @@ class Strategy(object):
         return True
 
     def strategy_4(self, code, k_line_list, m_day, is_test=False):
+        latest_close_price = float(k_line_list[-1]['close'])
+        if latest_close_price < latest_close_price_min_3_4 or latest_close_price > latest_close_price_max_3_4:
+            if is_test:
+                print('latest_close_price: {}, latest_close_price_max: {}'
+                      .format(latest_close_price, latest_close_price_max_3_4))
+            return False
+
         k_line_list_m_day = k_line_list[-m_day:]
         x_max_high_price = self.get_max_high_price(k_line_list_m_day)
         y_max_high_price = self.get_max_high_price(k_line_list)
@@ -339,12 +235,6 @@ class Strategy(object):
         if max_price_ratio < -6:
             return False
 
-        max_turn = self.get_max_turn(k_line_list_m_day)
-        avg_turn = self.get_avg_turn(k_line_list_m_day)
-        if max_turn >= turn_max_i or avg_turn >= avg_turn_max_i:
-            if is_test:
-                print('max_turn: {}, avg_turn: {}'.format(max_turn, avg_turn))
-            return False
         pct_chg_list = []
         for k_line in k_line_list_m_day:
             pct_chg = k_line['pct_chg']
@@ -396,6 +286,12 @@ class Strategy(object):
         all_green = self.is_data_list_all_green(k_line_list_l_r)
         if all_green:
             return False
+        k_line_list_l_r_1 = k_line_list_m_day[l_index:r_index+1]
+        max_turn = self.get_max_turn(k_line_list_l_r_1)
+        if is_test:
+            print('max_turn: {}'.format(max_turn))
+        if max_turn >= turn_max_i:
+            return False
         open_t = float(k_line_list_m_day[l_index]['open'])
         close_t_l = float(k_line_list_m_day[l_index-1]['close'])
         close_price_list = []
@@ -411,6 +307,72 @@ class Strategy(object):
                 print('code: {},  was give up'.format(code))
                 return False
         print('code: {},  strategy_4_ok'.format(code))
+        return True
+
+    def strategy_5(self, code, k_line_list, m_day, is_test=False):
+        latest_close_price = float(k_line_list[-1]['close'])
+        if latest_close_price < latest_close_price_min_5 or latest_close_price > latest_close_price_max_5:
+            if is_test:
+                print('latest_close_price: {}, latest_close_price_max: {}'
+                      .format(latest_close_price, latest_close_price_max_5))
+            return False
+        k_line_list_m_day = k_line_list[-m_day:]
+        pct_chg_list = []
+        for k_line in k_line_list_m_day:
+            pct_chg = k_line['pct_chg']
+            if isinstance(pct_chg, str) and not pct_chg:
+                continue
+            pct_chg_max = pct_change_max_i
+            if code.startswith('sz.30') or code.startswith('30'):
+                pct_chg_max = pct_change_max_j
+            if float(pct_chg) >= pct_chg_max:
+                pct_chg_list.append(1)
+            else:
+                pct_chg_list.append(0)
+        pch_chg_zt_index_list = []
+        for i, v in enumerate(pct_chg_list):
+            if v == 1:
+                pch_chg_zt_index_list.append(i)
+        if len(pch_chg_zt_index_list) < 2:
+            return False
+        if pch_chg_zt_index_list[-1] != m_day - 1:
+            return False
+
+        l_index = None
+        r_index = pch_chg_zt_index_list[-1]
+        for i in pch_chg_zt_index_list[-2::-1]:
+            gap = r_index - i - 1
+            if 10 <= gap <= 15:
+                l_index = i
+                break
+            r_index = i
+        if l_index is None:
+            return False
+        l_index_close_price = k_line_list_m_day[l_index]['close']
+        r_index_close_price = k_line_list_m_day[r_index]['close']
+        r_1 = 100 * (r_index_close_price - l_index_close_price) / l_index_close_price
+        if abs(r_1) > 15:
+            return False
+
+        k_line_list_l_r = k_line_list_m_day[l_index+1:r_index]
+        all_green = self.is_data_list_all_green(k_line_list_l_r)
+        if all_green:
+            return False
+        max_turn = self.get_max_turn(k_line_list_l_r)
+        if max_turn >= 20:
+            return False
+        open_t = float(k_line_list_m_day[l_index]['open'])
+        close_t_l = float(k_line_list_m_day[l_index-1]['close'])
+        for k_line in k_line_list_l_r:
+            close = float(k_line['close'])
+            _open = float(k_line['open'])
+            _pct_chg = float(k_line['pct_chg'])
+            r_1 = 100 * (close - open_t) / open_t
+            r_3 = 100 * (close - close_t_l) / close
+            if r_1 < 0 and abs(r_1) > 2 and r_3 < 0 and abs(r_3) > 2:
+                # print('code: {},  was give up'.format(code))
+                return False
+        print('code: {},  strategy_5_ok'.format(code))
         return True
 
 
