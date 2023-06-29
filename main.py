@@ -5,25 +5,31 @@ from strategy import Strategy
 
 test_stock_list = [
     # # strategy_3
-    # {'code': '600629', 'end_date': datetime.strptime('2023-04-17', '%Y-%m-%d')},
     # {'code': '000736', 'end_date': datetime.strptime('2022-03-24', '%Y-%m-%d')},
     # {'code': '002866', 'end_date': datetime.strptime('2022-06-21', '%Y-%m-%d')},
     # {'code': '603322', 'end_date': datetime.strptime('2022-05-23', '%Y-%m-%d')},
+
+
+    # {'code': '600629', 'end_date': datetime.strptime('2023-04-17', '%Y-%m-%d')},
     # {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
     # {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
 
 
     # # # strategy_4
-    # {'code': '601595', 'end_date': datetime.strptime('2023-03-20', '%Y-%m-%d')},
-    # {'code': '601949', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
     # {'code': '002703', 'end_date': datetime.strptime('2022-06-13', '%Y-%m-%d')},
 
+    # {'code': '601595', 'end_date': datetime.strptime('2023-03-20', '%Y-%m-%d')},
+    # {'code': '601949', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
+
+
     # # strategy_5
-    # {'code': '601595', 'end_date': datetime.strptime('2023-03-09', '%Y-%m-%d')},
-    # # {'code': '601858', 'end_date': datetime.strptime('2023-04-12', '%Y-%m-%d')},
-    # {'code': '605011', 'end_date': datetime.strptime('2023-05-15', '%Y-%m-%d')},
-    # {'code': '601900', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
-    # {'code': '603767', 'end_date': datetime.strptime('2023-06-20', '%Y-%m-%d')},
+    {'code': '601595', 'end_date': datetime.strptime('2023-03-09', '%Y-%m-%d')},
+    # {'code': '601858', 'end_date': datetime.strptime('2023-04-12', '%Y-%m-%d')},
+    {'code': '605011', 'end_date': datetime.strptime('2023-05-15', '%Y-%m-%d')},
+    {'code': '601900', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
+    {'code': '603767', 'end_date': datetime.strptime('2023-06-20', '%Y-%m-%d')},
+    {'code': '601949', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    {'code': '600629', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
 ]
 
 format_date = '%Y-%m-%d'
@@ -46,9 +52,9 @@ class Chooser(object):
             return False
 
         self.e_count += 1
-        strategy.strategy_3(code, k_line_list, m_day=5, is_test=is_test)
-        strategy.strategy_4(code, k_line_list, m_day=12, is_test=is_test)
-        strategy.strategy_5(code, k_line_list, m_day=4, is_test=is_test)
+        # strategy.strategy_3(code, k_line_list, m_day=5, is_test=is_test)
+        # strategy.strategy_4(code, k_line_list, m_day=12, is_test=is_test)
+        strategy.strategy_5(code, k_line_list, m_day=5, is_test=is_test)
 
     def choose(self):
         # ds = BaoDataSource()
@@ -76,11 +82,11 @@ class Chooser(object):
             else:
                 self.count += 1
                 if self.count % 1000 == 0:
-                    print('count: {}, e_count: {}'.format(self.count, self.e_count))
-                # if '600776' not in code:
+                    print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
+                # if '002921' not in code:
                 #     continue
                 self.run(code, ds, strategy, start_date_str, end_date_str)
-        print('count: {}, e_count: {}'.format(self.count, self.e_count))
+        print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
 
 
 if __name__ == '__main__':

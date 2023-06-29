@@ -13,7 +13,7 @@ turn_max_j = 25
 
 class Strategy(object):
     def __init__(self):
-        pass
+        self.e_count = 0
 
     def is_red(self, data):
         return float(data['close']) > float(data['open'])
@@ -59,7 +59,7 @@ class Strategy(object):
             if not close_price or not open_price:
                 continue
             r = (float(close_price) - float(open_price)) / float(open_price) * 100
-            if r > 0 or (r < 0 and abs(r) < 0.15):
+            if r >= 0:
                 up_num += 1
             else:
                 down_num += 1
@@ -329,16 +329,18 @@ class Strategy(object):
         latest_close_price = float(k_line_list[-1]['close'])
         if is_test:
             print('latest_close_price: {}'.format(latest_close_price))
-        if latest_close_price < 4 or latest_close_price > 20:
+        if latest_close_price < 5 or latest_close_price > 19:
             return False
 
         k_line_list_m_day = k_line_list[-m_day:]
         x_max_high_price = self.get_max_high_price(k_line_list_m_day)
         y_max_high_price = self.get_max_high_price(k_line_list)
         max_price_ratio = (x_max_high_price - y_max_high_price) / x_max_high_price * 100
-        if max_price_ratio < -10:
+        if is_test:
+            print('max_price_ratio: {}'.format(max_price_ratio))
+        if max_price_ratio != 0:
             return False
-
+        self.e_count += 1
         pct_chg_list = []
         for k_line in k_line_list_m_day:
             pct_chg = k_line['pct_chg']
@@ -357,13 +359,18 @@ class Strategy(object):
                 index_list.append(i)
         if len(index_list) not in [2, 3]:
             return False
+        if index_list[-1] != m_day - 1:
+            return False
 
         l_index = index_list[-2]
         day_gap = m_day - l_index
         r_index = m_day - 1
         k_line_list_l_r = k_line_list_m_day[l_index:r_index + 1]
-        all_red = self.is_data_list_all_red(k_line_list_l_r)
-        if not all_red:
+        # all_red = self.is_data_list_all_red(k_line_list_l_r)
+        # if not all_red:
+        #     return False
+        up_num, down_num = self.get_up_and_down_num(k_line_list_l_r)
+        if down_num > 1:
             return False
         max_turn = self.get_max_turn(k_line_list_l_r)
         if is_test:
