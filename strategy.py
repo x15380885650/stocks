@@ -357,7 +357,7 @@ class Strategy(object):
         for i, v in enumerate(pct_chg_list):
             if v == 1:
                 index_list.append(i)
-        if len(index_list) not in [2, 3]:
+        if len(index_list) not in [2]:
             return False
         if index_list[-1] != m_day - 1:
             return False
@@ -373,7 +373,10 @@ class Strategy(object):
         r_index = m_day - 1
         k_line_list_l_r = k_line_list_m_day[l_index:r_index + 1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_l_r)
-        if down_num > 1:
+        ration_up = 100 * up_num / (up_num + down_num)
+        if is_test:
+            print('ration_up: {}'.format(ration_up))
+        if ration_up < 80:
             return False
         max_turn = self.get_max_turn(k_line_list_l_r)
         if is_test:
