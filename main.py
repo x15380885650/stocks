@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
     # c.choose(is_test_code=True)  # test stock code
 
-    # c.choose(is_test_code=False, p_end_date=p_end_date, p_code='')
+    # c.choose(p_end_date=p_end_date, p_code='603848')
 
     # for p_day in range(1, 10):
     #     p_end_date = datetime.strptime('2023-05-09', '%Y-%m-%d') - timedelta(days=p_day)
