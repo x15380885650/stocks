@@ -151,7 +151,7 @@ class Strategy(object):
             pct_chg_sum += pct_chg
         return pct_chg_sum
 
-    def strategy(self, code, k_line_list, m_day, is_test=False):
+    def strategy_match(self, code, k_line_list, m_day, is_test=False):
         latest_close_price = float(k_line_list[-1]['close'])
         if is_test:
             print('latest_close_price: {}'.format(latest_close_price))
