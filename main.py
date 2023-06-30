@@ -22,14 +22,17 @@ test_stock_list = [
     # {'code': '601949', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
 
 
-    # # strategy_5
+    # # strategy_5    # ## {'code': '601858', 'end_date': datetime.strptime('2023-04-12', '%Y-%m-%d')},
     {'code': '601595', 'end_date': datetime.strptime('2023-03-09', '%Y-%m-%d')},
-    # {'code': '601858', 'end_date': datetime.strptime('2023-04-12', '%Y-%m-%d')},
-    {'code': '605011', 'end_date': datetime.strptime('2023-05-15', '%Y-%m-%d')},
-    {'code': '601900', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
-    {'code': '603767', 'end_date': datetime.strptime('2023-06-20', '%Y-%m-%d')},
-    {'code': '601949', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
     {'code': '600629', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
+    {'code': '601900', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
+    {'code': '601949', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    {'code': '605011', 'end_date': datetime.strptime('2023-05-15', '%Y-%m-%d')},
+    {'code': '002527', 'end_date': datetime.strptime('2023-06-16', '%Y-%m-%d')},
+    {'code': '603767', 'end_date': datetime.strptime('2023-06-20', '%Y-%m-%d')},
+
+
+
 ]
 
 format_date = '%Y-%m-%d'
@@ -83,7 +86,7 @@ class Chooser(object):
                 self.count += 1
                 if self.count % 1000 == 0:
                     print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
-                # if '002921' not in code:
+                # if '000678' not in code:
                 #     continue
                 self.run(code, ds, strategy, start_date_str, end_date_str)
         print('count: {}, e_count: {}'.format(self.count, strategy.e_count))

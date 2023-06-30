@@ -331,7 +331,7 @@ class Strategy(object):
             print('latest_close_price: {}'.format(latest_close_price))
         if latest_close_price < 5 or latest_close_price > 19:
             return False
-
+        total_count = len(k_line_list)
         k_line_list_m_day = k_line_list[-m_day:]
         x_max_high_price = self.get_max_high_price(k_line_list_m_day)
         y_max_high_price = self.get_max_high_price(k_line_list)
@@ -363,12 +363,15 @@ class Strategy(object):
             return False
 
         l_index = index_list[-2]
-        day_gap = m_day - l_index
+        l_index_close = float(k_line_list_m_day[l_index]['close'])
+        r_data_list = k_line_list[:total_count-m_day+l_index+1]
+        r_max_close_price = self.get_max_close_price(r_data_list)
+        if l_index_close < r_max_close_price:
+            if is_test:
+                print('l_index_close: {}, r_max_close_price: {}'.format(l_index_close, r_max_close_price))
+            return False
         r_index = m_day - 1
         k_line_list_l_r = k_line_list_m_day[l_index:r_index + 1]
-        # all_red = self.is_data_list_all_red(k_line_list_l_r)
-        # if not all_red:
-        #     return False
         up_num, down_num = self.get_up_and_down_num(k_line_list_l_r)
         if down_num > 1:
             return False
@@ -377,30 +380,6 @@ class Strategy(object):
             print('max_turn: {}'.format(max_turn))
         if max_turn >= turn_max_i:
             return False
-        # close_t = float(k_line_list_m_day[index_list[-1]]['close'])
-        # open_t = float(k_line_list_m_day[index_list[-1]]['open'])
-        # close_t_l = float(k_line_list_m_day[index_list[-1] - 1]['close'])
-        # close_price_list = []
-        # for k_line in k_line_list_l_r:
-        #     close = float(k_line['close'])
-        #     _open = float(k_line['open'])
-        #     high = float(k_line['high'])
-        #     _pct_chg = float(k_line['pct_chg'])
-        #     r_1 = 100 * (close - open_t) / open_t
-        #     r_2 = 100 * (close - _open) / _open
-        #     r_3 = 100 * (close - close_t_l) / close
-        #     if r_1 < 0 and r_3 < 0:
-        #         # print('code: {},  was give up'.format(code))
-        #         return False
-        #     # if r_2 < 0 or _pct_chg < 0:
-        #     #     continue
-        #     if r_2 < 0:
-        #         continue
-        #     date = k_line['date']
-        #     close_price_list.append({'date': date, 'close': close, 'r_1': r_1, 'r_2': r_2})
-        # if len(close_price_list) < day_gap:
-        #     # print('code: {},  was beated to lenggong'.format(code))
-        #     return False
 
         print('code: {},  strategy_5_ok'.format(code))
         return True
