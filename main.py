@@ -26,13 +26,10 @@ test_stock_list = [
     {'code': '601595', 'end_date': datetime.strptime('2023-03-09', '%Y-%m-%d')},
     {'code': '600629', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
     {'code': '601900', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
-    {'code': '601949', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    {'code': '601949', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},  # buy 时间点不好
     {'code': '605011', 'end_date': datetime.strptime('2023-05-15', '%Y-%m-%d')},
     {'code': '002527', 'end_date': datetime.strptime('2023-06-16', '%Y-%m-%d')},
-    {'code': '603767', 'end_date': datetime.strptime('2023-06-20', '%Y-%m-%d')},
-
-
-
+    {'code': '603767', 'end_date': datetime.strptime('2023-06-20', '%Y-%m-%d')},  # buy的时间点不好
 ]
 
 format_date = '%Y-%m-%d'
@@ -67,7 +64,7 @@ class Chooser(object):
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
-        # end_date_str = '2023-06-16'
+        # end_date_str = '2023-06-14'
         print('{}--->{}'.format(start_date_str, end_date_str))
         code_list = ds.get_all_stock_code_list(end_date_str)
         for code in code_list:
