@@ -6,7 +6,7 @@ latest_close_price_max_5 = 10
 
 pct_change_max_i = 9.9
 pct_change_max_j = 19.0
-turn_max_i = 12
+turn_max_i = 11.5
 avg_turn_max_i = 8.2
 turn_max_j = 25
 
