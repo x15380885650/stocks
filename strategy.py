@@ -1,15 +1,18 @@
 latest_close_price_min = 5
 latest_close_price_max = 18.5
+latest_close_price_min_adv = 4
+latest_close_price_max_adv = 20
 pct_change_max_i = 9.9
 pct_change_max_j = 19.0
 turn_max_i = 11.5
-turn_max_j = 15
+turn_max_i_adv = 20
 turn_min_i = 3
 
 
 class Strategy(object):
     def __init__(self):
         self.e_count = 0
+        self.e_count_adv = 0
 
     def is_red(self, data):
         return float(data['close']) > float(data['open'])
@@ -151,11 +154,13 @@ class Strategy(object):
             pct_chg_sum += pct_chg
         return pct_chg_sum
 
-    def strategy_match(self, code, k_line_list, m_day, is_test=False):
+    def strategy_match(self, code, k_line_list, m_day, is_test=False, adventure=False):
         latest_close_price = float(k_line_list[-1]['close'])
         if is_test:
             print('latest_close_price: {}'.format(latest_close_price))
-        if latest_close_price < latest_close_price_min or latest_close_price > latest_close_price_max:
+        if not adventure and not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
+            return False
+        if adventure and not (latest_close_price_min_adv <= latest_close_price <= latest_close_price_max_adv):
             return False
         total_count = len(k_line_list)
         k_line_list_m_day = k_line_list[-m_day:]
@@ -166,7 +171,10 @@ class Strategy(object):
             print('max_price_ratio: {}'.format(max_price_ratio))
         if max_price_ratio != 0:
             return False
-        self.e_count += 1
+        if not adventure:
+            self.e_count += 1
+        else:
+            self.e_count_adv += 1
         pct_chg_list = []
         for k_line in k_line_list_m_day:
             pct_chg = k_line['pct_chg']
@@ -210,11 +218,12 @@ class Strategy(object):
             print('max_turn: {}, avg_turn: {}'.format(max_turn, avg_turn))
         if avg_turn < turn_min_i:
             return False
-        if turn_max_i <= max_turn < turn_max_j:
-            print('join adventure stock, code: {}'.format(code))
-        if max_turn < turn_max_i:
+        if not adventure and max_turn <= turn_max_i:
             print('join conservative stock, code: {}'.format(code))
-        return True
+        if adventure and max_turn <= turn_max_i_adv:
+            print('join adventure stock, code: {}'.format(code))
+
+        return
 
 
 
