@@ -1,8 +1,10 @@
-latest_close_price_min = 4
+latest_close_price_min = 5
 latest_close_price_max = 18.5
 pct_change_max_i = 9.9
 pct_change_max_j = 19.0
 turn_max_i = 11.5
+turn_max_j = 15
+turn_min_i = 3
 
 
 class Strategy(object):
@@ -92,6 +94,16 @@ class Strategy(object):
             if max_turn < float(turn):
                 max_turn = float(turn)
         return max_turn
+
+    def get_min_turn(self, data_list):
+        min_turn = 100
+        for data in data_list:
+            turn = data['turn']
+            if not turn:
+                continue
+            if min_turn > float(turn):
+                min_turn = float(turn)
+        return min_turn
 
     def get_avg_turn(self, data_list):
         sum_turn = 0
@@ -193,12 +205,15 @@ class Strategy(object):
         if ration_up < 80:
             return False
         max_turn = self.get_max_turn(k_line_list_l_r)
+        avg_turn = self.get_avg_turn(k_line_list_l_r)
         if is_test:
-            print('max_turn: {}'.format(max_turn))
-        if max_turn >= turn_max_i:
+            print('max_turn: {}, avg_turn: {}'.format(max_turn, avg_turn))
+        if avg_turn < turn_min_i:
             return False
-
-        print('code: {},  strategy_ok'.format(code))
+        if turn_max_i <= max_turn < turn_max_j:
+            print('join adventure stock, code: {}'.format(code))
+        if max_turn < turn_max_i:
+            print('join conservative stock, code: {}'.format(code))
         return True
 
 

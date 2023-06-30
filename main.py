@@ -17,7 +17,6 @@ test_stock_list = [
 
 format_date = '%Y-%m-%d'
 minus_days = 30 * 3
-is_test_code = False
 
 
 class Chooser(object):
@@ -25,7 +24,7 @@ class Chooser(object):
         self.count = 0
         self.e_count = 0
 
-    def run(self, code, ds, strategy, start_date_str, end_date_str, is_test=False):
+    def run_strategy(self, code, ds, strategy, start_date_str, end_date_str, is_test=False):
         filtered = ds.is_code_filtered(code)
         if filtered:
             return False
@@ -37,13 +36,11 @@ class Chooser(object):
         self.e_count += 1
         strategy.strategy(code, k_line_list, m_day=5, is_test=is_test)
 
-    def choose(self):
+    def choose(self, is_test_code=False, p_end_date=None, p_code=''):
         # ds = BaoDataSource()
         ds = EfDataSource()
         strategy = Strategy()
-        end_date = ds.get_end_date()
-        # end_date = datetime.strptime('2023-05-09', '%Y-%m-%d')
-        # workday = is_workday(end_date)
+        end_date = ds.get_end_date() if not p_end_date else p_end_date
         holiday = is_holiday(end_date)
         day_of_week = end_date.weekday()
         print('{}, 星期{}'.format(end_date, day_of_week + 1))
@@ -65,17 +62,25 @@ class Chooser(object):
                     test_start_date_str = test_start_date.strftime(format_date)
                     test_end_date_str = test_end_date.strftime(format_date)
                     print('test code: {}...'.format(code))
-                    self.run(code, ds, strategy, test_start_date_str, test_end_date_str, is_test=True)
+                    self.run_strategy(code, ds, strategy, test_start_date_str, test_end_date_str, is_test=True)
             else:
                 self.count += 1
                 if self.count % 1000 == 0:
                     print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
-                # if '002553' not in code:
-                #     continue
-                self.run(code, ds, strategy, start_date_str, end_date_str)
+                if p_code and p_code not in code:
+                    continue
+                self.run_strategy(code, ds, strategy, start_date_str, end_date_str)
         print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
 
 
 if __name__ == '__main__':
+    end_date = datetime.strptime('2023-05-09', '%Y-%m-%d')
     c = Chooser()
-    c.choose()
+    c.choose()  # normal
+    # c.choose(is_test_code=True)  # test stock code
+
+    # c.choose(is_test_code=False, p_end_date=end_date, p_code='')
+
+    # for p_day in range(1, 10):
+    #     e_date = datetime.strptime('2023-05-09', '%Y-%m-%d') - timedelta(days=p_day)
+    #     c.choose(p_end_date=e_date)
