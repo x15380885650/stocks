@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from chinese_calendar import is_holiday, is_workday
 from data_source_bao import BaoDataSource
 from data_source_ef import EfDataSource
 from strategy import Strategy
@@ -61,10 +62,16 @@ class Chooser(object):
         ds = EfDataSource()
         strategy = Strategy()
         end_date = ds.get_end_date()
+        # end_date = datetime.strptime('2023-05-19', '%Y-%m-%d')
+        # workday = is_workday(end_date)
+        holiday = is_holiday(end_date)
+        day_of_week = end_date.weekday()
+        print('{}, 星期{}'.format(end_date, day_of_week + 1))
+        if holiday:
+            return
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
-        # end_date_str = '2023-06-14'
         print('{}--->{}'.format(start_date_str, end_date_str))
         code_list = ds.get_all_stock_code_list(end_date_str)
         for code in code_list:
