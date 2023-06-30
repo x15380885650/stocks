@@ -5,24 +5,6 @@ from data_source_ef import EfDataSource
 from strategy import Strategy
 
 test_stock_list = [
-    # # strategy_3
-    # {'code': '000736', 'end_date': datetime.strptime('2022-03-24', '%Y-%m-%d')},
-    # {'code': '002866', 'end_date': datetime.strptime('2022-06-21', '%Y-%m-%d')},
-    # {'code': '603322', 'end_date': datetime.strptime('2022-05-23', '%Y-%m-%d')},
-
-
-    # {'code': '600629', 'end_date': datetime.strptime('2023-04-17', '%Y-%m-%d')},
-    # {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
-    # {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-
-
-    # # # strategy_4
-    # {'code': '002703', 'end_date': datetime.strptime('2022-06-13', '%Y-%m-%d')},
-
-    # {'code': '601595', 'end_date': datetime.strptime('2023-03-20', '%Y-%m-%d')},
-    # {'code': '601949', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
-
-
     # # strategy_5    # ## {'code': '601858', 'end_date': datetime.strptime('2023-04-12', '%Y-%m-%d')},
     {'code': '601595', 'end_date': datetime.strptime('2023-03-09', '%Y-%m-%d')},
     {'code': '600629', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
@@ -53,16 +35,14 @@ class Chooser(object):
             return False
 
         self.e_count += 1
-        # strategy.strategy_3(code, k_line_list, m_day=5, is_test=is_test)
-        # strategy.strategy_4(code, k_line_list, m_day=12, is_test=is_test)
-        strategy.strategy_5(code, k_line_list, m_day=5, is_test=is_test)
+        strategy.strategy(code, k_line_list, m_day=5, is_test=is_test)
 
     def choose(self):
         # ds = BaoDataSource()
         ds = EfDataSource()
         strategy = Strategy()
         end_date = ds.get_end_date()
-        # end_date = datetime.strptime('2023-05-19', '%Y-%m-%d')
+        # end_date = datetime.strptime('2023-05-09', '%Y-%m-%d')
         # workday = is_workday(end_date)
         holiday = is_holiday(end_date)
         day_of_week = end_date.weekday()
