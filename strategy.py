@@ -329,7 +329,7 @@ class Strategy(object):
         latest_close_price = float(k_line_list[-1]['close'])
         if is_test:
             print('latest_close_price: {}'.format(latest_close_price))
-        if latest_close_price < 5 or latest_close_price > 19:
+        if latest_close_price < 4 or latest_close_price > 18.5:
             return False
         total_count = len(k_line_list)
         k_line_list_m_day = k_line_list[-m_day:]
