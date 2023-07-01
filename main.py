@@ -34,8 +34,11 @@ class Chooser(object):
             return False
 
         self.e_count += 1
-        strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=False)
-        strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=True)
+        # strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=False)
+        # strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=True)
+
+        # strategy.strategy_match_2(code, k_line_list, m_day=5, is_test=is_test, adventure=False)
+        strategy.strategy_match_2(code, k_line_list, m_day=5, is_test=is_test, adventure=True)
 
     def choose(self, is_test_code=False, p_end_date=None, p_code=''):
         # ds = BaoDataSource()
@@ -77,14 +80,16 @@ class Chooser(object):
 
 
 if __name__ == '__main__':
-    p_end_date = datetime.strptime('2023-06-30', '%Y-%m-%d')
+    p_end_date = datetime.strptime('2023-06-28', '%Y-%m-%d')
     c = Chooser()
 
-    c.choose()  # normal
+    # c.choose()  # normal
 
     # c.choose(is_test_code=True)  # test stock code
 
-    # c.choose(p_end_date=p_end_date, p_code='002535')
+    # c.choose(p_end_date=p_end_date)
+
+    # c.choose(p_end_date=p_end_date, p_code='603178')
 
     # for p_day in range(1, 10):
     #     p_end_date = datetime.strptime('2023-05-09', '%Y-%m-%d') - timedelta(days=p_day)

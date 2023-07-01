@@ -147,6 +147,25 @@ class Strategy(object):
             return False
         return True
 
+    def is_stock_complete_up(self, data_list):
+        prev_close_price = float(data_list[0]['close'])
+        prev_open_price = float(data_list[0]['open'])
+        for i, d in enumerate(data_list):
+            close_price = float(d['close'])
+            open_price = float(d['open'])
+            if close_price < open_price:
+                return False
+            if i == 0:
+                continue
+            # if not (prev_open_price <= open_price <= prev_close_price):
+            if not (open_price <= prev_close_price):
+                return False
+            if close_price < prev_close_price:
+                return False
+            prev_close_price = close_price
+            prev_open_price = open_price
+        return True
+
     def get_pct_chg_sum(self, data_list):
         pct_chg_sum = 0
         for d in data_list:
@@ -224,6 +243,65 @@ class Strategy(object):
             print('join adventure stock, code: {}'.format(code))
 
         return
+
+    def strategy_match_2(self, code, k_line_list, m_day, is_test=False, adventure=False):
+        latest_close_price = float(k_line_list[-1]['close'])
+        if is_test:
+            print('latest_close_price: {}'.format(latest_close_price))
+        if not adventure and not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
+            return False
+        if adventure and not (latest_close_price_min_adv <= latest_close_price <= latest_close_price_max_adv):
+            return False
+        total_count = len(k_line_list)
+        k_line_list_m_day = k_line_list[-m_day:]
+        x_max_high_price = self.get_max_high_price(k_line_list_m_day)
+        y_max_high_price = self.get_max_high_price(k_line_list)
+        max_price_ratio = (x_max_high_price - y_max_high_price) / x_max_high_price * 100
+        if is_test:
+            print('max_price_ratio: {}'.format(max_price_ratio))
+        if max_price_ratio != 0:
+            return False
+        if not adventure:
+            self.e_count += 1
+        else:
+            self.e_count_adv += 1
+        pct_chg_list = []
+        for k_line in k_line_list_m_day:
+            pct_chg = k_line['pct_chg']
+            if isinstance(pct_chg, str) and not pct_chg:
+                continue
+            pct_chg_max = pct_change_max_i
+            if code.startswith('sz.30') or code.startswith('30'):
+                pct_chg_max = pct_change_max_j
+            if float(pct_chg) >= pct_chg_max:
+                pct_chg_list.append(1)
+            else:
+                pct_chg_list.append(0)
+        index_list = []
+        for i, v in enumerate(pct_chg_list):
+            if v == 1:
+                index_list.append(i)
+        if len(index_list) not in [1]:
+            return False
+        if index_list[-1] != m_day - 1:
+            return False
+
+        complete_up = self.is_stock_complete_up(k_line_list_m_day)
+        if not complete_up:
+            return False
+
+        max_turn = self.get_max_turn(k_line_list_m_day)
+        avg_turn = self.get_avg_turn(k_line_list_m_day)
+        if is_test:
+            print('max_turn: {}, avg_turn: {}'.format(max_turn, avg_turn))
+        if avg_turn < turn_min_i:
+            return False
+        if not adventure and max_turn <= turn_max_i:
+            print('join conservative stock, code: {}'.format(code))
+        if adventure and max_turn <= turn_max_i_adv:
+            print('join adventure stock, code: {}'.format(code))
+        return
+
 
 
 
