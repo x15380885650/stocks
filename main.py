@@ -34,11 +34,8 @@ class Chooser(object):
             return False
 
         self.e_count += 1
-        # strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=False)
-        # strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=True)
-
-        # strategy.strategy_match_2(code, k_line_list, m_day=5, is_test=is_test, adventure=False)
-        strategy.strategy_match_2(code, k_line_list, m_day=5, is_test=is_test, adventure=True)
+        strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=False)
+        strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=True)
 
     def choose(self, is_test_code=False, p_end_date=None, p_code=''):
         # ds = BaoDataSource()
@@ -48,8 +45,8 @@ class Chooser(object):
         holiday = is_holiday(end_date)
         day_of_week = end_date.weekday()
         print('{}, 星期{}'.format(end_date, day_of_week + 1))
-        if holiday:
-            return
+        # if holiday:
+        #     return
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
@@ -83,7 +80,7 @@ if __name__ == '__main__':
     p_end_date = datetime.strptime('2023-06-28', '%Y-%m-%d')
     c = Chooser()
 
-    # c.choose()  # normal
+    c.choose()  # normal
 
     # c.choose(is_test_code=True)  # test stock code
 

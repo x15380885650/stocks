@@ -47,10 +47,11 @@ class EfDataSource(DataSource):
             low = arr[6]
             volume = arr[7]
             amount = arr[8]
+            amp = arr[9]
             pct_chg = arr[10]
             turn = arr[12]
             kline_history.append({'code': code, 'date': date, 'open': _open, 'close': close, 'high': high, 'low': low,
-                                  'volume': volume, 'amount': amount, 'pct_chg': pct_chg, 'turn': turn})
+                                  'volume': volume, 'amount': amount, 'pct_chg': pct_chg, 'turn': turn, 'amp': amp})
         return kline_history
 
 
