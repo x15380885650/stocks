@@ -241,12 +241,11 @@ class Strategy(object):
             print('max_turn: {}'.format(max_turn))
         if max_turn < turn_min_i:
             return False
-        if not adventure and max_turn <= turn_max_i:
-            print('join conservative stock, code: {}'.format(code))
-        if adventure and max_turn <= turn_max_i_adv:
-            print('join adventure stock, code: {}'.format(code))
-
-        return
+        if not adventure and max_turn > turn_max_i:
+            return False
+        if adventure and max_turn > turn_max_i_adv:
+            return False
+        return True
 
 
 

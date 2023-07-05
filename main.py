@@ -34,8 +34,17 @@ class Chooser(object):
             return False
 
         self.e_count += 1
-        strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=False)
-        strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=True)
+        con_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=False)
+        adv_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=True)
+        if con_ok or adv_ok:
+            stock_value = ds.get_stock_value(code)
+            if stock_value > 120:
+                print('stock_value: {} > 120, not ok, code: {}'.format(stock_value, code))
+                return
+        if con_ok:
+            print('join conservative stock, code: {}'.format(code))
+        if adv_ok:
+            print('join adventure stock, code: {}'.format(code))
 
     def choose(self, is_test_code=False, p_end_date=None, p_code=''):
         # ds = BaoDataSource()

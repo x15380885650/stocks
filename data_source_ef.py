@@ -55,5 +55,13 @@ class EfDataSource(DataSource):
                                   'volume': volume, 'amount': amount, 'pct_chg': pct_chg, 'turn': turn, 'amp': amp})
         return kline_history
 
+    def get_daily_billboard(self, start_date, end_date):
+        return ef.stock.get_daily_billboard(start_date, end_date)
+
+    def get_stock_value(self, code):
+        base_info = ef.stock.get_base_info(code)
+        stock_value = base_info[4] / 10000 / 10000
+        return stock_value
+
 
 
