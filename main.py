@@ -17,6 +17,7 @@ test_stock_list = [
 
 format_date = '%Y-%m-%d'
 minus_days = 30 * 3
+stock_value_max = 150
 
 
 class Chooser(object):
@@ -36,10 +37,11 @@ class Chooser(object):
         self.e_count += 1
         con_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=False)
         adv_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=True)
+        # adv_ok = False
         if con_ok or adv_ok:
             stock_value = ds.get_stock_value(code)
-            if stock_value > 120:
-                print('stock_value: {} > 120, not ok, code: {}'.format(stock_value, code))
+            if stock_value > stock_value_max:
+                print('stock_value: {} > {}, not ok, code: {}'.format(stock_value, stock_value_max, code))
                 return
         if con_ok:
             print('join conservative stock, code: {}'.format(code))
@@ -86,7 +88,7 @@ class Chooser(object):
 
 
 if __name__ == '__main__':
-    p_end_date = datetime.strptime('2023-07-03', '%Y-%m-%d')
+    p_end_date = datetime.strptime('2023-07-07', '%Y-%m-%d')
     c = Chooser()
 
     c.choose()  # normal
@@ -95,7 +97,7 @@ if __name__ == '__main__':
 
     # c.choose(p_end_date=p_end_date)
 
-    # c.choose(p_end_date=p_end_date, p_code='600367')
+    # c.choose(p_end_date=p_end_date, p_code='000020')
 
     # for p_day in range(1, 10):
     #     p_end_date = datetime.strptime('2023-05-09', '%Y-%m-%d') - timedelta(days=p_day)

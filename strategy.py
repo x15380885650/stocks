@@ -214,9 +214,12 @@ class Strategy(object):
         for i, v in enumerate(pct_chg_list):
             if v == 1:
                 index_list.append(i)
-        if len(index_list) not in [2]:
+        if len(index_list) not in [2, 3]:
             return False
         if index_list[-1] != m_day - 1:
+            return False
+        sum_index_list = sum(index_list)
+        if sum_index_list > 8:
             return False
 
         l_index = index_list[-2]

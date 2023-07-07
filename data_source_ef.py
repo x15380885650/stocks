@@ -9,7 +9,7 @@ class EfDataSource(DataSource):
         super(EfDataSource, self).__init__()
 
     def get_end_date(self):
-        # return datetime.now().date()
+        return datetime.now().date()
         now_hour = datetime.now().hour
         if now_hour >= 15:
             return datetime.now().date()
