@@ -1,16 +1,16 @@
-latest_close_price_min = 5
-latest_close_price_max = 18.5
+latest_close_price_min = 4
+latest_close_price_max = 20
 
-latest_close_price_min_adv = 2
+latest_close_price_min_adv = 4
 latest_close_price_max_adv = 20
 
 pct_change_max_i = 9.8
 pct_change_max_j = 19.0
 
-turn_max_i = 11.5
+turn_max_i = 12
 turn_max_i_adv = 18
 
-turn_min_i = 4.5
+turn_min_i = 4
 
 
 class Strategy(object):

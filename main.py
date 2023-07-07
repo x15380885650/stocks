@@ -17,7 +17,8 @@ test_stock_list = [
 
 format_date = '%Y-%m-%d'
 minus_days = 30 * 3
-stock_value_max = 150
+stock_value_max = 200
+stock_value_min = 20
 
 
 class Chooser(object):
@@ -36,12 +37,13 @@ class Chooser(object):
 
         self.e_count += 1
         con_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=False)
-        adv_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=True)
-        # adv_ok = False
+        # adv_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=True)
+        adv_ok = False
         if con_ok or adv_ok:
             stock_value = ds.get_stock_value(code)
-            if stock_value > stock_value_max:
-                print('stock_value: {} > {}, not ok, code: {}'.format(stock_value, stock_value_max, code))
+            if stock_value > stock_value_max or stock_value < stock_value_min:
+                print('stock_value: {} not in [{}, {}], code: {}'
+                      .format(stock_value, stock_value_min, stock_value_max, code))
                 return
         if con_ok:
             print('join conservative stock, code: {}'.format(code))
