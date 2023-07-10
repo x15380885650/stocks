@@ -192,6 +192,8 @@ class Strategy(object):
         max_price_ratio = (x_max_high_price - y_max_high_price) / x_max_high_price * 100
         if is_test:
             print('max_price_ratio: {}'.format(max_price_ratio))
+        # if max_price_ratio < 0 and abs(max_price_ratio) > 5:
+        #     return False
         if max_price_ratio != 0:
             return False
         if not adventure:
@@ -228,8 +230,8 @@ class Strategy(object):
         r_max_close_price = self.get_max_close_price(r_data_list)
         if is_test:
             print('l_index_close: {}, r_max_close_price: {}'.format(l_index_close, r_max_close_price))
-        if not adventure and l_index_close < r_max_close_price:
-            return False
+        # if not adventure and l_index_close < r_max_close_price:
+        #     return False
         r_index = m_day - 1
         k_line_list_l_r = k_line_list_m_day[l_index:r_index + 1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_l_r)

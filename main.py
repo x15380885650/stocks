@@ -16,7 +16,7 @@ test_stock_list = [
 ]
 
 format_date = '%Y-%m-%d'
-minus_days = 30 * 3
+minus_days = 30 * 2.5
 stock_value_max = 200
 stock_value_min = 20
 
@@ -90,7 +90,7 @@ class Chooser(object):
 
 
 if __name__ == '__main__':
-    p_end_date = datetime.strptime('2023-07-07', '%Y-%m-%d')
+    p_end_date = datetime.strptime('2023-06-12', '%Y-%m-%d')
     c = Chooser()
 
     c.choose()  # normal
@@ -99,7 +99,8 @@ if __name__ == '__main__':
 
     # c.choose(p_end_date=p_end_date)
 
-    # c.choose(p_end_date=p_end_date, p_code='000020')
+    # c.choose(p_end_date=p_end_date, p_code='600367')  # 2023-07-03
+    # c.choose(p_end_date=p_end_date, p_code='600602')  # 2023-06-12
 
     # for p_day in range(1, 10):
     #     p_end_date = datetime.strptime('2023-05-09', '%Y-%m-%d') - timedelta(days=p_day)
