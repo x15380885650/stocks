@@ -101,24 +101,6 @@ class Chooser(object):
             save_data_list_append_by_json_dump(file_path, top_pct_chg_code_list)
         return top_pct_chg_code_list
 
-    # def run_strategy(self, code, strategy, start_date_str, end_date_str, is_test=False):
-    #     k_line_list = self.get_valid_k_line_list(code, start_date_str, end_date_str)
-    #     if not k_line_list:
-    #         return False
-    #
-    #     self.e_count += 1
-    #     strategy_1_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test)
-    #     strategy_2_ok = strategy.strategy_match_2(code, k_line_list, m_day=5, is_test=is_test)
-    #     if strategy_1_ok or strategy_2_ok:
-    #         stock_value = self.ds.get_stock_value(code)
-    #         if stock_value > stock_value_max or stock_value < stock_value_min:
-    #             print('stock_value: {} not in [{}, {}], code: {}'
-    #                   .format(stock_value, stock_value_min, stock_value_max, code))
-    #             return
-    #     if strategy_1_ok:
-    #         print('join strategy_1 stock, code: {}'.format(code))
-    #     if strategy_2_ok:
-    #         print('join strategy_2 stock, code: {}'.format(code))
 
     def get_valid_k_line_list(self, code, start_date_str, end_date_str):
         filtered = self.ds.is_code_filtered(code)
