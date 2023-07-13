@@ -1,16 +1,4 @@
-latest_close_price_min = 3.5
-latest_close_price_max = 20
-
-latest_close_price_min_adv = 4
-latest_close_price_max_adv = 20
-
-pct_change_max_i = 9.8
-pct_change_max_j = 19.0
-
-turn_max_i = 12
-turn_max_i_adv = 18
-
-turn_min_i = 4
+from constants import latest_close_price_min, latest_close_price_max, pct_change_max_i, pct_change_max_j, turn_max_i
 
 
 class Strategy(object):
@@ -194,6 +182,7 @@ class Strategy(object):
         #     return False
         if max_price_ratio != 0:
             return False
+        self.e_count += 1
         pct_chg_list = []
         for k_line in k_line_list_m_day:
             pct_chg = k_line['pct_chg']

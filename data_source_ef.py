@@ -9,7 +9,7 @@ class EfDataSource(DataSource):
         super(EfDataSource, self).__init__()
 
     def get_end_date(self):
-        return datetime.now().date()
+        # return datetime.now().date()
         now_hour = datetime.now().hour
         if now_hour >= 15:
             return datetime.now().date()
@@ -54,6 +54,30 @@ class EfDataSource(DataSource):
             kline_history.append({'code': code, 'date': date, 'open': _open, 'close': close, 'high': high, 'low': low,
                                   'volume': volume, 'amount': amount, 'pct_chg': pct_chg, 'turn': turn, 'amp': amp})
         return kline_history
+
+    def get_stock_list_kline_history(self, code_list, start_date, end_date):
+        stock_kline_history_list = []
+        start_date = start_date.replace('-', '')
+        end_date = end_date.replace('-', '')
+        data = ef.stock.get_quote_history(code_list, beg=start_date, end=end_date, fqt=0)
+        for code, df in data.items():
+            for s in df.iterrows():
+                arr = s[1]
+                code = arr[1]
+                date = arr[2]
+                _open = arr[3]
+                close = arr[4]
+                high = arr[5]
+                low = arr[6]
+                volume = arr[7]
+                amount = arr[8]
+                amp = arr[9]
+                pct_chg = arr[10]
+                turn = arr[12]
+                stock_kline_history_list.append(
+                    {'code': code, 'date': date, 'open': _open, 'close': close, 'high': high, 'low': low,
+                     'volume': volume, 'amount': amount, 'pct_chg': pct_chg, 'turn': turn, 'amp': amp})
+        return stock_kline_history_list
 
     def get_daily_billboard(self, start_date, end_date):
         return ef.stock.get_daily_billboard(start_date, end_date)
