@@ -5,14 +5,22 @@ from data_source_ef import EfDataSource
 from strategy import Strategy
 
 test_stock_list = [
-    # # strategy_5    # ## {'code': '601858', 'end_date': datetime.strptime('2023-04-12', '%Y-%m-%d')},
-    {'code': '601595', 'end_date': datetime.strptime('2023-03-09', '%Y-%m-%d')},
-    {'code': '600629', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
-    {'code': '601900', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
-    {'code': '601949', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},  # buy 时间点不好
-    {'code': '605011', 'end_date': datetime.strptime('2023-05-15', '%Y-%m-%d')},
-    {'code': '002527', 'end_date': datetime.strptime('2023-06-16', '%Y-%m-%d')},
-    {'code': '603767', 'end_date': datetime.strptime('2023-06-20', '%Y-%m-%d')},  # buy的时间点不好
+    # # strategy_1
+    # {'code': '601595', 'end_date': datetime.strptime('2023-03-09', '%Y-%m-%d')},
+    # {'code': '600629', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
+    # {'code': '601900', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
+    # {'code': '605011', 'end_date': datetime.strptime('2023-05-15', '%Y-%m-%d')},
+    # {'code': '002527', 'end_date': datetime.strptime('2023-06-16', '%Y-%m-%d')},
+    # {'code': '603767', 'end_date': datetime.strptime('2023-06-20', '%Y-%m-%d')},  # buy的时间点不好
+
+    # # strategy_2
+    {'code': '603083', 'end_date': datetime.strptime('2023-02-27', '%Y-%m-%d')},
+    {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
+    {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
+    {'code': '002527', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
+    {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
 ]
 
 format_date = '%Y-%m-%d'
@@ -36,19 +44,19 @@ class Chooser(object):
             return False
 
         self.e_count += 1
-        con_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=False)
-        # adv_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test, adventure=True)
-        adv_ok = False
-        if con_ok or adv_ok:
+        # strategy_1_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test)
+        strategy_1_ok = False
+        strategy_2_ok = strategy.strategy_match_2(code, k_line_list, m_day=5, is_test=is_test)
+        if strategy_1_ok or strategy_2_ok:
             stock_value = ds.get_stock_value(code)
             if stock_value > stock_value_max or stock_value < stock_value_min:
                 print('stock_value: {} not in [{}, {}], code: {}'
                       .format(stock_value, stock_value_min, stock_value_max, code))
                 return
-        if con_ok:
-            print('join conservative stock, code: {}'.format(code))
-        if adv_ok:
-            print('join adventure stock, code: {}'.format(code))
+        if strategy_1_ok:
+            print('join strategy_1 stock, code: {}'.format(code))
+        if strategy_2_ok:
+            print('join strategy_2 stock, code: {}'.format(code))
 
     def choose(self, is_test_code=False, p_end_date=None, p_code=''):
         # ds = BaoDataSource()
@@ -90,7 +98,7 @@ class Chooser(object):
 
 
 if __name__ == '__main__':
-    p_end_date = datetime.strptime('2023-07-12', '%Y-%m-%d')
+    p_end_date = datetime.strptime('2023-06-26', '%Y-%m-%d')
     c = Chooser()
 
     c.choose()  # normal
@@ -99,7 +107,7 @@ if __name__ == '__main__':
 
     # c.choose(p_end_date=p_end_date)
 
-    # c.choose(p_end_date=p_end_date, p_code='600367')  # 2023-07-03
+    # c.choose(p_end_date=p_end_date, p_code='603788')  # 2023-07-03
     # c.choose(p_end_date=p_end_date, p_code='600602')  # 2023-06-12
 
     # for p_day in range(1, 10):
