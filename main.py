@@ -90,7 +90,7 @@ class Chooser(object):
 
 
 if __name__ == '__main__':
-    p_end_date = datetime.strptime('2023-06-12', '%Y-%m-%d')
+    p_end_date = datetime.strptime('2023-07-12', '%Y-%m-%d')
     c = Chooser()
 
     c.choose()  # normal

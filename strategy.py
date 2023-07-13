@@ -244,8 +244,8 @@ class Strategy(object):
         # min_turn = self.get_min_turn(k_line_list_l_r)
         if is_test:
             print('max_turn: {}'.format(max_turn))
-        if max_turn < turn_min_i:
-            return False
+        # if max_turn < turn_min_i:
+        #     return False
         if not adventure and max_turn > turn_max_i:
             return False
         if adventure and max_turn > turn_max_i_adv:
