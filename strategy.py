@@ -177,13 +177,11 @@ class Strategy(object):
             pct_chg_sum += pct_chg
         return pct_chg_sum
 
-    def strategy_match(self, code, k_line_list, m_day, is_test=False, adventure=False):
+    def strategy_match(self, code, k_line_list, m_day, is_test=False):
         latest_close_price = float(k_line_list[-1]['close'])
         if is_test:
             print('latest_close_price: {}'.format(latest_close_price))
-        if not adventure and not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
-            return False
-        if adventure and not (latest_close_price_min_adv <= latest_close_price <= latest_close_price_max_adv):
+        if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
             return False
         total_count = len(k_line_list)
         k_line_list_m_day = k_line_list[-m_day:]
@@ -196,10 +194,6 @@ class Strategy(object):
         #     return False
         if max_price_ratio != 0:
             return False
-        if not adventure:
-            self.e_count += 1
-        else:
-            self.e_count_adv += 1
         pct_chg_list = []
         for k_line in k_line_list_m_day:
             pct_chg = k_line['pct_chg']
@@ -230,8 +224,6 @@ class Strategy(object):
         r_max_close_price = self.get_max_close_price(r_data_list)
         if is_test:
             print('l_index_close: {}, r_max_close_price: {}'.format(l_index_close, r_max_close_price))
-        # if not adventure and l_index_close < r_max_close_price:
-        #     return False
         r_index = m_day - 1
         k_line_list_l_r = k_line_list_m_day[l_index:r_index + 1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_l_r)
@@ -244,15 +236,11 @@ class Strategy(object):
         # min_turn = self.get_min_turn(k_line_list_l_r)
         if is_test:
             print('max_turn: {}'.format(max_turn))
-        # if max_turn < turn_min_i:
-        #     return False
-        if not adventure and max_turn > turn_max_i:
-            return False
-        if adventure and max_turn > turn_max_i_adv:
+        if max_turn > turn_max_i:
             return False
         return True
 
-    def is_strategy_2_last_data_ok(self, last_data):
+    def is_strategy_2_last_data_ok(self, last_data, prev_close_price):
         red = self.is_red(last_data)
         if not red:
             return False
@@ -269,11 +257,11 @@ class Strategy(object):
         r_2 = 100 * (high_price - close_price) / close_price
         r_3 = 100 * (open_price - low_price) / low_price
         r_4 = 100 * (high_price - low_price) / low_price
-        k_1 = 100 * (pct_chg - r_1) / pct_chg
-        print('code: {}, r1: {}, r2: {}, r3: {}, r4: {}, k_1: {}'.format(last_data['code'], r_1, r_2, r_3, r_4, k_1))
-        if r_1 > 6 or r_2 > 5.5 or r_3 > 3.5 or r_4 > 12.5:
+        r_5 = 100 * (open_price - prev_close_price) / prev_close_price
+        print('code: {}, r1: {}, r2: {}, r3: {}, r4: {}, r_5: {}'.format(last_data['code'], r_1, r_2, r_3, r_4, r_5))
+        if r_1 > 6 or r_2 > 5.5 or r_3 > 4:
             return False
-        if k_1 < 0 and abs(k_1) > 20:
+        if r_5 < 0 and abs(r_5) > 1.5:
             return False
         return True
 
@@ -320,7 +308,7 @@ class Strategy(object):
             print('max_turn: {}'.format(max_turn))
         if max_turn > turn_max_i:
             return False
-        last_data_ok = self.is_strategy_2_last_data_ok(k_line_list_m_day[-1])
+        last_data_ok = self.is_strategy_2_last_data_ok(k_line_list_m_day[-1], k_line_list_m_day[-2]['close'])
         if not last_data_ok:
             return False
         return True

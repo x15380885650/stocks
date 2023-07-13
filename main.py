@@ -14,12 +14,12 @@ test_stock_list = [
     # {'code': '603767', 'end_date': datetime.strptime('2023-06-20', '%Y-%m-%d')},  # buy的时间点不好
 
     # # strategy_2
-    {'code': '603083', 'end_date': datetime.strptime('2023-02-27', '%Y-%m-%d')},
-    {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
-    {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-    {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-    {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
-    {'code': '002527', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
+    # {'code': '603083', 'end_date': datetime.strptime('2023-02-27', '%Y-%m-%d')},
+    # {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
+    # {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    # {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    # {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
+    # {'code': '002527', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
     {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
 ]
 
@@ -44,8 +44,7 @@ class Chooser(object):
             return False
 
         self.e_count += 1
-        # strategy_1_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test)
-        strategy_1_ok = False
+        strategy_1_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test)
         strategy_2_ok = strategy.strategy_match_2(code, k_line_list, m_day=5, is_test=is_test)
         if strategy_1_ok or strategy_2_ok:
             stock_value = ds.get_stock_value(code)
