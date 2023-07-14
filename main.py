@@ -20,14 +20,14 @@ test_stock_list = [
     # # strategy_2
     ##{'code': '603083', 'end_date': datetime.strptime('2023-02-27', '%Y-%m-%d')},
 
-    # {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
-    # {'code': '000021', 'end_date': datetime.strptime('2023-03-31', '%Y-%m-%d')},
-    # {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-    # {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-    # {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
-    # {'code': '002527', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},   # 换手率太高
-    # {'code': '000837', 'end_date': datetime.strptime('2023-06-21', '%Y-%m-%d')},
-    # {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
+    {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
+    {'code': '000021', 'end_date': datetime.strptime('2023-03-31', '%Y-%m-%d')},
+    {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
+    {'code': '002527', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},   # 换手率太高
+    {'code': '000837', 'end_date': datetime.strptime('2023-06-21', '%Y-%m-%d')},
+    {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
 
 ]
 
@@ -193,7 +193,6 @@ class Chooser(object):
             print('code_list is empty, break!!!')
         for code in code_list:
             self.count += 1
-            # self.monitor_strategy_1(code, strategy, start_date_str, end_date_str)
             self.monitor_strategy_2(code, strategy, start_date_str, end_date_str)
         print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
 
@@ -202,7 +201,6 @@ if __name__ == '__main__':
     p_end_date = datetime.strptime('2023-06-26', '%Y-%m-%d')
     c = Chooser()
     c.monitor()
-
     # c.choose()  # normal
 
     # c.choose(is_test_code=True)  # test stock code

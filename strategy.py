@@ -235,9 +235,6 @@ class Strategy(object):
             return False
 
         pct_chg = float(last_data['pct_chg'])
-        # if pct_chg < 2 or pct_chg > 7.5:
-        #     return False
-
         close_price = float(last_data['close'])
         open_price = float(last_data['open'])
         low_price = float(last_data['low'])
@@ -250,8 +247,8 @@ class Strategy(object):
         r_1_3_max = r_1 if r_1 > r_3 else r_3
         r_6 = r_1_3_max / r_2
         r_7 = r_2 / r_3 if r_2 > r_3 else r_3 / r_2
-        print('code: {}, r_1: {}, r_2: {}, r_3: {}, r_4: {}, r_5: {}, r_6: {}, r_7: {}'
-              .format(last_data['code'], r_1, r_2, r_3, r_4, r_5, r_6, r_7))
+        print('code: {}, r_1: {}, r_2: {}, r_3: {}, r_4: {}, r_5: {}, r_6: {}, r_7: {}, pct_chg: {}'
+              .format(last_data['code'], r_1, r_2, r_3, r_4, r_5, r_6, r_7, pct_chg))
 
         if not (0.5 <= r_6 <= 2):
             return False
@@ -265,7 +262,8 @@ class Strategy(object):
             return False
         if r_5 < 0 and abs(r_5) > 1.5:
             return False
-
+        if pct_chg < 2 or pct_chg > 7.5:
+            return False
         return True
 
     def strategy_match_2(self, code, k_line_list, m_day, is_test=False):
