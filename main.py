@@ -10,21 +10,24 @@ from dumper_loader import load_data_append_by_json_dump, save_data_list_append_b
 
 test_stock_list = [
     # # strategy_1
-    {'code': '601595', 'end_date': datetime.strptime('2023-03-09', '%Y-%m-%d')},
-    {'code': '600629', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
-    {'code': '601900', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
-    {'code': '605011', 'end_date': datetime.strptime('2023-05-15', '%Y-%m-%d')},
-    {'code': '002527', 'end_date': datetime.strptime('2023-06-16', '%Y-%m-%d')},
-    {'code': '603767', 'end_date': datetime.strptime('2023-06-20', '%Y-%m-%d')},  # buy的时间点不好
+    # {'code': '601595', 'end_date': datetime.strptime('2023-03-09', '%Y-%m-%d')},
+    # {'code': '600629', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
+    # {'code': '601900', 'end_date': datetime.strptime('2023-04-20', '%Y-%m-%d')},
+    # {'code': '605011', 'end_date': datetime.strptime('2023-05-15', '%Y-%m-%d')},
+    # {'code': '002527', 'end_date': datetime.strptime('2023-06-16', '%Y-%m-%d')},
+    # {'code': '603767', 'end_date': datetime.strptime('2023-06-20', '%Y-%m-%d')},  # buy的时间点不好
 
     # # strategy_2
-    # {'code': '603083', 'end_date': datetime.strptime('2023-02-27', '%Y-%m-%d')},
-    # {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
-    # {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-    # {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-    # {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
-    # {'code': '002527', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
-    # {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
+    {'code': '603083', 'end_date': datetime.strptime('2023-02-27', '%Y-%m-%d')},
+    {'code': '002527', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
+    {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
+
+    {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
+    {'code': '000021', 'end_date': datetime.strptime('2023-03-31', '%Y-%m-%d')},
+    {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
+    {'code': '000837', 'end_date': datetime.strptime('2023-06-21', '%Y-%m-%d')},
 ]
 
 format_date = '%Y-%m-%d'
@@ -101,7 +104,6 @@ class Chooser(object):
             save_data_list_append_by_json_dump(file_path, top_pct_chg_code_list)
         return top_pct_chg_code_list
 
-
     def get_valid_k_line_list(self, code, start_date_str, end_date_str):
         filtered = self.ds.is_code_filtered(code)
         if filtered:
@@ -112,13 +114,12 @@ class Chooser(object):
             return None
         last_date = k_line_list[-1]['date']
         if last_date != end_date_str:
-            print('code: {}, last_date: {} != end_date_str: {}'.format(code, last_date, end_date_str))
+            # print('code: {}, last_date: {} != end_date_str: {}'.format(code, last_date, end_date_str))
             return None
         return k_line_list
 
     def monitor_strategy_1(self, code, strategy, start_date_str, end_date_str, is_test=False):
         k_line_list = self.get_valid_k_line_list(code, start_date_str, end_date_str)
-        self.e_count += 1
         strategy_1_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test)
         if strategy_1_ok:
             stock_value = self.ds.get_stock_value(code)
@@ -131,7 +132,8 @@ class Chooser(object):
 
     def monitor_strategy_2(self, code, strategy, start_date_str, end_date_str, is_test=False):
         k_line_list = self.get_valid_k_line_list(code, start_date_str, end_date_str)
-        self.e_count += 1
+        if not k_line_list:
+            return
         strategy_2_ok = strategy.strategy_match_2(code, k_line_list, m_day=5, is_test=is_test)
         if strategy_2_ok:
             stock_value = self.ds.get_stock_value(code)
@@ -165,23 +167,22 @@ class Chooser(object):
                     test_start_date_str = test_start_date.strftime(format_date)
                     test_end_date_str = test_end_date.strftime(format_date)
                     print('test code: {}...'.format(code))
-                    self.monitor_strategy_1(code, strategy, test_start_date_str, test_end_date_str, is_test=True)
+                    # self.monitor_strategy_1(code, strategy, test_start_date_str, test_end_date_str, is_test=True)
                     self.monitor_strategy_2(code, strategy, test_start_date_str, test_end_date_str, is_test=True)
             else:
                 self.count += 1
                 if self.count % 1000 == 0:
-                    print('count: {}, e_count: {}, e_count_adv: {}'
-                          .format(self.count, strategy.e_count, strategy.e_count_adv))
+                    print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
                 if p_code and p_code not in code:
                     continue
-                self.monitor_strategy_1(code, strategy, start_date_str, end_date_str)
+                # self.monitor_strategy_1(code, strategy, start_date_str, end_date_str)
                 self.monitor_strategy_2(code, strategy, start_date_str, end_date_str)
-        print('count: {}, e_count: {}, e_count_adv: {}'
-              .format(self.count, strategy.e_count, strategy.e_count_adv))
+        print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
 
     def monitor(self):
         strategy = Strategy()
         end_date = self.get_valid_end_date()
+        end_date = end_date + timedelta(days=1)
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
@@ -191,10 +192,9 @@ class Chooser(object):
             print('code_list is empty, break!!!')
         for code in code_list:
             self.count += 1
-            self.monitor_strategy_1(code, strategy, start_date_str, end_date_str)
-            # self.monitor_strategy_2(code, strategy, start_date_str, end_date_str)
-        print('count: {}, e_count: {}, e_count_adv: {}'
-              .format(self.count, strategy.e_count, strategy.e_count_adv))
+            # self.monitor_strategy_1(code, strategy, start_date_str, end_date_str)
+            self.monitor_strategy_2(code, strategy, start_date_str, end_date_str)
+        print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
 
 
 if __name__ == '__main__':
