@@ -255,15 +255,18 @@ class Strategy(object):
 
         if not (0.5 <= r_6 <= 2):
             return False
+        if not (0.5 <= r_1 <= 5.5):
+            return False
         if not (2 <= r_2 <= 6):
+            return False
+        if not (0.5 <= r_3 <= 4.5):
             return False
         if r_5 < 0 and abs(r_5) > 1.5:
             return False
         # if r_4 > 15:
         #     return False
 
-        # if not (2 <= r_1 <= 7):
-        #     return False
+
         # if not (1 <= r_2 <= 7):
         #     return False
         # if not (1 <= r_3 <= 4.5):
