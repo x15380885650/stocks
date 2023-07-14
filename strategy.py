@@ -261,18 +261,10 @@ class Strategy(object):
             return False
         if not (0.5 <= r_3 <= 4.5):
             return False
+        if r_4 > 15:
+            return False
         if r_5 < 0 and abs(r_5) > 1.5:
             return False
-        # if r_4 > 15:
-        #     return False
-
-
-        # if not (1 <= r_2 <= 7):
-        #     return False
-        # if not (1 <= r_3 <= 4.5):
-        #     return False
-        # if r_4 > 15:
-        #     return False
 
         return True
 
