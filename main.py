@@ -119,7 +119,7 @@ class Chooser(object):
             return None
         return k_line_list
 
-    def monitor_strategy_1(self, code, strategy, start_date_str, end_date_str, is_test=False):
+    def choose_strategy_1(self, code, strategy, start_date_str, end_date_str, is_test=False):
         k_line_list = self.get_valid_k_line_list(code, start_date_str, end_date_str)
         if not k_line_list:
             return
@@ -178,7 +178,7 @@ class Chooser(object):
                     print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
                 if p_code and p_code not in code:
                     continue
-                self.monitor_strategy_1(code, strategy, start_date_str, end_date_str)
+                self.choose_strategy_1(code, strategy, start_date_str, end_date_str)
                 # self.monitor_strategy_2(code, strategy, start_date_str, end_date_str)
         print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
 
