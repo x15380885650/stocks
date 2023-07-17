@@ -121,6 +121,8 @@ class Chooser(object):
 
     def monitor_strategy_1(self, code, strategy, start_date_str, end_date_str, is_test=False):
         k_line_list = self.get_valid_k_line_list(code, start_date_str, end_date_str)
+        if not k_line_list:
+            return
         strategy_1_ok = strategy.strategy_match(code, k_line_list, m_day=5, is_test=is_test)
         if strategy_1_ok:
             stock_value = self.ds.get_stock_value(code)
@@ -176,14 +178,14 @@ class Chooser(object):
                     print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
                 if p_code and p_code not in code:
                     continue
-                # self.monitor_strategy_1(code, strategy, start_date_str, end_date_str)
-                self.monitor_strategy_2(code, strategy, start_date_str, end_date_str)
+                self.monitor_strategy_1(code, strategy, start_date_str, end_date_str)
+                # self.monitor_strategy_2(code, strategy, start_date_str, end_date_str)
         print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
 
     def monitor(self):
         strategy = Strategy()
-        end_date = self.get_valid_end_date()
-        end_date = end_date + timedelta(days=1)
+        # end_date = self.get_valid_end_date()
+        end_date = datetime.now().date()
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)

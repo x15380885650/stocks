@@ -232,6 +232,7 @@ class Strategy(object):
     def is_strategy_2_last_data_ok(self, last_data, prev_close_price):
         red = self.is_red(last_data)
         if not red:
+            # print('code: {} is not red'.format(last_data['code']))
             return False
 
         pct_chg = float(last_data['pct_chg'])
