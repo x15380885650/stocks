@@ -137,7 +137,7 @@ class Chooser(object):
         k_line_list = self.get_valid_k_line_list(code, start_date_str, end_date_str)
         if not k_line_list:
             return
-        strategy_2_ok = strategy.strategy_match_2(code, k_line_list, m_day=5, is_test=is_test)
+        strategy_2_ok = strategy.strategy_match_2(code, k_line_list, m_day=2, is_test=is_test)
         if strategy_2_ok:
             stock_value = self.ds.get_stock_value(code)
             if stock_value > stock_value_max or stock_value < stock_value_min:

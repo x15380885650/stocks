@@ -1,4 +1,4 @@
-from constants import latest_close_price_min, latest_close_price_max, pct_change_max_i, pct_change_max_j, turn_max_i
+from constants import latest_close_price_min, latest_close_price_max, pct_change_max_i, pct_change_max_j, turn_max_i, turn_max_i_instant
 
 
 class Strategy(object):
@@ -247,9 +247,9 @@ class Strategy(object):
         r_5 = 100 * (open_price - prev_close_price) / prev_close_price
         r_1_3_max = r_1 if r_1 > r_3 else r_3
         r_6 = r_1_3_max / r_2
-        r_7 = r_2 / r_3 if r_2 > r_3 else r_3 / r_2
-        print('code: {}, r_1: {}, r_2: {}, r_3: {}, r_4: {}, r_5: {}, r_6: {}, r_7: {}, pct_chg: {}'
-              .format(last_data['code'], r_1, r_2, r_3, r_4, r_5, r_6, r_7, pct_chg))
+        # r_7 = r_2 / r_3 if r_2 > r_3 else r_3 / r_2
+        print('code: {}, r_1: {}, r_2: {}, r_3: {}, r_4: {}, r_5: {}, r_6: {}, pct_chg: {}'
+              .format(last_data['code'], r_1, r_2, r_3, r_4, r_5, r_6, pct_chg))
 
         if not (0.5 <= r_6 <= 2):
             return False
@@ -283,6 +283,14 @@ class Strategy(object):
         #     return False
         if max_price_ratio != 0:
             return False
+        prev_close_price = float(k_line_list_m_day[-2]['close'])
+        open_price = float(k_line_list_m_day[-1]['open'])
+        r_5 = 100 * (open_price - prev_close_price) / prev_close_price
+        if r_5 < 0 and abs(r_5) > 1.5:
+            return False
+        now_turn = float(k_line_list_m_day[-1]['turn'])
+        if now_turn > turn_max_i_instant:
+            return False
         self.e_count += 1
         pct_chg_list = []
         for k_line in k_line_list_m_day:
@@ -309,6 +317,7 @@ class Strategy(object):
         if is_test:
             print('max_turn: {}'.format(max_turn))
         if max_turn > turn_max_i:
+            # print('code: {}, max_turn: {}'.format(code, max_turn))
             return False
         last_data_ok = self.is_strategy_2_last_data_ok(k_line_list_m_day[-1], k_line_list_m_day[-2]['close'])
         if not last_data_ok:
