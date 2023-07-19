@@ -178,8 +178,8 @@ class Chooser(object):
                     print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
                 if p_code and p_code not in code:
                     continue
-                self.choose_strategy_1(code, strategy, start_date_str, end_date_str)
-                # self.monitor_strategy_2(code, strategy, start_date_str, end_date_str)
+                # self.choose_strategy_1(code, strategy, start_date_str, end_date_str)
+                self.monitor_strategy_2(code, strategy, start_date_str, end_date_str)
         print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
 
     def monitor(self):
