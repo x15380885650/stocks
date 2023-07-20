@@ -257,7 +257,7 @@ class Strategy(object):
             return False
         if not (2 <= r_2 <= 6):
             return False
-        if not (0.15 <= r_3 <= 4.5):
+        if not (0.1 <= r_3 <= 4.5):
             return False
         if r_4 > 15:
             return False
@@ -290,6 +290,10 @@ class Strategy(object):
             return False
         now_turn = float(k_line_list_m_day[-1]['turn'])
         if now_turn > turn_max_i_instant:
+            return False
+        prev_turn = float(k_line_list_m_day[-2]['turn'])
+        r_turn = now_turn/prev_turn
+        if r_turn > 3.5:
             return False
         self.e_count += 1
         pct_chg_list = []
