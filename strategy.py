@@ -292,8 +292,9 @@ class Strategy(object):
         if now_turn > turn_max_i_instant:
             return False
         prev_turn = float(k_line_list_m_day[-2]['turn'])
-        r_turn = now_turn/prev_turn
-        if r_turn > 3.5:
+        r_turn_ratio = now_turn/prev_turn
+        if r_turn_ratio > 2:
+            print('r_turn_ratio: {}, now_turn: {}, code: {}'.format(r_turn_ratio, now_turn, code))
             return False
         self.e_count += 1
         pct_chg_list = []

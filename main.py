@@ -25,8 +25,8 @@ test_stock_list = [
     {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
     {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
     {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
-    {'code': '002527', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},   # 换手率太高
-    {'code': '000837', 'end_date': datetime.strptime('2023-06-21', '%Y-%m-%d')},
+    # {'code': '002527', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},   # 换手率太高
+    # {'code': '000837', 'end_date': datetime.strptime('2023-06-21', '%Y-%m-%d')},   # 前后换手率比值太高
     {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
 
 ]
