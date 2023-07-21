@@ -231,11 +231,6 @@ class Strategy(object):
         return True
 
     def is_strategy_2_last_data_ok(self, last_data, prev_close_price):
-        red = self.is_red(last_data)
-        if not red:
-            # print('code: {} is not red'.format(last_data['code']))
-            return False
-
         pct_chg = float(last_data['pct_chg'])
         close_price = float(last_data['close'])
         open_price = float(last_data['open'])
@@ -275,6 +270,10 @@ class Strategy(object):
         if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
             return False
         k_line_list_m_day = k_line_list[-m_day:]
+        red = self.is_red(k_line_list_m_day[-1])
+        if not red:
+            # print('code: {} is not red'.format(last_data['code']))
+            return False
         x_max_high_price = self.get_max_high_price(k_line_list_m_day)
         y_max_high_price = self.get_max_high_price(k_line_list)
         max_price_ratio = (x_max_high_price - y_max_high_price) / x_max_high_price * 100
@@ -326,9 +325,10 @@ class Strategy(object):
             return False
         prev_turn = float(k_line_list_m_day[-2]['turn'])
         r_turn_ratio = now_turn / prev_turn
-        if r_turn_ratio > 2:
-            print('r_turn_ratio: {}, now_turn: {}, code: {}'.format(r_turn_ratio, now_turn, code))
-            return False
+        print('r_turn_ratio: {}'.format(r_turn_ratio))
+        # if r_turn_ratio > 2:
+        #     print('r_turn_ratio: {}, now_turn: {}, code: {}'.format(r_turn_ratio, now_turn, code))
+        #     return False
         return True
 
 
