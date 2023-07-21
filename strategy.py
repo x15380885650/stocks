@@ -1,4 +1,5 @@
-from constants import latest_close_price_min, latest_close_price_max, pct_change_max_i, pct_change_max_j, turn_max_i, turn_max_i_instant
+from constants import latest_close_price_min, latest_close_price_max, pct_change_max_i, pct_change_max_j, turn_max_i, \
+    turn_max_i_instant, turn_min_i
 
 
 class Strategy(object):
@@ -291,11 +292,6 @@ class Strategy(object):
         now_turn = float(k_line_list_m_day[-1]['turn'])
         if now_turn > turn_max_i_instant:
             return False
-        prev_turn = float(k_line_list_m_day[-2]['turn'])
-        r_turn_ratio = now_turn/prev_turn
-        if r_turn_ratio > 2:
-            print('r_turn_ratio: {}, now_turn: {}, code: {}'.format(r_turn_ratio, now_turn, code))
-            return False
         self.e_count += 1
         pct_chg_list = []
         for k_line in k_line_list_m_day:
@@ -319,13 +315,19 @@ class Strategy(object):
             return False
         k_line_list_l_r = k_line_list_m_day[:-1]
         max_turn = self.get_max_turn(k_line_list_l_r)
+        min_turn = self.get_min_turn(k_line_list_l_r)
         if is_test:
-            print('max_turn: {}'.format(max_turn))
-        if max_turn > turn_max_i:
+            print('max_turn: {}, min_turn: {}'.format(max_turn, min_turn))
+        if max_turn > turn_max_i or min_turn < turn_min_i:
             # print('code: {}, max_turn: {}'.format(code, max_turn))
             return False
         last_data_ok = self.is_strategy_2_last_data_ok(k_line_list_m_day[-1], k_line_list_m_day[-2]['close'])
         if not last_data_ok:
+            return False
+        prev_turn = float(k_line_list_m_day[-2]['turn'])
+        r_turn_ratio = now_turn / prev_turn
+        if r_turn_ratio > 2:
+            print('r_turn_ratio: {}, now_turn: {}, code: {}'.format(r_turn_ratio, now_turn, code))
             return False
         return True
 
