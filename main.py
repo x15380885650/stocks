@@ -203,6 +203,7 @@ if __name__ == '__main__':
     p_end_date = datetime.strptime('2023-06-26', '%Y-%m-%d')
     c = Chooser()
     c.monitor()
+
     # c.choose()  # normal
 
     # c.choose(is_test_code=True)  # test stock code
