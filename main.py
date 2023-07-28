@@ -25,7 +25,7 @@ test_stock_list = [
 
 format_date = '%Y-%m-%d'
 minus_days = 30 * 2.5
-stock_value_max = 250
+stock_value_max = 300
 stock_value_min = 20
 
 
