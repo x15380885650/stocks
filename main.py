@@ -9,14 +9,15 @@ from constants import pct_change_max_i
 from dumper_loader import load_data_append_by_json_dump, save_data_list_append_by_json_dump
 
 test_stock_list = [
-    {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
-    {'code': '000021', 'end_date': datetime.strptime('2023-03-31', '%Y-%m-%d')},
-    {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-    ## {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-    {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
-    {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
-    {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
-    {'code': '000961', 'end_date': datetime.strptime('2023-07-24', '%Y-%m-%d')},
+    # {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
+    # {'code': '000021', 'end_date': datetime.strptime('2023-03-31', '%Y-%m-%d')},
+    # {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    # ## {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    # {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
+    # {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
+    # {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
+    # {'code': '000961', 'end_date': datetime.strptime('2023-07-24', '%Y-%m-%d')},
+    {'code': '600215', 'end_date': datetime.strptime('2023-07-25', '%Y-%m-%d')},
 ]
 
 format_date = '%Y-%m-%d'
