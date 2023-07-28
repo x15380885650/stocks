@@ -419,7 +419,7 @@ class Strategy(object):
         last_data_ok = self.is_strategy_3_last_data_ok(k_line_list_m_day[-1], k_line_list_m_day[-2]['close'])
         if not last_data_ok:
             return False
-        print('r_turn_ratio: {}, now_turn: {}, code: {}'.format(r_turn_ratio, now_turn, code))
+        # print('r_turn_ratio: {}, now_turn: {}, code: {}'.format(r_turn_ratio, now_turn, code))
         return True
 
 

@@ -119,8 +119,8 @@ class Chooser(object):
         if strategy_3_ok:
             stock_value = self.ds.get_stock_value(code)
             if stock_value > stock_value_max or stock_value < stock_value_min:
-                print('stock_value: {} not in [{}, {}], code: {}'
-                      .format(stock_value, stock_value_min, stock_value_max, code))
+                # print('stock_value: {} not in [{}, {}], code: {}'
+                #       .format(stock_value, stock_value_min, stock_value_max, code))
                 return
         if strategy_3_ok:
             print('join strategy_2 stock, code: {}'.format(code))
@@ -178,15 +178,15 @@ class Chooser(object):
 
 
 if __name__ == '__main__':
-    p_end_date = datetime.strptime('2023-07-27', '%Y-%m-%d')
+    p_end_date = datetime.strptime('2023-07-26', '%Y-%m-%d')
     c = Chooser()
     # c.monitor()
 
-    c.choose()  # normal
+    # c.choose()  # normal
 
     # c.choose(is_test_code=True)  # test stock code
 
-    # c.choose(p_end_date=p_end_date)
+    c.choose(p_end_date=p_end_date)
 
     # c.choose(p_end_date=p_end_date, p_code='603788')  # 2023-07-03
     # c.choose(p_end_date=p_end_date, p_code='600602')  # 2023-06-12
