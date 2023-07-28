@@ -14,8 +14,8 @@ test_stock_list = [
     {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
     ## {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
     {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
-    {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
     {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
+    {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
     {'code': '000961', 'end_date': datetime.strptime('2023-07-24', '%Y-%m-%d')},
 ]
 
@@ -176,9 +176,9 @@ class Chooser(object):
 if __name__ == '__main__':
     p_end_date = datetime.strptime('2023-07-27', '%Y-%m-%d')
     c = Chooser()
-    c.monitor()
+    # c.monitor()
 
-    # c.choose()  # normal
+    c.choose()  # normal
 
     # c.choose(is_test_code=True)  # test stock code
 
