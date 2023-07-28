@@ -263,6 +263,39 @@ class Strategy(object):
             return False
         return True
 
+    def is_strategy_3_last_data_ok(self, last_data, prev_close_price):
+        pct_chg = float(last_data['pct_chg'])
+        close_price = float(last_data['close'])
+        open_price = float(last_data['open'])
+        low_price = float(last_data['low'])
+        high_price = float(last_data['high'])
+        r_1 = 100 * (high_price - close_price) / close_price
+        r_2 = 100 * (close_price - open_price) / open_price
+        r_3 = 100 * (open_price - low_price) / low_price
+        r_4 = 100 * (high_price - low_price) / low_price
+        r_5 = 100 * (open_price - prev_close_price) / prev_close_price
+        r_1_3_max = r_1 if r_1 > r_3 else r_3
+        r_6 = r_1_3_max / r_2
+        # r_7 = r_2 / r_3 if r_2 > r_3 else r_3 / r_2
+        print('code: {}, r_1: {}, r_2: {}, r_3: {}, r_4: {}, r_5: {}, r_6: {}, pct_chg: {}'
+              .format(last_data['code'], r_1, r_2, r_3, r_4, r_5, r_6, pct_chg))
+
+        # if not (0.65 <= r_6 <= 1.65):
+        #     return False
+        # if not (1 <= r_1 <= 5.5):
+        #     return False
+        if not (0.5 <= r_2 <= 6.5):
+            return False
+        # if not (0 <= r_3 <= 4.5):
+        #     return False
+        # if r_4 > 14.5:
+        #     return False
+        # if r_5 > 4.5:
+        #     return False
+        if pct_chg < -3 or pct_chg > 7.5:
+            return False
+        return True
+
     def strategy_match_2(self, code, k_line_list, m_day, is_test=False):
         latest_close_price = float(k_line_list[-1]['close'])
         if is_test:
@@ -340,24 +373,27 @@ class Strategy(object):
         k_line_list_m_day = k_line_list[-m_day:]
         red = self.is_red(k_line_list_m_day[-1])
         if not red:
-            # print('code: {} is not red'.format(last_data['code']))
             return False
         x_max_high_price = self.get_max_high_price(k_line_list_m_day)
         y_max_high_price = self.get_max_high_price(k_line_list)
         max_price_ratio = (x_max_high_price - y_max_high_price) / x_max_high_price * 100
         if is_test:
             print('max_price_ratio: {}'.format(max_price_ratio))
-        # if max_price_ratio < 0 and abs(max_price_ratio) > 5:
-        #     return False
         if max_price_ratio != 0:
             return False
-        # prev_close_price = float(k_line_list_m_day[-2]['close'])
-        # open_price = float(k_line_list_m_day[-1]['open'])
-        # r_5 = 100 * (open_price - prev_close_price) / prev_close_price
-        # if r_5 < 0 and abs(r_5) > 1.5:
-        #     return False
         now_turn = float(k_line_list_m_day[-1]['turn'])
         if now_turn > turn_max_i_instant:
+            return False
+        prev_turn = float(k_line_list_m_day[-2]['turn'])
+        r_turn_ratio = now_turn / prev_turn
+        if r_turn_ratio >= 1.9:
+            return False
+        k_line_list_l_r = k_line_list_m_day[:-1]
+        max_turn = self.get_max_turn(k_line_list_l_r)
+        min_turn = self.get_min_turn(k_line_list_l_r)
+        if is_test:
+            print('max_turn: {}, min_turn: {}'.format(max_turn, min_turn))
+        if max_turn > turn_max_i:
             return False
         self.e_count += 1
         pct_chg_list = []
@@ -380,26 +416,8 @@ class Strategy(object):
             return False
         if index_list[-1] != m_day - 2:
             return False
-        k_line_list_l_r = k_line_list_m_day[:-1]
-        max_turn = self.get_max_turn(k_line_list_l_r)
-        min_turn = self.get_min_turn(k_line_list_l_r)
-        if is_test:
-            print('max_turn: {}, min_turn: {}'.format(max_turn, min_turn))
-        # if max_turn > turn_max_i or min_turn < turn_min_i:
-        if max_turn > turn_max_i:
-            # print('code: {}, max_turn: {}'.format(code, max_turn))
-            return False
-        # last_data_ok = self.is_strategy_2_last_data_ok(k_line_list_m_day[-1], k_line_list_m_day[-2]['close'])
-        # if not last_data_ok:
-        #     return False
-        is_last_data_red = self.is_red(k_line_list_m_day[-1])
-        if not is_last_data_red:
-            return False
-        prev_turn = float(k_line_list_m_day[-2]['turn'])
-        r_turn_ratio = now_turn / prev_turn
-        # print('r_turn_ratio: {}'.format(r_turn_ratio))
-        if r_turn_ratio >= 1.8:
-            # print('r_turn_ratio: {}, now_turn: {}, code: {}'.format(r_turn_ratio, now_turn, code))
+        last_data_ok = self.is_strategy_3_last_data_ok(k_line_list_m_day[-1], k_line_list_m_day[-2]['close'])
+        if not last_data_ok:
             return False
         print('r_turn_ratio: {}, now_turn: {}, code: {}'.format(r_turn_ratio, now_turn, code))
         return True
