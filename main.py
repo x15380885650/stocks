@@ -15,7 +15,7 @@ test_stock_list = [
     {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
     ## {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
     {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
-    {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
+    # {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
     {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
     {'code': '000961', 'end_date': datetime.strptime('2023-07-24', '%Y-%m-%d')},
     {'code': '600266', 'end_date': datetime.strptime('2023-07-26', '%Y-%m-%d')},
@@ -47,6 +47,12 @@ class Chooser(object):
         return end_date
 
     def get_top_pct_chg_code_list(self):
+        # return ['603716', '603383', '603378', '603132', '603116', '601519', '601162', '601127', '601136', '601860',
+        #         '601555', '601375', '601099', '601086', '601059', '601881', '600864', '600807', '600381', '600266',
+        #         '600067', '600369', '600446', '600155', '600280', '600030', '002961', '002762', '002671', '002488',
+        #         '002377', '002146', '001322', '000850', '000861', '000750', '000715', '000700', '000609', '000572',
+        #         '000010']
+
         end_date = self.get_valid_end_date()
         day_of_week = end_date.weekday()
         print('get_top_pct_chg_code_list, {}, 星期{}'.format(end_date, day_of_week + 1))
@@ -58,6 +64,7 @@ class Chooser(object):
         if os.path.exists(file_path):
             print('get_top_pct_chg_code_list by file_path: {}'.format(file_path))
             top_pct_chg_code_list = load_data_append_by_json_dump(file_path, ret_type=[])
+            print(top_pct_chg_code_list)
             return top_pct_chg_code_list
 
         code_list = self.ds.get_all_stock_code_list(end_date_str)
@@ -123,7 +130,7 @@ class Chooser(object):
                 #       .format(stock_value, stock_value_min, stock_value_max, code))
                 return
         if strategy_3_ok:
-            print('join strategy_2 stock, code: {}'.format(code))
+            print('join strategy_3 stock, code: {}'.format(code))
 
     def choose(self, is_test_code=False, p_end_date=None, p_code=''):
         # ds = BaoDataSource()
@@ -180,15 +187,15 @@ class Chooser(object):
 if __name__ == '__main__':
     p_end_date = datetime.strptime('2023-07-26', '%Y-%m-%d')
     c = Chooser()
-    # c.monitor()
+    c.monitor()
 
     # c.choose()  # normal
 
     # c.choose(is_test_code=True)  # test stock code
 
-    c.choose(p_end_date=p_end_date)
+    # c.choose(p_end_date=p_end_date)
 
-    # c.choose(p_end_date=p_end_date, p_code='603788')  # 2023-07-03
+    # c.choose(p_end_date=p_end_date, p_code='600675')  # 2023-07-03
     # c.choose(p_end_date=p_end_date, p_code='600602')  # 2023-06-12
 
     # for p_day in range(1, 10):
