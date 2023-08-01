@@ -9,7 +9,7 @@ from constants import pct_change_max_i
 from dumper_loader import load_data_append_by_json_dump, save_data_list_append_by_json_dump
 
 test_stock_list = [
-    {'code': '603083', 'end_date': datetime.strptime('2023-02-27', '%Y-%m-%d')},
+    # {'code': '603083', 'end_date': datetime.strptime('2023-02-27', '%Y-%m-%d')},
     {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
     {'code': '000021', 'end_date': datetime.strptime('2023-03-31', '%Y-%m-%d')},
     {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
@@ -25,7 +25,7 @@ test_stock_list = [
 
 format_date = '%Y-%m-%d'
 minus_days = 30 * 2.5
-stock_value_max = 300
+stock_value_max = 350
 stock_value_min = 20
 
 
@@ -47,11 +47,11 @@ class Chooser(object):
         return end_date
 
     def get_top_pct_chg_code_list(self):
-        # return ['603716', '603383', '603378', '603132', '603116', '601519', '601162', '601127', '601136', '601860',
-        #         '601555', '601375', '601099', '601086', '601059', '601881', '600864', '600807', '600381', '600266',
-        #         '600067', '600369', '600446', '600155', '600280', '600030', '002961', '002762', '002671', '002488',
-        #         '002377', '002146', '001322', '000850', '000861', '000750', '000715', '000700', '000609', '000572',
-        #         '000010']
+        return ['605011', '605162', '603685', '603536', '603132', '603119', '601005', '603267', '601777', '600906',
+                '600719', '600569', '600595', '600577', '600531', '600468', '600361', '600239', '600105', '600103',
+                '002997', '002630', '002471', '002377', '002256', '002175', '000980', '000962', '000890', '000608',
+                '000506', '000413', '000004']
+
 
         end_date = self.get_valid_end_date()
         day_of_week = end_date.weekday()
