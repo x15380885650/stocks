@@ -19,7 +19,7 @@ test_stock_list = [
     {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
     {'code': '000961', 'end_date': datetime.strptime('2023-07-24', '%Y-%m-%d')},
     {'code': '600266', 'end_date': datetime.strptime('2023-07-26', '%Y-%m-%d')},
-    #{'code': '600383', 'end_date': datetime.strptime('2023-07-26', '%Y-%m-%d')},
+    {'code': '601519', 'end_date': datetime.strptime('2023-07-31', '%Y-%m-%d')},
 
 ]
 
@@ -47,12 +47,9 @@ class Chooser(object):
         return end_date
 
     def get_top_pct_chg_code_list(self):
-        return ['605011', '605162', '603685', '603536', '603132', '603119', '601005', '603267', '601777', '600906',
-                '600719', '600569', '600595', '600577', '600531', '600468', '600361', '600239', '600105', '600103',
-                '002997', '002630', '002471', '002377', '002256', '002175', '000980', '000962', '000890', '000608',
-                '000506', '000413', '000004']
-
-
+        return ['600906', '603800', '603767', '603536', '603496', '603000', '601933', '601777', '601519', '603828',
+                '600468', '600239', '600595', '002992', '002846', '002813', '002703', '002527', '002356', '002647',
+                '002229', '000890']
         end_date = self.get_valid_end_date()
         day_of_week = end_date.weekday()
         print('get_top_pct_chg_code_list, {}, 星期{}'.format(end_date, day_of_week + 1))
@@ -187,9 +184,9 @@ class Chooser(object):
 if __name__ == '__main__':
     p_end_date = datetime.strptime('2023-07-26', '%Y-%m-%d')
     c = Chooser()
-    c.monitor()
+    # c.monitor()
 
-    # c.choose()  # normal
+    c.choose()  # normal
 
     # c.choose(is_test_code=True)  # test stock code
 

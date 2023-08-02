@@ -394,10 +394,10 @@ class Strategy(object):
                   .format(r_turn_ratio, r_r_turn_ratio, s_turn_ratio))
         if r_turn_ratio >= 1.75:
             return False
-        if r_r_turn_ratio >= 3:
+        if r_r_turn_ratio >= 4:
             return False
-        if s_turn_ratio >= 3:
-            return False
+        # if s_turn_ratio >= 3:
+        #     return False
         k_line_list_l_r = k_line_list_m_day[:-1]
         max_turn = self.get_max_turn(k_line_list_l_r)
         min_turn = self.get_min_turn(k_line_list_l_r)
