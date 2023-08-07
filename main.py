@@ -47,9 +47,9 @@ class Chooser(object):
         return end_date
 
     def get_top_pct_chg_code_list(self):
-        return ['600906', '603800', '603767', '603536', '603496', '603000', '601933', '601777', '601519', '603828',
-                '600468', '600239', '600595', '002992', '002846', '002813', '002703', '002527', '002356', '002647',
-                '002229', '000890']
+        # return ['600906', '603800', '603767', '603536', '603496', '603000', '601933', '601777', '601519', '603828',
+        #         '600468', '600239', '600595', '002992', '002846', '002813', '002703', '002527', '002356', '002647',
+        #         '002229', '000890']
         end_date = self.get_valid_end_date()
         day_of_week = end_date.weekday()
         print('get_top_pct_chg_code_list, {}, 星期{}'.format(end_date, day_of_week + 1))
@@ -61,7 +61,7 @@ class Chooser(object):
         if os.path.exists(file_path):
             print('get_top_pct_chg_code_list by file_path: {}'.format(file_path))
             top_pct_chg_code_list = load_data_append_by_json_dump(file_path, ret_type=[])
-            print(top_pct_chg_code_list)
+            # print(top_pct_chg_code_list)
             return top_pct_chg_code_list
 
         code_list = self.ds.get_all_stock_code_list(end_date_str)
@@ -184,9 +184,9 @@ class Chooser(object):
 if __name__ == '__main__':
     p_end_date = datetime.strptime('2023-07-26', '%Y-%m-%d')
     c = Chooser()
-    # c.monitor()
+    c.monitor()
 
-    c.choose()  # normal
+    # c.choose()  # normal
 
     # c.choose(is_test_code=True)  # test stock code
 
