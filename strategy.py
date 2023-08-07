@@ -286,7 +286,7 @@ class Strategy(object):
             return False
         if not (0.5 <= r_2 <= 7):
             return False
-        if not (1 <= r_3 <= 5):
+        if not (1 <= r_3 <= 6):
             return False
         # if r_4 > 14.5:
         #     return False

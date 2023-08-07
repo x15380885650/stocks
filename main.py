@@ -184,11 +184,11 @@ class Chooser(object):
 if __name__ == '__main__':
     p_end_date = datetime.strptime('2023-07-31', '%Y-%m-%d')
     c = Chooser()
-    c.monitor()
+    # c.monitor()
 
     # c.choose()  # normal
 
-    # c.choose(is_test_code=True)  # test stock code
+    c.choose(is_test_code=True)  # test stock code
 
     # c.choose(p_end_date=p_end_date)
 
