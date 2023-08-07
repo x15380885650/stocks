@@ -282,12 +282,12 @@ class Strategy(object):
 
         # if not (0.65 <= r_6 <= 1.65):
         #     return False
-        # if not (1 <= r_1 <= 5.5):
-        #     return False
-        if not (0.5 <= r_2 <= 6.5):
+        if not (1 <= r_1 <= 8):
             return False
-        # if not (0 <= r_3 <= 4.5):
-        #     return False
+        if not (0.5 <= r_2 <= 7):
+            return False
+        if not (1 <= r_3 <= 5):
+            return False
         # if r_4 > 14.5:
         #     return False
         # if r_5 > 4.5:
@@ -429,7 +429,7 @@ class Strategy(object):
         last_data_ok = self.is_strategy_3_last_data_ok(k_line_list_m_day[-1], k_line_list_m_day[-2]['close'])
         if not last_data_ok:
             return False
-        # print('r_turn_ratio: {}, now_turn: {}, code: {}'.format(r_turn_ratio, now_turn, code))
+        print('prev_turn: {}, now_turn: {}, code: {}'.format(prev_turn, now_turn, code))
         return True
 
 

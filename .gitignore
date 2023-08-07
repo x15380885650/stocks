@@ -1,0 +1,6 @@
+*.log
+*.xml
+*.pyc
+.idea/*
+.idea
+!.gitignore

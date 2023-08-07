@@ -26,7 +26,7 @@ test_stock_list = [
 format_date = '%Y-%m-%d'
 minus_days = 30 * 2.5
 stock_value_max = 350
-stock_value_min = 20
+stock_value_min = 10
 
 
 class Chooser(object):
@@ -182,7 +182,7 @@ class Chooser(object):
 
 
 if __name__ == '__main__':
-    p_end_date = datetime.strptime('2023-07-26', '%Y-%m-%d')
+    p_end_date = datetime.strptime('2023-07-31', '%Y-%m-%d')
     c = Chooser()
     c.monitor()
 
