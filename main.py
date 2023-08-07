@@ -9,37 +9,37 @@ from constants import pct_change_max_i
 from dumper_loader import load_data_append_by_json_dump, save_data_list_append_by_json_dump
 
 test_stock_list = [
-    # # {'code': '603083', 'end_date': datetime.strptime('2023-02-27', '%Y-%m-%d')},
-    # {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
-    # {'code': '000021', 'end_date': datetime.strptime('2023-03-31', '%Y-%m-%d')},
-    # {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-    # ## {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},002599
-    # {'code': '603779', 'end_date': datetime.strptime('2023-06-05', '%Y-%m-%d')},
-    # # {'code': '002599', 'end_date': datetime.strptime('2023-06-07', '%Y-%m-%d')},
-    # {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
-    # {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
-    # {'code': '000961', 'end_date': datetime.strptime('2023-07-24', '%Y-%m-%d')},
-    # {'code': '600266', 'end_date': datetime.strptime('2023-07-26', '%Y-%m-%d')},
-    # {'code': '601519', 'end_date': datetime.strptime('2023-07-31', '%Y-%m-%d')},
+    # {'code': '603083', 'end_date': datetime.strptime('2023-02-27', '%Y-%m-%d')},
+    {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
+    {'code': '000021', 'end_date': datetime.strptime('2023-03-31', '%Y-%m-%d')},
+    {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    ## {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},002599
+    {'code': '603779', 'end_date': datetime.strptime('2023-06-05', '%Y-%m-%d')},
+    # {'code': '002599', 'end_date': datetime.strptime('2023-06-07', '%Y-%m-%d')},
+    {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
+    {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
+    {'code': '000961', 'end_date': datetime.strptime('2023-07-24', '%Y-%m-%d')},
+    {'code': '600266', 'end_date': datetime.strptime('2023-07-26', '%Y-%m-%d')},
+    {'code': '601519', 'end_date': datetime.strptime('2023-07-31', '%Y-%m-%d')},
 
-    {'code': '002174', 'end_date': datetime.strptime('2023-04-25', '%Y-%m-%d')},
-    {'code': '600713', 'end_date': datetime.strptime('2023-04-28', '%Y-%m-%d')},
-    {'code': '601068', 'end_date': datetime.strptime('2023-04-28', '%Y-%m-%d')},
-    {'code': '600880', 'end_date': datetime.strptime('2023-05-04', '%Y-%m-%d')},
-    {'code': '600425', 'end_date': datetime.strptime('2023-05-05', '%Y-%m-%d')},
-    {'code': '603999', 'end_date': datetime.strptime('2023-05-05', '%Y-%m-%d')},
-    {'code': '000561', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
-    {'code': '000795', 'end_date': datetime.strptime('2023-06-30', '%Y-%m-%d')},
-    {'code': '002117', 'end_date': datetime.strptime('2023-07-04', '%Y-%m-%d')},
-    {'code': '002771', 'end_date': datetime.strptime('2023-07-04', '%Y-%m-%d')},
-    {'code': '002790', 'end_date': datetime.strptime('2023-07-04', '%Y-%m-%d')},
-    {'code': '601567', 'end_date': datetime.strptime('2023-07-17', '%Y-%m-%d')},
-    {'code': '600153', 'end_date': datetime.strptime('2023-08-01', '%Y-%m-%d')},
+    # {'code': '002174', 'end_date': datetime.strptime('2023-04-25', '%Y-%m-%d')},
+    # {'code': '600713', 'end_date': datetime.strptime('2023-04-28', '%Y-%m-%d')},
+    # {'code': '601068', 'end_date': datetime.strptime('2023-04-28', '%Y-%m-%d')},
+    # {'code': '600880', 'end_date': datetime.strptime('2023-05-04', '%Y-%m-%d')},
+    # {'code': '600425', 'end_date': datetime.strptime('2023-05-05', '%Y-%m-%d')},
+    # {'code': '603999', 'end_date': datetime.strptime('2023-05-05', '%Y-%m-%d')},
+    # {'code': '000561', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
+    # {'code': '000795', 'end_date': datetime.strptime('2023-06-30', '%Y-%m-%d')},
+    # {'code': '002117', 'end_date': datetime.strptime('2023-07-04', '%Y-%m-%d')},
+    # {'code': '002771', 'end_date': datetime.strptime('2023-07-04', '%Y-%m-%d')},
+    # {'code': '002790', 'end_date': datetime.strptime('2023-07-04', '%Y-%m-%d')},
+    # {'code': '601567', 'end_date': datetime.strptime('2023-07-17', '%Y-%m-%d')},
+    # {'code': '600153', 'end_date': datetime.strptime('2023-08-01', '%Y-%m-%d')},
 
 ]
 
 format_date = '%Y-%m-%d'
-minus_days = 30 * 2
+minus_days = 30 * 2.5
 stock_value_max = 350
 stock_value_min = 10
 
@@ -62,14 +62,14 @@ class Chooser(object):
         return end_date
 
     def get_top_pct_chg_code_list(self, end_date_str):
-        return ['603336', '603629', '601595', '603106', '601900', '603283', '601136', '600864', '600610', '600531',
-                '600468', '600361', '600127', '002905', '002787', '002670', '002599', '002480', '002355', '002235',
-                '002084', '000936', '000719']
+        # return ['603336', '603629', '601595', '603106', '601900', '603283', '601136', '600864', '600610', '600531',
+        #         '600468', '600361', '600127', '002905', '002787', '002670', '002599', '002480', '002355', '002235',
+        #         '002084', '000936', '000719']
         file_path = 'data/{}_codes.json'.format(end_date_str)
         if os.path.exists(file_path):
             print('get_top_pct_chg_code_list by file_path: {}'.format(file_path))
             top_pct_chg_code_list = load_data_append_by_json_dump(file_path, ret_type=[])
-            print(top_pct_chg_code_list)
+            # print(top_pct_chg_code_list)
             return top_pct_chg_code_list
 
         code_list = self.ds.get_all_stock_code_list(end_date_str)
@@ -207,8 +207,8 @@ if __name__ == '__main__':
 
     # c.choose(p_end_date=p_end_date, p_code='002599')  # 2023-07-03
 
-    # for p_day in range(0, 365):
-    #     p_end_date = datetime.strptime('2023-08-07', '%Y-%m-%d') - timedelta(days=p_day)
+    # for p_day in range(0, 30):
+    #     p_end_date = datetime.strptime('2023-08-01', '%Y-%m-%d') - timedelta(days=p_day)
     #     # p_end_date = datetime.strptime('2023-07-31', '%Y-%m-%d')
     #     holiday = is_holiday(p_end_date)
     #     if holiday:
