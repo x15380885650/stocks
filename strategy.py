@@ -277,23 +277,23 @@ class Strategy(object):
         r_1_3_max = r_1 if r_1 > r_3 else r_3
         r_6 = r_1_3_max / r_2
         # r_7 = r_2 / r_3 if r_2 > r_3 else r_3 / r_2
-        print('code: {}, r_1: {}, r_2: {}, r_3: {}, r_4: {}, r_5: {}, r_6: {}, pct_chg: {}'
-              .format(last_data['code'], r_1, r_2, r_3, r_4, r_5, r_6, pct_chg))
 
         # if not (0.65 <= r_6 <= 1.65):
         #     return False
         if not (1 <= r_1 <= 8):
             return False
-        if not (0.5 <= r_2 <= 7):
+        if not (0.5 <= r_2 <= 6.5):
             return False
-        if not (1 <= r_3 <= 6):
+        if not (1 <= r_3 <= 5):
             return False
-        # if r_4 > 14.5:
-        #     return False
-        # if r_5 > 4.5:
-        #     return False
-        if pct_chg < 1 or pct_chg > 7.5:
+        if r_4 > 14.5:
             return False
+        if r_5 > 4.5 or r_5 < -2.5:
+            return False
+        if pct_chg < 1.5 or pct_chg > 7.5:
+            return False
+        print('code: {}, r_1: {}, r_2: {}, r_3: {}, r_4: {}, r_5: {}, r_6: {}, pct_chg: {}'
+              .format(last_data['code'], r_1, r_2, r_3, r_4, r_5, r_6, pct_chg))
         return True
 
     def strategy_match_2(self, code, k_line_list, m_day, is_test=False):
@@ -382,15 +382,15 @@ class Strategy(object):
         if max_price_ratio != 0:
             return False
         now_turn = float(k_line_list_m_day[-1]['turn'])
-        if now_turn > turn_max_i_instant:
-            return False
+        # if now_turn > turn_max_i_instant:
+        #     return False
         prev_turn = float(k_line_list_m_day[-2]['turn'])
         prev_prev_turn = float(k_line_list_m_day[-3]['turn'])
         r_r_turn_ratio = prev_turn / prev_prev_turn
         r_turn_ratio = now_turn / prev_turn
         s_turn_ratio = now_turn / prev_prev_turn
         if is_test:
-            print('r_turn_ratio: {}, r_r_turn_ratio: {}, s_turn_ratio: {}'
+            print('k_turn_ratio: {}, r_r_turn_ratio: {}, s_turn_ratio: {}'
                   .format(r_turn_ratio, r_r_turn_ratio, s_turn_ratio))
         if r_turn_ratio >= 1.75:
             return False
@@ -403,7 +403,7 @@ class Strategy(object):
         min_turn = self.get_min_turn(k_line_list_l_r)
         if is_test:
             print('max_turn: {}, min_turn: {}'.format(max_turn, min_turn))
-        if max_turn > turn_max_i:
+        if max_turn > turn_max_i or max_turn < turn_min_i:
             return False
         self.e_count += 1
         pct_chg_list = []

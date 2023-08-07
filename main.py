@@ -9,22 +9,37 @@ from constants import pct_change_max_i
 from dumper_loader import load_data_append_by_json_dump, save_data_list_append_by_json_dump
 
 test_stock_list = [
-    # {'code': '603083', 'end_date': datetime.strptime('2023-02-27', '%Y-%m-%d')},
-    {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
-    {'code': '000021', 'end_date': datetime.strptime('2023-03-31', '%Y-%m-%d')},
-    {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-    ## {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-    {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
-    # {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
-    {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
-    {'code': '000961', 'end_date': datetime.strptime('2023-07-24', '%Y-%m-%d')},
-    {'code': '600266', 'end_date': datetime.strptime('2023-07-26', '%Y-%m-%d')},
-    {'code': '601519', 'end_date': datetime.strptime('2023-07-31', '%Y-%m-%d')},
+    # # {'code': '603083', 'end_date': datetime.strptime('2023-02-27', '%Y-%m-%d')},
+    # {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
+    # {'code': '000021', 'end_date': datetime.strptime('2023-03-31', '%Y-%m-%d')},
+    # {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    # ## {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},002599
+    # {'code': '603779', 'end_date': datetime.strptime('2023-06-05', '%Y-%m-%d')},
+    # # {'code': '002599', 'end_date': datetime.strptime('2023-06-07', '%Y-%m-%d')},
+    # {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
+    # {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
+    # {'code': '000961', 'end_date': datetime.strptime('2023-07-24', '%Y-%m-%d')},
+    # {'code': '600266', 'end_date': datetime.strptime('2023-07-26', '%Y-%m-%d')},
+    # {'code': '601519', 'end_date': datetime.strptime('2023-07-31', '%Y-%m-%d')},
+
+    {'code': '002174', 'end_date': datetime.strptime('2023-04-25', '%Y-%m-%d')},
+    {'code': '600713', 'end_date': datetime.strptime('2023-04-28', '%Y-%m-%d')},
+    {'code': '601068', 'end_date': datetime.strptime('2023-04-28', '%Y-%m-%d')},
+    {'code': '600880', 'end_date': datetime.strptime('2023-05-04', '%Y-%m-%d')},
+    {'code': '600425', 'end_date': datetime.strptime('2023-05-05', '%Y-%m-%d')},
+    {'code': '603999', 'end_date': datetime.strptime('2023-05-05', '%Y-%m-%d')},
+    {'code': '000561', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
+    {'code': '000795', 'end_date': datetime.strptime('2023-06-30', '%Y-%m-%d')},
+    {'code': '002117', 'end_date': datetime.strptime('2023-07-04', '%Y-%m-%d')},
+    {'code': '002771', 'end_date': datetime.strptime('2023-07-04', '%Y-%m-%d')},
+    {'code': '002790', 'end_date': datetime.strptime('2023-07-04', '%Y-%m-%d')},
+    {'code': '601567', 'end_date': datetime.strptime('2023-07-17', '%Y-%m-%d')},
+    {'code': '600153', 'end_date': datetime.strptime('2023-08-01', '%Y-%m-%d')},
 
 ]
 
 format_date = '%Y-%m-%d'
-minus_days = 30 * 2.5
+minus_days = 30 * 2
 stock_value_max = 350
 stock_value_min = 10
 
@@ -36,8 +51,8 @@ class Chooser(object):
         # self.ds = BaoDataSource()
         self.ds = EfDataSource()
 
-    def get_valid_end_date(self):
-        end_date = self.ds.get_end_date()
+    def get_valid_end_date(self, _end_date=None):
+        end_date = self.ds.get_end_date() if not _end_date else _end_date
         while True:
             holiday = is_holiday(end_date)
             if holiday:
@@ -46,22 +61,15 @@ class Chooser(object):
                 break
         return end_date
 
-    def get_top_pct_chg_code_list(self):
-        # return ['600906', '603800', '603767', '603536', '603496', '603000', '601933', '601777', '601519', '603828',
-        #         '600468', '600239', '600595', '002992', '002846', '002813', '002703', '002527', '002356', '002647',
-        #         '002229', '000890']
-        end_date = self.get_valid_end_date()
-        day_of_week = end_date.weekday()
-        print('get_top_pct_chg_code_list, {}, 星期{}'.format(end_date, day_of_week + 1))
-        start_date = end_date - timedelta(days=0)
-        start_date_str = start_date.strftime(format_date)
-        end_date_str = end_date.strftime(format_date)
-        print('get_top_pct_chg_code_list, {}--->{}'.format(start_date_str, end_date_str))
-        file_path = '{}_codes.json'.format(end_date_str)
+    def get_top_pct_chg_code_list(self, end_date_str):
+        return ['603336', '603629', '601595', '603106', '601900', '603283', '601136', '600864', '600610', '600531',
+                '600468', '600361', '600127', '002905', '002787', '002670', '002599', '002480', '002355', '002235',
+                '002084', '000936', '000719']
+        file_path = 'data/{}_codes.json'.format(end_date_str)
         if os.path.exists(file_path):
             print('get_top_pct_chg_code_list by file_path: {}'.format(file_path))
             top_pct_chg_code_list = load_data_append_by_json_dump(file_path, ret_type=[])
-            # print(top_pct_chg_code_list)
+            print(top_pct_chg_code_list)
             return top_pct_chg_code_list
 
         code_list = self.ds.get_all_stock_code_list(end_date_str)
@@ -83,7 +91,7 @@ class Chooser(object):
             if count % 1000 == 0 and count != 0:
                 print('count: {}, top_pct_chg_count: {}'.format(count, len(top_pct_chg_code_list)))
             if batch:
-                kline_history_list = self.ds.get_stock_list_kline_history(batch, start_date_str, end_date_str)
+                kline_history_list = self.ds.get_stock_list_kline_history(batch, end_date_str, end_date_str)
                 for stock_kline in kline_history_list:
                     last_date = stock_kline['date']
                     code = stock_kline['code']
@@ -129,7 +137,7 @@ class Chooser(object):
         if strategy_3_ok:
             print('join strategy_3 stock, code: {}'.format(code))
 
-    def choose(self, is_test_code=False, p_end_date=None, p_code=''):
+    def choose(self, is_test_code=False, p_end_date=None, p_code='', partial_code_list=False):
         # ds = BaoDataSource()
         ds = EfDataSource()
         strategy = Strategy()
@@ -140,7 +148,12 @@ class Chooser(object):
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
         print('{}--->{}'.format(start_date_str, end_date_str))
-        code_list = ds.get_all_stock_code_list(end_date_str)
+        if not partial_code_list:
+            code_list = ds.get_all_stock_code_list(end_date_str)
+        else:
+            t_end_date = self.get_valid_end_date(end_date - timedelta(days=1))
+            t_end_date_str = t_end_date.strftime(format_date)
+            code_list = self.get_top_pct_chg_code_list(t_end_date_str)
         for code in code_list:
             if is_test_code:
                 for test_stock in test_stock_list:
@@ -171,7 +184,7 @@ class Chooser(object):
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
-        code_list = self.get_top_pct_chg_code_list()
+        code_list = self.get_top_pct_chg_code_list(end_date_str)
         print('monitor, {}--->{}, code_list: {}'.format(start_date_str, end_date_str, len(code_list)))
         if not code_list:
             print('code_list is empty, break!!!')
@@ -182,19 +195,24 @@ class Chooser(object):
 
 
 if __name__ == '__main__':
-    p_end_date = datetime.strptime('2023-07-31', '%Y-%m-%d')
+    p_end_date = datetime.strptime('2023-06-07', '%Y-%m-%d')
     c = Chooser()
-    # c.monitor()
+    c.monitor()
 
     # c.choose()  # normal
 
-    c.choose(is_test_code=True)  # test stock code
+    # c.choose(is_test_code=True)  # test stock code
 
     # c.choose(p_end_date=p_end_date)
 
-    # c.choose(p_end_date=p_end_date, p_code='600675')  # 2023-07-03
-    # c.choose(p_end_date=p_end_date, p_code='600602')  # 2023-06-12
+    # c.choose(p_end_date=p_end_date, p_code='002599')  # 2023-07-03
 
-    # for p_day in range(1, 10):
-    #     p_end_date = datetime.strptime('2023-05-09', '%Y-%m-%d') - timedelta(days=p_day)
-    #     c.choose(p_end_date=p_end_date)
+    # for p_day in range(0, 365):
+    #     p_end_date = datetime.strptime('2023-08-07', '%Y-%m-%d') - timedelta(days=p_day)
+    #     # p_end_date = datetime.strptime('2023-07-31', '%Y-%m-%d')
+    #     holiday = is_holiday(p_end_date)
+    #     if holiday:
+    #         continue
+    #     c.count = 0
+    #
+    #     c.choose(p_end_date=p_end_date, partial_code_list=True)
