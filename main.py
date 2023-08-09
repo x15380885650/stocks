@@ -40,7 +40,7 @@ test_stock_list = [
 
 format_date = '%Y-%m-%d'
 minus_days = 30 * 2.5
-stock_value_max = 350
+stock_value_max = 300
 stock_value_min = 10
 
 
@@ -51,11 +51,20 @@ class Chooser(object):
         # self.ds = BaoDataSource()
         self.ds = EfDataSource()
 
+    def is_deal_date(self, t_date):
+        t_holiday = is_holiday(t_date)
+        if t_holiday:
+            return False
+        day_of_week = t_date.weekday() + 1
+        if day_of_week in [6, 7]:
+            return False
+        return True
+
     def get_valid_end_date(self, _end_date=None):
         end_date = self.ds.get_end_date() if not _end_date else _end_date
         while True:
-            holiday = is_holiday(end_date)
-            if holiday:
+            deal_date_ok = self.is_deal_date(end_date)
+            if not deal_date_ok:
                 end_date = end_date - timedelta(days=1)
             else:
                 break
@@ -131,8 +140,8 @@ class Chooser(object):
         if strategy_3_ok:
             stock_value = self.ds.get_stock_value(code)
             if stock_value > stock_value_max or stock_value < stock_value_min:
-                # print('stock_value: {} not in [{}, {}], code: {}'
-                #       .format(stock_value, stock_value_min, stock_value_max, code))
+                print('stock_value: {} not in [{}, {}], code: {}'
+                      .format(stock_value, stock_value_min, stock_value_max, code))
                 return
         if strategy_3_ok:
             print('join strategy_3 stock, code: {}'.format(code))
@@ -152,6 +161,9 @@ class Chooser(object):
             code_list = ds.get_all_stock_code_list(end_date_str)
         else:
             t_end_date = self.get_valid_end_date(end_date - timedelta(days=1))
+            deal_date_ok = self.is_deal_date(t_end_date)
+            if not deal_date_ok:
+                return
             t_end_date_str = t_end_date.strftime(format_date)
             code_list = self.get_top_pct_chg_code_list(t_end_date_str)
         for code in code_list:
@@ -184,7 +196,9 @@ class Chooser(object):
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
-        code_list = self.get_top_pct_chg_code_list(end_date_str)
+        prev_end_date = end_date - timedelta(days=1)
+        prev_end_date_str = prev_end_date.strftime(format_date)
+        code_list = self.get_top_pct_chg_code_list(prev_end_date_str)
         print('monitor, {}--->{}, code_list: {}'.format(start_date_str, end_date_str, len(code_list)))
         if not code_list:
             print('code_list is empty, break!!!')
@@ -208,10 +222,10 @@ if __name__ == '__main__':
     # c.choose(p_end_date=p_end_date, p_code='002599')  # 2023-07-03
 
     # for p_day in range(0, 30):
-    #     p_end_date = datetime.strptime('2023-08-01', '%Y-%m-%d') - timedelta(days=p_day)
+    #     p_end_date = datetime.strptime('2023-06-01', '%Y-%m-%d') - timedelta(days=p_day)
     #     # p_end_date = datetime.strptime('2023-07-31', '%Y-%m-%d')
-    #     holiday = is_holiday(p_end_date)
-    #     if holiday:
+    #     deal_date_ok = c.is_deal_date(p_end_date)
+    #     if not deal_date_ok:
     #         continue
     #     c.count = 0
     #
