@@ -198,7 +198,11 @@ class Chooser(object):
         end_date_str = end_date.strftime(format_date)
         prev_end_date = end_date - timedelta(days=1)
         prev_end_date_str = prev_end_date.strftime(format_date)
-        code_list = self.get_top_pct_chg_code_list(prev_end_date_str)
+        now_hour = datetime.now().hour
+        if now_hour >= 15:
+            code_list = self.get_top_pct_chg_code_list(end_date_str)
+        else:
+            code_list = self.get_top_pct_chg_code_list(prev_end_date_str)
         print('monitor, {}--->{}, code_list: {}'.format(start_date_str, end_date_str, len(code_list)))
         if not code_list:
             print('code_list is empty, break!!!')
@@ -209,7 +213,7 @@ class Chooser(object):
 
 
 if __name__ == '__main__':
-    p_end_date = datetime.strptime('2023-06-07', '%Y-%m-%d')
+    p_end_date = datetime.strptime('2023-08-08', '%Y-%m-%d')
     c = Chooser()
     c.monitor()
 
@@ -221,8 +225,8 @@ if __name__ == '__main__':
 
     # c.choose(p_end_date=p_end_date, p_code='002599')  # 2023-07-03
 
-    # for p_day in range(0, 30):
-    #     p_end_date = datetime.strptime('2023-06-01', '%Y-%m-%d') - timedelta(days=p_day)
+    # for p_day in range(0, 10):
+    #     p_end_date = datetime.strptime('2023-07-05', '%Y-%m-%d') - timedelta(days=p_day)
     #     # p_end_date = datetime.strptime('2023-07-31', '%Y-%m-%d')
     #     deal_date_ok = c.is_deal_date(p_end_date)
     #     if not deal_date_ok:
