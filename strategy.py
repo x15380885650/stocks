@@ -422,10 +422,10 @@ class Strategy(object):
         for i, v in enumerate(pct_chg_list):
             if v == 1:
                 index_list.append(i)
-        if len(index_list) not in [1, 2]:
+        if len(index_list) not in [1]:
             return False
-        # if index_list[-1] != m_day - 2:
-        #     return False
+        if index_list[-1] != m_day - 2:
+            return False
         last_data_ok = self.is_strategy_3_last_data_ok(k_line_list_m_day[-1], k_line_list_m_day[-2]['close'])
         if not last_data_ok:
             return False
