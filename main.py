@@ -196,7 +196,8 @@ class Chooser(object):
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
-        prev_end_date = end_date - timedelta(days=1)
+        # prev_end_date = end_date - timedelta(days=1)
+        prev_end_date = self.get_valid_end_date(end_date - timedelta(days=1))
         prev_end_date_str = prev_end_date.strftime(format_date)
         now_hour = datetime.now().hour
         if now_hour >= 15:
