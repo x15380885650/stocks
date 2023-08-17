@@ -290,7 +290,7 @@ class Strategy(object):
             return False
         if r_5 > 5 or r_5 < -2.5:
             return False
-        if pct_chg < 1 or pct_chg > 7.5:
+        if pct_chg < 1.5 or pct_chg > 7.5:
             return False
         print('code: {}, r_1: {}, r_2: {}, r_3: {}, r_4: {}, r_5: {}, r_6: {}, pct_chg: {}'
               .format(last_data['code'], r_1, r_2, r_3, r_4, r_5, r_6, pct_chg))
