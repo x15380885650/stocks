@@ -403,7 +403,7 @@ class Strategy(object):
         min_turn = self.get_min_turn(k_line_list_l_r)
         if is_test:
             print('max_turn: {}, min_turn: {}'.format(max_turn, min_turn))
-        if max_turn > turn_max_i or max_turn < turn_min_i:
+        if max_turn > turn_max_i:
             return False
         self.e_count += 1
         pct_chg_list = []
@@ -431,74 +431,5 @@ class Strategy(object):
             return False
         print('prev_prev_turn: {}, prev_turn: {}, now_turn: {}, code: {}'.format(prev_prev_turn, prev_turn, now_turn, code))
         return True
-
-    def strategy_match_4(self, code, k_line_list, m_day, is_test=False):
-        latest_close_price = float(k_line_list[-1]['close'])
-        if is_test:
-            print('latest_close_price: {}'.format(latest_close_price))
-        if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
-            return False
-        k_line_list_m_day = k_line_list[-m_day:]
-        red = self.is_red(k_line_list_m_day[-1])
-        if not red:
-            return False
-        x_max_high_price = self.get_max_high_price(k_line_list_m_day)
-        y_max_high_price = self.get_max_high_price(k_line_list)
-        max_price_ratio = (x_max_high_price - y_max_high_price) / x_max_high_price * 100
-        if is_test:
-            print('max_price_ratio: {}'.format(max_price_ratio))
-        if max_price_ratio != 0:
-            return False
-        now_turn = float(k_line_list_m_day[-1]['turn'])
-        # if now_turn > turn_max_i_instant:
-        #     return False
-        prev_turn = float(k_line_list_m_day[-2]['turn'])
-        prev_prev_turn = float(k_line_list_m_day[-3]['turn'])
-        r_r_turn_ratio = prev_turn / prev_prev_turn
-        r_turn_ratio = now_turn / prev_turn
-        s_turn_ratio = now_turn / prev_prev_turn
-        if is_test:
-            print('k_turn_ratio: {}, r_r_turn_ratio: {}, s_turn_ratio: {}'
-                  .format(r_turn_ratio, r_r_turn_ratio, s_turn_ratio))
-        # if r_turn_ratio >= 1.75:
-        #     return False
-        # if r_r_turn_ratio <= 5:
-        #     return False
-        # if s_turn_ratio >= 3:
-        #     return False
-        k_line_list_l_r = k_line_list_m_day[:-1]
-        max_turn = self.get_max_turn(k_line_list_l_r)
-        min_turn = self.get_min_turn(k_line_list_l_r)
-        if is_test:
-            print('max_turn: {}, min_turn: {}'.format(max_turn, min_turn))
-        # if max_turn > turn_max_i or max_turn < turn_min_i:
-        #     return False
-        self.e_count += 1
-        pct_chg_list = []
-        for k_line in k_line_list_m_day:
-            pct_chg = k_line['pct_chg']
-            if isinstance(pct_chg, str) and not pct_chg:
-                continue
-            pct_chg_max = pct_change_max_i
-            if code.startswith('sz.30') or code.startswith('30'):
-                pct_chg_max = pct_change_max_j
-            if float(pct_chg) >= pct_chg_max:
-                pct_chg_list.append(1)
-            else:
-                pct_chg_list.append(0)
-        index_list = []
-        for i, v in enumerate(pct_chg_list):
-            if v == 1:
-                index_list.append(i)
-        if len(index_list) not in [2]:
-            return False
-        if index_list[-1] == m_day - 1:
-            return False
-        # last_data_ok = self.is_strategy_3_last_data_ok(k_line_list_m_day[-1], k_line_list_m_day[-2]['close'])
-        # if not last_data_ok:
-        #     return False
-        print('prev_prev_turn: {}, prev_turn: {}, now_turn: {}, code: {}'.format(prev_prev_turn, prev_turn, now_turn, code))
-        return True
-
 
 
