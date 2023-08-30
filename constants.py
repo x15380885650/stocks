@@ -11,4 +11,4 @@ turn_max_i_instant = 17.6
 # turn_max_i_instant = 25
 
 
-turn_min_i = 2.5
+turn_min_i = 1.5

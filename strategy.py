@@ -403,7 +403,7 @@ class Strategy(object):
         min_turn = self.get_min_turn(k_line_list_l_r)
         if is_test:
             print('max_turn: {}, min_turn: {}'.format(max_turn, min_turn))
-        if max_turn > turn_max_i:
+        if max_turn > turn_max_i or min_turn < turn_min_i:
             return False
         self.e_count += 1
         pct_chg_list = []
