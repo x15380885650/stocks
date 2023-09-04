@@ -392,18 +392,22 @@ class Strategy(object):
         if is_test:
             print('k_turn_ratio: {}, r_r_turn_ratio: {}, s_turn_ratio: {}'
                   .format(r_turn_ratio, r_r_turn_ratio, s_turn_ratio))
-        if r_turn_ratio >= 1.75:
-            return False
-        if r_r_turn_ratio >= 4:
-            return False
+        # if r_turn_ratio >= 1.75:
+        #     return False
+        # if r_r_turn_ratio >= 4:
+        #     return False
         # if s_turn_ratio >= 3:
         #     return False
+        if r_turn_ratio >= 3:
+            return False
         k_line_list_l_r = k_line_list_m_day[:-1]
         max_turn = self.get_max_turn(k_line_list_l_r)
         min_turn = self.get_min_turn(k_line_list_l_r)
         if is_test:
             print('max_turn: {}, min_turn: {}'.format(max_turn, min_turn))
-        if max_turn > turn_max_i or min_turn < turn_min_i:
+        if max_turn > turn_max_i:
+            return False
+        if now_turn > turn_max_i_instant:
             return False
         self.e_count += 1
         pct_chg_list = []

@@ -5,7 +5,8 @@ pct_change_max_i = 9.7
 pct_change_max_j = 19.0
 #
 turn_max_i = 10.5
-turn_max_i_instant = 17.6
+# turn_max_i_instant = 17.6
+turn_max_i_instant = 25
 
 # turn_max_i = 15
 # turn_max_i_instant = 25
