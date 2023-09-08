@@ -278,20 +278,28 @@ class Strategy(object):
         r_6 = r_1_3_max / r_2
         # r_7 = r_2 / r_3 if r_2 > r_3 else r_3 / r_2
 
-        # if not (0.65 <= r_6 <= 1.65):
+        # if not (1 <= r_1 <= 8):
         #     return False
-        if not (1 <= r_1 <= 8):
+        if not (1 <= r_1 <= 10):
             return False
         if not (0.5 <= r_2 <= 6.5):
             return False
-        if not (0.5 <= r_3 <= 5):
+        if not (0.2 <= r_3 <= 5):
             return False
+        # if not (0.5 <= r_3 <= 5):
+        #     return False
         if r_4 > 14.5:
             return False
-        if r_5 > 5 or r_5 < -2.5:
+        # if r_5 > 5 or r_5 < -2.5:
+        #     return False
+        if r_5 > 5 or r_5 < -5:
             return False
-        if pct_chg < 1.5 or pct_chg > 7.5:
+        # if pct_chg < 1.5 or pct_chg > 7.5:
+        #     return False
+        #
+        if pct_chg < -3 or pct_chg > 7.5:
             return False
+
         print('code: {}, r_1: {}, r_2: {}, r_3: {}, r_4: {}, r_5: {}, r_6: {}, pct_chg: {}'
               .format(last_data['code'], r_1, r_2, r_3, r_4, r_5, r_6, pct_chg))
         return True

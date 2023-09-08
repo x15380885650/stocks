@@ -22,6 +22,7 @@ test_stock_list = [
     # {'code': '600266', 'end_date': datetime.strptime('2023-07-26', '%Y-%m-%d')},
     # {'code': '601519', 'end_date': datetime.strptime('2023-07-31', '%Y-%m-%d')},
     {'code': '600272', 'end_date': datetime.strptime('2023-08-10', '%Y-%m-%d')},
+    {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
 
     # {'code': '002174', 'end_date': datetime.strptime('2023-04-25', '%Y-%m-%d')},
     # {'code': '600713', 'end_date': datetime.strptime('2023-04-28', '%Y-%m-%d')},
@@ -215,7 +216,7 @@ class Chooser(object):
 
 
 if __name__ == '__main__':
-    p_end_date = datetime.strptime('2023-08-15', '%Y-%m-%d')
+    p_end_date = datetime.strptime('2023-06-19', '%Y-%m-%d')
     c = Chooser()
     c.monitor()
 
@@ -225,7 +226,7 @@ if __name__ == '__main__':
 
     # c.choose(p_end_date=p_end_date)
 
-    # c.choose(p_end_date=p_end_date, p_code='002599')  # 2023-07-03
+    # c.choose(p_end_date=p_end_date, p_code='603767')
 
     # for p_day in range(0, 10):
     #     p_end_date = datetime.strptime('2023-09-03', '%Y-%m-%d') - timedelta(days=p_day)
