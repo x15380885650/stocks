@@ -282,20 +282,13 @@ class Strategy(object):
             return False
         if not (0.5 <= r_2 <= 6.5):
             return False
-        if not (0.3 <= r_3 <= 5):
+        if not (0.5 <= r_3 <= 5):
             return False
-        # if not (0.5 <= r_3 <= 5):
-        #     return False
         if r_4 > 14.5:
             return False
-        # if r_5 > 5 or r_5 < -2.5:
-        #     return False
-        if r_5 > 5 or r_5 < -5:
+        if r_5 > 5 or r_5 < -2.5:
             return False
-        # if pct_chg < 1.5 or pct_chg > 7.5:
-        #     return False
-        #
-        if pct_chg < -3 or pct_chg > 7.5:
+        if pct_chg < 1.5 or pct_chg > 7.5:
             return False
 
         print('code: {}, r_1: {}, r_2: {}, r_3: {}, r_4: {}, r_5: {}, r_6: {}, pct_chg: {}'
