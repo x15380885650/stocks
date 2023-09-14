@@ -278,7 +278,7 @@ class Strategy(object):
         r_6 = r_1_3_max / r_2
         # r_7 = r_2 / r_3 if r_2 > r_3 else r_3 / r_2
 
-        if not (1 <= r_1 <= 8):
+        if not (1 <= r_1 <= 8.5):
             return False
         if not (0.5 <= r_2 <= 6.5):
             return False

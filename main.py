@@ -217,7 +217,7 @@ class Chooser(object):
 
 
 if __name__ == '__main__':
-    p_end_date = datetime.strptime('2023-06-19', '%Y-%m-%d')
+    p_end_date = datetime.strptime('2023-09-13', '%Y-%m-%d')
     c = Chooser()
     c.monitor()
 
@@ -227,7 +227,7 @@ if __name__ == '__main__':
 
     # c.choose(p_end_date=p_end_date)
 
-    # c.choose(p_end_date=p_end_date, p_code='603767')
+    # c.choose(p_end_date=p_end_date, p_code='601188')
 
     # for p_day in range(0, 10):
     #     p_end_date = datetime.strptime('2023-09-03', '%Y-%m-%d') - timedelta(days=p_day)
