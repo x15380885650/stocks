@@ -5,7 +5,7 @@ from chinese_calendar import is_holiday, is_workday
 from data_source_bao import BaoDataSource
 from data_source_ef import EfDataSource
 from strategy import Strategy
-from constants import pct_change_max_i
+from constants import pct_change_max_i, pct_change_max_j
 from dumper_loader import load_data_append_by_json_dump, save_data_list_append_by_json_dump
 
 test_stock_list = [
@@ -22,7 +22,9 @@ test_stock_list = [
     # {'code': '600266', 'end_date': datetime.strptime('2023-07-26', '%Y-%m-%d')},
     # {'code': '601519', 'end_date': datetime.strptime('2023-07-31', '%Y-%m-%d')},
     # {'code': '600272', 'end_date': datetime.strptime('2023-08-10', '%Y-%m-%d')},
-    # {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
+    # # {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
+    # {'code': '300293', 'end_date': datetime.strptime('2023-09-07', '%Y-%m-%d')},
+    {'code': '300684', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
 
 
     # {'code': '002174', 'end_date': datetime.strptime('2023-04-25', '%Y-%m-%d')},
@@ -53,6 +55,11 @@ class Chooser(object):
         self.e_count = 0
         # self.ds = BaoDataSource()
         self.ds = EfDataSource()
+
+    def get_pct_change_max(self, code):
+        if code.startswith('30') or code.startswith('sz.30'):
+            return pct_change_max_j
+        return pct_change_max_i
 
     def is_deal_date(self, t_date):
         t_holiday = is_holiday(t_date)
@@ -111,7 +118,8 @@ class Chooser(object):
                         print('code: {}, last_date: {} != end_date_str: {}'.format(code, last_date, end_date_str))
                         continue
                     latest_pct_chg = float(stock_kline['pct_chg'])
-                    if latest_pct_chg < pct_change_max_i:
+                    pct_change_max = self.get_pct_change_max(code)
+                    if latest_pct_chg < pct_change_max:
                         continue
                     top_pct_chg_code_list.append(code)
             else:

@@ -1,5 +1,5 @@
 from constants import latest_close_price_min, latest_close_price_max, pct_change_max_i, pct_change_max_j, turn_max_i, \
-    turn_max_i_instant, turn_min_i
+    turn_max_i_instant, turn_min_i, turn_max_j, turn_max_j_instant
 
 
 class Strategy(object):
@@ -264,6 +264,7 @@ class Strategy(object):
         return True
 
     def is_strategy_3_last_data_ok(self, last_data, prev_close_price):
+        code = last_data['code']
         pct_chg = float(last_data['pct_chg'])
         close_price = float(last_data['close'])
         open_price = float(last_data['open'])
@@ -286,10 +287,18 @@ class Strategy(object):
             return False
         if r_4 > 14.5:
             return False
-        if r_5 > 5 or r_5 < -2.5:
-            return False
-        if pct_chg < 1.5 or pct_chg > 7.5:
-            return False
+        if code.startswith('sz.30') or code.startswith('30'):
+            if r_5 > 10 or r_5 < -5:
+                return False
+        else:
+            if r_5 > 5 or r_5 < -2.5:
+                return False
+        if code.startswith('sz.30') or code.startswith('30'):
+            if pct_chg < 3 or pct_chg > 15:
+                return False
+        else:
+            if pct_chg < 1.5 or pct_chg > 7.5:
+                return False
 
         print('code: {}, r_1: {}, r_2: {}, r_3: {}, r_4: {}, r_5: {}, r_6: {}, pct_chg: {}'
               .format(last_data['code'], r_1, r_2, r_3, r_4, r_5, r_6, pct_chg))
@@ -362,6 +371,15 @@ class Strategy(object):
         #     print('r_turn_ratio: {}, now_turn: {}, code: {}'.format(r_turn_ratio, now_turn, code))
         #     return False
         return True
+    def get_turn_max_e(self, code):
+        if code.startswith('30') or code.startswith('sz.30'):
+            return turn_max_j
+        return turn_max_i
+
+    def get_turn_max_instant_e(self, code):
+        if code.startswith('30') or code.startswith('sz.30'):
+            return turn_max_j_instant
+        return turn_max_i_instant
 
     def strategy_match_3(self, code, k_line_list, m_day, is_test=False):
         latest_close_price = float(k_line_list[-1]['close'])
@@ -404,9 +422,11 @@ class Strategy(object):
         min_turn = self.get_min_turn(k_line_list_l_r)
         if is_test:
             print('max_turn: {}, min_turn: {}'.format(max_turn, min_turn))
-        if max_turn > turn_max_i:
+        turn_max_e = self.get_turn_max_e(code)
+        turn_max_instant_e = self.get_turn_max_instant_e(code)
+        if max_turn > turn_max_e:
             return False
-        if now_turn > turn_max_i_instant:
+        if now_turn > turn_max_instant_e:
             return False
         self.e_count += 1
         pct_chg_list = []
