@@ -283,7 +283,7 @@ class Strategy(object):
             return False
         if not (0.5 <= r_2 <= 6.5):
             return False
-        if not (0.5 <= r_3 <= 5):
+        if not (0 <= r_3 <= 5):
             return False
         if r_4 > 14.5:
             return False
@@ -399,9 +399,9 @@ class Strategy(object):
         if max_price_ratio != 0:
             return False
         now_turn = float(k_line_list_m_day[-1]['turn'])
-        # if now_turn > turn_max_i_instant:
-        #     return False
         prev_turn = float(k_line_list_m_day[-2]['turn'])
+        if now_turn < turn_min_i or prev_turn < turn_min_i:
+            return False
         prev_prev_turn = float(k_line_list_m_day[-3]['turn'])
         r_r_turn_ratio = prev_turn / prev_prev_turn
         r_turn_ratio = now_turn / prev_turn
@@ -415,7 +415,7 @@ class Strategy(object):
         #     return False
         # if s_turn_ratio >= 3:
         #     return False
-        if r_turn_ratio >= 3:
+        if r_turn_ratio >= 2.85:
             return False
         k_line_list_l_r = k_line_list_m_day[:-1]
         max_turn = self.get_max_turn(k_line_list_l_r)

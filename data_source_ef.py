@@ -17,8 +17,10 @@ class EfDataSource(DataSource):
             return datetime.now().date() - timedelta(days=1)
 
     def is_code_filtered(self, code):
-        if not code.startswith('00') and not code.startswith('60') and not code.startswith('300'):
+        if not code.startswith('00') and not code.startswith('60'):
             return True
+        # if not code.startswith('00') and not code.startswith('60') and not code.startswith('300'):
+        #     return True
         # if code.startswith('000') or code.startswith('sh.688'):
         #     return True
         # if code.startswith('300') or code.startswith('688'):

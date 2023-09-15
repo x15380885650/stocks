@@ -9,22 +9,18 @@ from constants import pct_change_max_i, pct_change_max_j
 from dumper_loader import load_data_append_by_json_dump, save_data_list_append_by_json_dump
 
 test_stock_list = [
-    # # {'code': '603083', 'end_date': datetime.strptime('2023-02-27', '%Y-%m-%d')},
     # {'code': '601595', 'end_date': datetime.strptime('2023-03-21', '%Y-%m-%d')},
     # {'code': '000021', 'end_date': datetime.strptime('2023-03-31', '%Y-%m-%d')},
     # {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
-    # ## {'code': '601900', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},002599
     # {'code': '603779', 'end_date': datetime.strptime('2023-06-05', '%Y-%m-%d')},
-    # # {'code': '002599', 'end_date': datetime.strptime('2023-06-07', '%Y-%m-%d')},
     # {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
     # {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
     # {'code': '000961', 'end_date': datetime.strptime('2023-07-24', '%Y-%m-%d')},
     # {'code': '600266', 'end_date': datetime.strptime('2023-07-26', '%Y-%m-%d')},
     # {'code': '601519', 'end_date': datetime.strptime('2023-07-31', '%Y-%m-%d')},
     # {'code': '600272', 'end_date': datetime.strptime('2023-08-10', '%Y-%m-%d')},
-    # # {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
-    # {'code': '300293', 'end_date': datetime.strptime('2023-09-07', '%Y-%m-%d')},
-    {'code': '300684', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
+    # {'code': '601188', 'end_date': datetime.strptime('2023-09-13', '%Y-%m-%d')},
+    {'code': '600895', 'end_date': datetime.strptime('2023-03-16', '%Y-%m-%d')},
 
 
     # {'code': '002174', 'end_date': datetime.strptime('2023-04-25', '%Y-%m-%d')},
@@ -84,7 +80,10 @@ class Chooser(object):
         # return ['603336', '603629', '601595', '603106', '601900', '603283', '601136', '600864', '600610', '600531',
         #         '600468', '600361', '600127', '002905', '002787', '002670', '002599', '002480', '002355', '002235',
         #         '002084', '000936', '000719']
-        file_path = 'data/{}_codes.json'.format(end_date_str)
+        file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
+        if not os.path.exists(file_folder):
+            os.makedirs(file_folder)
+        file_path = '{}/{}_codes.json'.format(file_folder, end_date_str)
         if os.path.exists(file_path):
             print('get_top_pct_chg_code_list by file_path: {}'.format(file_path))
             top_pct_chg_code_list = load_data_append_by_json_dump(file_path, ret_type=[])
@@ -237,8 +236,8 @@ if __name__ == '__main__':
 
     # c.choose(p_end_date=p_end_date, p_code='601188')
 
-    # for p_day in range(0, 10):
-    #     p_end_date = datetime.strptime('2023-09-03', '%Y-%m-%d') - timedelta(days=p_day)
+    # for p_day in range(0, 300):
+    #     p_end_date = datetime.strptime('2023-09-14', '%Y-%m-%d') - timedelta(days=p_day)
     #     # p_end_date = datetime.strptime('2023-07-31', '%Y-%m-%d')
     #     deal_date_ok = c.is_deal_date(p_end_date)
     #     if not deal_date_ok:
