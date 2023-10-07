@@ -225,7 +225,7 @@ class Chooser(object):
 
 
 if __name__ == '__main__':
-    p_end_date = datetime.strptime('2023-09-13', '%Y-%m-%d')
+    p_end_date = datetime.strptime('2023-09-28', '%Y-%m-%d')
     c = Chooser()
     c.monitor()
 
@@ -233,7 +233,7 @@ if __name__ == '__main__':
 
     # c.choose(is_test_code=True)  # test stock code
 
-    # c.choose(p_end_date=p_end_date)
+    # c.choose(p_end_date=p_end_date, partial_code_list=True)
 
     # c.choose(p_end_date=p_end_date, p_code='601188')
 
