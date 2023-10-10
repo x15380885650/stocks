@@ -287,18 +287,18 @@ class Strategy(object):
             return False
         if r_4 > 14.5:
             return False
-        if code.startswith('sz.30') or code.startswith('30'):
-            if r_5 > 10 or r_5 < -5:
-                return False
-        else:
-            if r_5 > 5 or r_5 < -2.5:
-                return False
-        if code.startswith('sz.30') or code.startswith('30'):
-            if pct_chg < 3 or pct_chg > 15:
-                return False
-        else:
-            if pct_chg < 1.5 or pct_chg > 7.5:
-                return False
+        # if code.startswith('sz.30') or code.startswith('30'):
+        #     if r_5 > 10 or r_5 < -5:
+        #         return False
+        # else:
+        #     if r_5 > 5 or r_5 < -2.5:
+        #         return False
+        # if code.startswith('sz.30') or code.startswith('30'):
+        #     if pct_chg < 3 or pct_chg > 15:
+        #         return False
+        # else:
+        #     if pct_chg < 1.5 or pct_chg > 7.5:
+        #         return False
 
         print('code: {}, r_1: {}, r_2: {}, r_3: {}, r_4: {}, r_5: {}, r_6: {}, pct_chg: {}'
               .format(last_data['code'], r_1, r_2, r_3, r_4, r_5, r_6, pct_chg))

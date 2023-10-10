@@ -15,6 +15,7 @@ test_stock_list = [
     {'code': '600629', 'end_date': datetime.strptime('2023-04-21', '%Y-%m-%d')},
     {'code': '603779', 'end_date': datetime.strptime('2023-06-05', '%Y-%m-%d')},
     {'code': '000936', 'end_date': datetime.strptime('2023-06-13', '%Y-%m-%d')},
+    {'code': '603767', 'end_date': datetime.strptime('2023-06-19', '%Y-%m-%d')},
     {'code': '002535', 'end_date': datetime.strptime('2023-06-29', '%Y-%m-%d')},
     {'code': '000961', 'end_date': datetime.strptime('2023-07-24', '%Y-%m-%d')},
     {'code': '600266', 'end_date': datetime.strptime('2023-07-26', '%Y-%m-%d')},
