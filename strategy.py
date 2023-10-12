@@ -382,6 +382,8 @@ class Strategy(object):
         return turn_max_i_instant
 
     def strategy_match_3(self, code, k_line_list, m_day, is_test=False):
+        # if code != '603229':
+        #     return False
         latest_close_price = float(k_line_list[-1]['close'])
         if is_test:
             print('latest_close_price: {}'.format(latest_close_price))
@@ -400,8 +402,8 @@ class Strategy(object):
             return False
         now_turn = float(k_line_list_m_day[-1]['turn'])
         prev_turn = float(k_line_list_m_day[-2]['turn'])
-        if now_turn < turn_min_i or prev_turn < turn_min_i:
-            return False
+        # if now_turn < turn_min_i or prev_turn < turn_min_i:
+        #     return False
         prev_prev_turn = float(k_line_list_m_day[-3]['turn'])
         r_r_turn_ratio = prev_turn / prev_prev_turn
         r_turn_ratio = now_turn / prev_turn
