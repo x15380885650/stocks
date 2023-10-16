@@ -419,7 +419,7 @@ class Strategy(object):
         #     return False
         # if r_turn_ratio >= 2.85:
         #     return False
-        if r_turn_ratio >= 4:
+        if r_turn_ratio >= 3:
             return False
         k_line_list_l_r = k_line_list_m_day[:-1]
         max_turn = self.get_max_turn(k_line_list_l_r)
