@@ -227,7 +227,7 @@ class Chooser(object):
 
 
 if __name__ == '__main__':
-    p_end_date = datetime.strptime('2023-10-12', '%Y-%m-%d')
+    p_end_date = datetime.strptime('2023-10-18', '%Y-%m-%d')
     c = Chooser()
     c.monitor()
 
