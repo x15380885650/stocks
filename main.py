@@ -22,7 +22,6 @@ test_stock_list = [
     {'code': '601519', 'end_date': datetime.strptime('2023-07-31', '%Y-%m-%d')},
     {'code': '600272', 'end_date': datetime.strptime('2023-08-10', '%Y-%m-%d')},
     {'code': '601188', 'end_date': datetime.strptime('2023-09-13', '%Y-%m-%d')},
-    {'code': '000526', 'end_date': datetime.strptime('2023-10-09', '%Y-%m-%d')},
 
 
 
