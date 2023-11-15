@@ -218,12 +218,13 @@ class Chooser(object):
             code_list = self.get_top_pct_chg_code_list(end_date_str)
         else:
             code_list = self.get_top_pct_chg_code_list(prev_end_date_str)
+        end_date_str = end_date_str if now_hour >= 15 else prev_end_date_str
         print('monitor, {}--->{}, code_list: {}'.format(start_date_str, end_date_str, len(code_list)))
         if not code_list:
             print('code_list is empty, break!!!')
         for code in code_list:
             self.count += 1
-            self.monitor_strategy_4(code, strategy, start_date_str, prev_end_date_str)
+            self.monitor_strategy_4(code, strategy, start_date_str, end_date_str)
         print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
 
 
