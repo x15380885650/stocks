@@ -159,6 +159,15 @@ class Strategy(object):
             prev_open_price = open_price
         return True
 
+    def is_stock_all_red(self, data_list):
+        for i, d in enumerate(data_list):
+            close_price = float(d['close'])
+            open_price = float(d['open'])
+            r = (float(close_price) - float(open_price)) / float(open_price) * 100
+            if r < -0.25:
+                return False
+        return True
+
     def get_pct_chg_sum(self, data_list):
         pct_chg_sum = 0
         for d in data_list:
@@ -457,6 +466,43 @@ class Strategy(object):
         if not last_data_ok:
             return False
         print('prev_prev_turn: {}, prev_turn: {}, now_turn: {}, code: {}'.format(prev_prev_turn, prev_turn, now_turn, code))
+        return True
+
+    def strategy_match_4(self, code, k_line_list, m_day, is_test=False):
+        m_day = 5
+        latest_close_price = float(k_line_list[-1]['close'])
+        if is_test:
+            print('latest_close_price: {}'.format(latest_close_price))
+        if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
+            return False
+        k_line_list_m_day = k_line_list[-m_day:]
+        all_red = self.is_stock_all_red(k_line_list_m_day)
+        if not all_red:
+            return False
+        pct_chg_list = []
+        for k_line in k_line_list_m_day:
+            pct_chg = k_line['pct_chg']
+            if isinstance(pct_chg, str) and not pct_chg:
+                continue
+            pct_chg_max = pct_change_max_i
+            if code.startswith('sz.30') or code.startswith('30'):
+                pct_chg_max = pct_change_max_j
+            if float(pct_chg) >= pct_chg_max:
+                pct_chg_list.append(1)
+            else:
+                pct_chg_list.append(0)
+        index_list = []
+        for i, v in enumerate(pct_chg_list):
+            if v == 1:
+                index_list.append(i)
+        if len(index_list) not in [1]:
+            return False
+        if index_list[-1] != m_day - 1:
+            return False
+        # last_data_ok = self.is_strategy_3_last_data_ok(k_line_list_m_day[-1], k_line_list_m_day[-2]['close'])
+        # if not last_data_ok:
+        #     return False
+        # print('prev_prev_turn: {}, prev_turn: {}, now_turn: {}, code: {}'.format(prev_prev_turn, prev_turn, now_turn, code))
         return True
 
 

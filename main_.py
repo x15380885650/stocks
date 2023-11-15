@@ -144,19 +144,19 @@ class Chooser(object):
             return None
         return k_line_list
 
-    def monitor_strategy_3(self, code, strategy, start_date_str, end_date_str, is_test=False):
+    def monitor_strategy_4(self, code, strategy, start_date_str, end_date_str, is_test=False):
         k_line_list = self.get_valid_k_line_list(code, start_date_str, end_date_str)
         if not k_line_list:
             return
-        strategy_3_ok = strategy.strategy_match_3(code, k_line_list, m_day=3, is_test=is_test)
-        if strategy_3_ok:
+        strategy_4_ok = strategy.strategy_match_4(code, k_line_list, m_day=3, is_test=is_test)
+        if strategy_4_ok:
             stock_value = self.ds.get_stock_value(code)
             if stock_value > stock_value_max or stock_value < stock_value_min:
                 print('stock_value: {} not in [{}, {}], code: {}'
                       .format(stock_value, stock_value_min, stock_value_max, code))
                 return
-        if strategy_3_ok:
-            print('join strategy_3 stock, code: {}'.format(code))
+        if strategy_4_ok:
+            print('join strategy_4 stock, code: {}'.format(code))
 
     def choose(self, is_test_code=False, p_end_date=None, p_code='', partial_code_list=False):
         # ds = BaoDataSource()
@@ -190,7 +190,7 @@ class Chooser(object):
                     test_end_date_str = test_end_date.strftime(format_date)
                     print('test code: {}...'.format(code))
                     # self.monitor_strategy_1(code, strategy, test_start_date_str, test_end_date_str, is_test=True)
-                    self.monitor_strategy_3(code, strategy, test_start_date_str, test_end_date_str, is_test=True)
+                    self.monitor_strategy_4(code, strategy, test_start_date_str, test_end_date_str, is_test=True)
             else:
                 self.count += 1
                 if self.count % 1000 == 0:
@@ -198,7 +198,7 @@ class Chooser(object):
                 if p_code and p_code not in code:
                     continue
                 # self.choose_strategy_1(code, strategy, start_date_str, end_date_str)
-                self.monitor_strategy_3(code, strategy, start_date_str, end_date_str)
+                self.monitor_strategy_4(code, strategy, start_date_str, end_date_str)
         print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
 
     def monitor(self):
@@ -223,7 +223,7 @@ class Chooser(object):
             print('code_list is empty, break!!!')
         for code in code_list:
             self.count += 1
-            self.monitor_strategy_3(code, strategy, start_date_str, end_date_str)
+            self.monitor_strategy_4(code, strategy, start_date_str, prev_end_date_str)
         print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
 
 
