@@ -42,6 +42,7 @@ class EfDataSource(DataSource):
         df = ef.stock.get_quote_history(code, beg=start_date, end=end_date, fqt=0)
         for s in df.iterrows():
             arr = s[1]
+            name = arr[0]
             code = arr[1]
             date = arr[2]
             _open = arr[3]
@@ -54,7 +55,8 @@ class EfDataSource(DataSource):
             pct_chg = arr[10]
             turn = arr[12]
             kline_history.append({'code': code, 'date': date, 'open': _open, 'close': close, 'high': high, 'low': low,
-                                  'volume': volume, 'amount': amount, 'pct_chg': pct_chg, 'turn': turn, 'amp': amp})
+                                  'volume': volume, 'amount': amount, 'pct_chg': pct_chg, 'turn': turn, 'amp': amp,
+                                  'name': name})
         return kline_history
 
     def get_stock_list_kline_history(self, code_list, start_date, end_date):
