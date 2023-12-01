@@ -180,25 +180,72 @@ class Chooser(object):
             self.monitor_strategy_4(code, strategy, start_date_str, end_date_str)
         print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
 
+    def get_day_range_stock_list(self, end_date, min_day, max_day):
+        days = 1
+        stock_list = []
+        valid_file_path_list = []
+        while True:
+            temp_date = end_date - timedelta(days=days)
+            temp_date_str = temp_date.strftime(format_date)
+            file_folder = 'data/{}'.format(temp_date_str[:temp_date_str.rfind('-')])
+            file_path = '{}/{}_codes.json'.format(file_folder, temp_date_str)
+            if not os.path.exists(file_path):
+                days += 1
+                continue
+            valid_file_path_list.append(file_path)
+            if len(valid_file_path_list) >= 30:
+                break
+            days += 1
+        range_file_path_list = valid_file_path_list[min_day:max_day]
+        for file_path in range_file_path_list:
+            print(file_path)
+            top_pct_chg_code_list = load_data_append_by_json_dump(file_path, ret_type=[])
+            stock_list.extend(top_pct_chg_code_list)
+        print('stock_list_before: {}'.format(len(stock_list)))
+        stock_list = list(set(stock_list))
+        print('stock_list_after: {}'.format(len(stock_list)))
+        return stock_list
+
+    def run(self):
+        import time
+        strategy = Strategy()
+        end_date = datetime.now().date()
+        # end_date = datetime.strptime('2023-11-10', '%Y-%m-%d')
+        start_date = end_date - timedelta(days=minus_days)
+        start_date_str = start_date.strftime(format_date)
+        end_date_str = end_date.strftime(format_date)
+        min_day, max_day = 5, 14
+        stock_list = self.get_day_range_stock_list(end_date, min_day=min_day, max_day=14)
+        exclude_stock_list = []
+        while True:
+            act_count, idx = 0, 0
+            for idx, code in enumerate(stock_list):
+                if idx % 100 == 0 and idx != 0:
+                    print('idx: {}, act_count: {}'.format(idx, act_count))
+                if code in exclude_stock_list:
+                    # print(code)
+                    continue
+                k_line_list = self.get_valid_k_line_list(code, start_date_str, end_date_str)
+                if not k_line_list:
+                    continue
+                name = k_line_list[0]['name']
+                if 'ST' in name:
+                    print(name)
+                    continue
+                act_count += 1
+                strategy_6_ok = strategy.strategy_match_6(code, k_line_list, exclude_stock_list, m_day=min_day)
+                if strategy_6_ok:
+                    stock_value = self.ds.get_stock_value(code)
+                    if stock_value > stock_value_max or stock_value < stock_value_min:
+                        print('stock_value: {} not in [{}, {}], code: {}'
+                              .format(stock_value, stock_value_min, stock_value_max, code))
+                        continue
+                if strategy_6_ok:
+                    print('join strategy_6 stock, code: {}'.format(code))
+            print('idx: {}, act_count: {}'.format(idx, act_count))
+            time.sleep(1)
+
 
 if __name__ == '__main__':
-    p_end_date = datetime.strptime('2023-10-18', '%Y-%m-%d')
     c = Chooser()
-    c.choose()
-
-    # c.choose()  # normal
-
-    # c.choose(is_test_code=True)  # test stock code
-
-    # c.choose(p_end_date=p_end_date, partial_code_list=True)
-
-    # c.choose(p_end_date=p_end_date, p_code='603229')
-
-    # for p_day in range(0, 300):
-    #     p_end_date = datetime.strptime('2023-09-14', '%Y-%m-%d') - timedelta(days=p_day)
-    #     # p_end_date = datetime.strptime('2023-07-31', '%Y-%m-%d')
-    #     deal_date_ok = c.is_deal_date(p_end_date)
-    #     if not deal_date_ok:
-    #         continue
-    #     c.count = 0
-    #     c.choose(p_end_date=p_end_date, partial_code_list=True)
+    c.run()

@@ -564,4 +564,36 @@ class Strategy(object):
         # # print('prev_prev_turn: {}, prev_turn: {}, now_turn: {}, code: {}'.format(prev_prev_turn, prev_turn, now_turn, code))
         # return True
 
-
+    def strategy_match_6(self, code, k_line_list, exclude_stock_list, m_day):
+        latest_close_price = float(k_line_list[-1]['close'])
+        if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
+            exclude_stock_list.append(code)
+            return False
+        k_line_list_m_day = k_line_list[-m_day-1:]
+        self.e_count += 1
+        pct_chg_list = []
+        for k_line in k_line_list_m_day:
+            pct_chg = k_line['pct_chg']
+            if isinstance(pct_chg, str) and not pct_chg:
+                continue
+            pct_chg_max = pct_change_max_i
+            if code.startswith('sz.30') or code.startswith('30'):
+                pct_chg_max = pct_change_max_j
+            if float(pct_chg) >= pct_chg_max:
+                pct_chg_list.append(1)
+            else:
+                pct_chg_list.append(0)
+        index_list = []
+        for i, v in enumerate(pct_chg_list):
+            if v == 1:
+                index_list.append(i)
+        # if len(index_list) not in [1]:
+        #     return False
+        if len(index_list) >= 1:
+            if index_list[-1] < m_day:
+                exclude_stock_list.append(code)
+            return False
+        latest_pct_chg = k_line_list_m_day[-1]['pct_chg']
+        if latest_pct_chg < 6:
+            return False
+        return True
