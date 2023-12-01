@@ -243,7 +243,7 @@ class Chooser(object):
                 if strategy_6_ok:
                     print('join strategy_6 stock, code: {}'.format(code))
             print('idx: {}, act_count: {}'.format(idx, act_count))
-            time.sleep(1)
+            time.sleep(60)
 
 
 if __name__ == '__main__':
