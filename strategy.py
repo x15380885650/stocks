@@ -567,7 +567,8 @@ class Strategy(object):
     def strategy_match_6(self, code, k_line_list, exclude_stock_list, m_day):
         latest_close_price = float(k_line_list[-1]['close'])
         if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
-            exclude_stock_list.append(code)
+            if code not in exclude_stock_list:
+                exclude_stock_list.append(code)
             return False
         k_line_list_m_day = k_line_list[-m_day-1:]
         self.e_count += 1
@@ -590,7 +591,7 @@ class Strategy(object):
         # if len(index_list) not in [1]:
         #     return False
         if len(index_list) >= 1:
-            if index_list[-1] < m_day:
+            if index_list[-1] < m_day and code not in exclude_stock_list:
                 exclude_stock_list.append(code)
             return False
         latest_pct_chg = k_line_list_m_day[-1]['pct_chg']

@@ -216,6 +216,7 @@ class Chooser(object):
         end_date_str = end_date.strftime(format_date)
         min_day, max_day = 5, 14
         stock_list = self.get_day_range_stock_list(end_date, min_day=min_day, max_day=14)
+        sleep_time = 30
         exclude_stock_list = []
         while True:
             act_count, idx = 0, 0
@@ -223,7 +224,11 @@ class Chooser(object):
                 if idx % 100 == 0 and idx != 0:
                     print('idx: {}, act_count: {}'.format(idx, act_count))
                 if code in exclude_stock_list:
-                    # print(code)
+                    continue
+                stock_value = self.ds.get_stock_value(code)
+                if stock_value > stock_value_max or stock_value < stock_value_min:
+                    if code not in exclude_stock_list:
+                        exclude_stock_list.append(code)
                     continue
                 k_line_list = self.get_valid_k_line_list(code, start_date_str, end_date_str)
                 if not k_line_list:
@@ -235,15 +240,9 @@ class Chooser(object):
                 act_count += 1
                 strategy_6_ok = strategy.strategy_match_6(code, k_line_list, exclude_stock_list, m_day=min_day)
                 if strategy_6_ok:
-                    stock_value = self.ds.get_stock_value(code)
-                    if stock_value > stock_value_max or stock_value < stock_value_min:
-                        print('stock_value: {} not in [{}, {}], code: {}'
-                              .format(stock_value, stock_value_min, stock_value_max, code))
-                        continue
-                if strategy_6_ok:
                     print('join strategy_6 stock, code: {}'.format(code))
-            print('idx: {}, act_count: {}'.format(idx, act_count))
-            time.sleep(60)
+            print('idx: {}, act_count: {}, sleep {}'.format(idx, act_count, sleep_time))
+            time.sleep(sleep_time)
 
 
 if __name__ == '__main__':
