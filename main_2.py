@@ -48,137 +48,39 @@ class Chooser(object):
                 break
         return end_date
 
-    def get_top_pct_chg_code_list(self, end_date_str):
-        # return ['603336', '603629', '601595', '603106', '601900', '603283', '601136', '600864', '600610', '600531',
-        #         '600468', '600361', '600127', '002905', '002787', '002670', '002599', '002480', '002355', '002235',
-        #         '002084', '000936', '000719']
-        file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
-        if not os.path.exists(file_folder):
-            os.makedirs(file_folder)
-        file_path = '{}/{}_codes.json'.format(file_folder, end_date_str)
-        if os.path.exists(file_path):
-            print('get_top_pct_chg_code_list by file_path: {}'.format(file_path))
-            top_pct_chg_code_list = load_data_append_by_json_dump(file_path, ret_type=[])
-            # print(top_pct_chg_code_list)
-            return top_pct_chg_code_list
+    # def get_valid_k_line_list(self, code, start_date_str, end_date_str):
+    #     filtered = self.ds.is_code_filtered(code)
+    #     if filtered:
+    #         return None
+    #     k_line_list = self.ds.get_stock_kline_history(code, start_date_str, end_date_str)
+    #     total_count = len(k_line_list)
+    #     if total_count < int(minus_days / 2):
+    #         return None
+    #     last_date = k_line_list[-1]['date']
+    #     if last_date != end_date_str:
+    #         # print('code: {}, last_date: {} != end_date_str: {}'.format(code, last_date, end_date_str))
+    #         return None
+    #     return k_line_list
 
-        code_list = self.ds.get_all_stock_code_list(end_date_str)
-        top_pct_chg_code_list = []
-        count = 0
-        filtered_code_list = []
-        for index, code in enumerate(code_list):
-            filtered = self.ds.is_code_filtered(code)
-            if filtered:
+    def get_valid_stock_list_kline_list(self, code_list, start_date_str, end_date_str, exclude_code_list):
+        stock_list_kline = self.ds.get_stock_list_kline_history(code_list, start_date_str, end_date_str)
+        new_stock_list_kline = []
+        for stock_k_line in stock_list_kline:
+            code = stock_k_line[-1]['code']
+            name = stock_k_line[-1]['name']
+            total_count = len(stock_k_line)
+            if total_count < int(minus_days / 2):
+                exclude_code_list.append(code)
                 continue
-            filtered_code_list.append(code)
-        print('all_code_list: {}, filtered_code_list: {}'.format(len(code_list), len(filtered_code_list)))
-        # filtered_code_list = filtered_code_list[0: 500]
-        stream = iter(filtered_code_list)
-        batch_size = 1000
-        while True:
-            batch = list(islice(stream, 0, batch_size))
-            count += len(batch)
-            if count % 1000 == 0 and count != 0:
-                print('count: {}, top_pct_chg_count: {}'.format(count, len(top_pct_chg_code_list)))
-            if batch:
-                kline_history_list = self.ds.get_stock_list_kline_history(batch, end_date_str, end_date_str)
-                for stock_kline in kline_history_list:
-                    last_date = stock_kline['date']
-                    code = stock_kline['code']
-                    if last_date != end_date_str:
-                        print('code: {}, last_date: {} != end_date_str: {}'.format(code, last_date, end_date_str))
-                        continue
-                    latest_pct_chg = float(stock_kline['pct_chg'])
-                    pct_change_max = self.get_pct_change_max(code)
-                    if latest_pct_chg < pct_change_max:
-                        continue
-                    top_pct_chg_code_list.append(code)
-            else:
-                break
-        print('count: {}, top_pct_chg_count: {}'.format(count, len(top_pct_chg_code_list)))
-        if top_pct_chg_code_list:
-            save_data_list_append_by_json_dump(file_path, top_pct_chg_code_list)
-        return top_pct_chg_code_list
-
-    def get_valid_k_line_list(self, code, start_date_str, end_date_str):
-        filtered = self.ds.is_code_filtered(code)
-        if filtered:
-            return None
-        k_line_list = self.ds.get_stock_kline_history(code, start_date_str, end_date_str)
-        total_count = len(k_line_list)
-        if total_count < int(minus_days / 2):
-            return None
-        last_date = k_line_list[-1]['date']
-        if last_date != end_date_str:
-            # print('code: {}, last_date: {} != end_date_str: {}'.format(code, last_date, end_date_str))
-            return None
-        return k_line_list
-
-    def monitor_strategy_5(self, code, strategy, start_date_str, end_date_str, is_test=False):
-        k_line_list = self.get_valid_k_line_list(code, start_date_str, end_date_str)
-        if not k_line_list:
-            return
-        name = k_line_list[0]['name']
-        if 'ST' in name:
-            # print(name)
-            return
-        strategy_5_ok = strategy.strategy_match_5(code, k_line_list, m_day=5, is_test=is_test)
-        if strategy_5_ok:
-            stock_value = self.ds.get_stock_value(code)
-            if stock_value > stock_value_max or stock_value < stock_value_min:
-                # print('stock_value: {} not in [{}, {}], code: {}'
-                #       .format(stock_value, stock_value_min, stock_value_max, code))
-                return
-        if strategy_5_ok:
-            print('join strategy_5 stock, code: {}'.format(code))
-
-    def choose(self, is_test_code=False, p_end_date=None, p_code=''):
-        # ds = BaoDataSource()
-        ds = EfDataSource()
-        strategy = Strategy()
-        end_date = self.get_valid_end_date() if not p_end_date else p_end_date
-        day_of_week = end_date.weekday()
-        print('{}, 星期{}'.format(end_date, day_of_week + 1))
-        start_date = end_date - timedelta(days=minus_days)
-        start_date_str = start_date.strftime(format_date)
-        end_date_str = end_date.strftime(format_date)
-        print('{}--->{}'.format(start_date_str, end_date_str))
-        code_list = ds.get_all_stock_code_list(end_date_str)
-        for code in code_list:
-            self.count += 1
-            if self.count % 1000 == 0:
-                print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
-            if p_code and p_code not in code:
+            last_date = stock_k_line[-1]['date']
+            if last_date != end_date_str:
+                exclude_code_list.append(code)
                 continue
-            # self.choose_strategy_1(code, strategy, start_date_str, end_date_str)
-            self.monitor_strategy_5(code, strategy, start_date_str, end_date_str)
-        print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
-
-    def monitor(self):
-        strategy = Strategy()
-        # end_date = self.get_valid_end_date()
-        end_date = datetime.now().date()
-        start_date = end_date - timedelta(days=minus_days)
-        start_date_str = start_date.strftime(format_date)
-        end_date_str = end_date.strftime(format_date)
-        # prev_end_date = end_date - timedelta(days=1)
-        prev_end_date = self.get_valid_end_date(end_date - timedelta(days=1))
-        prev_end_date_str = prev_end_date.strftime(format_date)
-        now_hour = datetime.now().hour
-        # end_date_str = end_date_str if now_hour >= 15 else prev_end_date_str
-        # code_list = self.get_top_pct_chg_code_list(prev_end_date_str)
-        if now_hour >= 15:
-            code_list = self.get_top_pct_chg_code_list(end_date_str)
-        else:
-            code_list = self.get_top_pct_chg_code_list(prev_end_date_str)
-        end_date_str = end_date_str if now_hour >= 15 else prev_end_date_str
-        print('monitor, {}--->{}, code_list: {}'.format(start_date_str, end_date_str, len(code_list)))
-        if not code_list:
-            print('code_list is empty, break!!!')
-        for code in code_list:
-            self.count += 1
-            self.monitor_strategy_4(code, strategy, start_date_str, end_date_str)
-        print('count: {}, e_count: {}'.format(self.count, strategy.e_count))
+            if 'ST' in name:
+                exclude_code_list.append(code)
+                continue
+            new_stock_list_kline.append(stock_k_line)
+        return new_stock_list_kline
 
     def get_day_range_stock_list(self, end_date, min_day, max_day):
         days = 1
@@ -218,30 +120,60 @@ class Chooser(object):
         stock_list = self.get_day_range_stock_list(end_date, min_day=min_day, max_day=14)
         sleep_time = 30
         exclude_stock_list = []
+        stock_value_checked = False
         while True:
-            act_count, idx = 0, 0
-            for idx, code in enumerate(stock_list):
-                if idx % 100 == 0 and idx != 0:
-                    print('idx: {}, act_count: {}'.format(idx, act_count))
+            filter_stock_list = []
+            for code in stock_list:
                 if code in exclude_stock_list:
                     continue
-                stock_value = self.ds.get_stock_value(code)
-                if stock_value > stock_value_max or stock_value < stock_value_min:
-                    if code not in exclude_stock_list:
+                filtered = self.ds.is_code_filtered(code)
+                if filtered:
+                    continue
+                filter_stock_list.append(code)
+            if not stock_value_checked:
+                stocks_base_info = self.ds.get_stocks_base_info(filter_stock_list)
+                for base_info in stocks_base_info.iterrows():
+                    stock_value_checked = True
+                    code = base_info[1][0]
+                    stock_value = base_info[1][4] / 10000 / 10000
+                    if stock_value > stock_value_max or stock_value < stock_value_min:
                         exclude_stock_list.append(code)
-                    continue
-                k_line_list = self.get_valid_k_line_list(code, start_date_str, end_date_str)
-                if not k_line_list:
-                    continue
-                name = k_line_list[0]['name']
-                if 'ST' in name:
-                    print(name)
-                    continue
-                act_count += 1
-                strategy_6_ok = strategy.strategy_match_6(code, k_line_list, exclude_stock_list, m_day=min_day)
+                        if code in filter_stock_list:
+                            filter_stock_list.remove(code)
+
+            stock_list_kline_list = self.get_valid_stock_list_kline_list(
+                filter_stock_list, start_date_str, end_date_str, exclude_stock_list)
+            for stock_kilne in stock_list_kline_list:
+                code = stock_kilne[-1]['code']
+                strategy_6_ok = strategy.strategy_match_6(code, stock_kilne, exclude_stock_list, m_day=min_day)
                 if strategy_6_ok:
                     print('join strategy_6 stock, code: {}'.format(code))
-            print('idx: {}, act_count: {}, sleep {}'.format(idx, act_count, sleep_time))
+            print('now: {}, sleep: {}'.format(datetime.now(), sleep_time))
+            time.sleep(sleep_time)
+
+            # filtered_stock_list = []
+            # for idx, code in enumerate(stock_list):
+            #     if code in exclude_stock_list:
+            #         continue
+            #     # stock_value = self.ds.get_stock_value(code)
+            #     # if stock_value > stock_value_max or stock_value < stock_value_min:
+            #     #     if code not in exclude_stock_list:
+            #     #         exclude_stock_list.append(code)
+            #     #     continue
+            #     filtered_stock_list.append(code)
+            # print('total_count: {}, act_count: {}'.format(len(stock_list), len(filtered_stock_list)))
+            #     k_line_list = self.get_valid_k_line_list(code, start_date_str, end_date_str)
+            #     if not k_line_list:
+            #         continue
+            #     name = k_line_list[0]['name']
+            #     if 'ST' in name:
+            #         print(name)
+            #         continue
+            #     act_count += 1
+            #     strategy_6_ok = strategy.strategy_match_6(code, k_line_list, exclude_stock_list, m_day=min_day)
+            #     if strategy_6_ok:
+            #         print('join strategy_6 stock, code: {}'.format(code))
+            # print('idx: {}, act_count: {}, sleep {}'.format(idx, act_count, sleep_time))
             time.sleep(sleep_time)
 
 

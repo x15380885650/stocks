@@ -65,8 +65,10 @@ class EfDataSource(DataSource):
         end_date = end_date.replace('-', '')
         data = ef.stock.get_quote_history(code_list, beg=start_date, end=end_date, fqt=0)
         for code, df in data.items():
+            k_line_list = []
             for s in df.iterrows():
                 arr = s[1]
+                name = arr[0]
                 code = arr[1]
                 date = arr[2]
                 _open = arr[3]
@@ -78,9 +80,10 @@ class EfDataSource(DataSource):
                 amp = arr[9]
                 pct_chg = arr[10]
                 turn = arr[12]
-                stock_kline_history_list.append(
+                k_line_list.append(
                     {'code': code, 'date': date, 'open': _open, 'close': close, 'high': high, 'low': low,
-                     'volume': volume, 'amount': amount, 'pct_chg': pct_chg, 'turn': turn, 'amp': amp})
+                     'volume': volume, 'amount': amount, 'pct_chg': pct_chg, 'turn': turn, 'amp': amp, 'name': name})
+            stock_kline_history_list.append(k_line_list)
         return stock_kline_history_list
 
     def get_daily_billboard(self, start_date, end_date):
@@ -90,6 +93,10 @@ class EfDataSource(DataSource):
         base_info = ef.stock.get_base_info(code)
         stock_value = base_info[4] / 10000 / 10000
         return stock_value
+
+    def get_stocks_base_info(self, code_list):
+        base_info_list = ef.stock.get_base_info(code_list)
+        return base_info_list
 
 
 
