@@ -1,4 +1,5 @@
 import os
+from collections import defaultdict
 from datetime import datetime, timedelta
 from itertools import islice
 from chinese_calendar import is_holiday, is_workday
@@ -7,6 +8,7 @@ from data_source_ef import EfDataSource
 from strategy import Strategy
 from constants import pct_change_max_i, pct_change_max_j
 from dumper_loader import load_data_append_by_json_dump, save_data_list_append_by_json_dump
+
 
 test_stock_list = [
 ]
@@ -121,6 +123,7 @@ class Chooser(object):
         sleep_time = 30
         exclude_stock_list = []
         stock_value_checked = False
+        record_stock_dict = defaultdict(int)
         while True:
             filter_stock_list = []
             for code in stock_list:
@@ -147,35 +150,12 @@ class Chooser(object):
                 code = stock_kilne[-1]['code']
                 strategy_6_ok = strategy.strategy_match_6(code, stock_kilne, exclude_stock_list, m_day=min_day)
                 if strategy_6_ok:
-                    print('join strategy_6 stock, code: {}'.format(code))
+                    r_count = record_stock_dict.get(code, 0)
+                    if r_count <= 10:
+                        record_stock_dict[code] += 1
+                        print('join strategy_6 stock, code: {}'.format(code))
             print('now: {}, sleep: {}'.format(datetime.now(), sleep_time))
             time.sleep(sleep_time)
-
-            # filtered_stock_list = []
-            # for idx, code in enumerate(stock_list):
-            #     if code in exclude_stock_list:
-            #         continue
-            #     # stock_value = self.ds.get_stock_value(code)
-            #     # if stock_value > stock_value_max or stock_value < stock_value_min:
-            #     #     if code not in exclude_stock_list:
-            #     #         exclude_stock_list.append(code)
-            #     #     continue
-            #     filtered_stock_list.append(code)
-            # print('total_count: {}, act_count: {}'.format(len(stock_list), len(filtered_stock_list)))
-            #     k_line_list = self.get_valid_k_line_list(code, start_date_str, end_date_str)
-            #     if not k_line_list:
-            #         continue
-            #     name = k_line_list[0]['name']
-            #     if 'ST' in name:
-            #         print(name)
-            #         continue
-            #     act_count += 1
-            #     strategy_6_ok = strategy.strategy_match_6(code, k_line_list, exclude_stock_list, m_day=min_day)
-            #     if strategy_6_ok:
-            #         print('join strategy_6 stock, code: {}'.format(code))
-            # print('idx: {}, act_count: {}, sleep {}'.format(idx, act_count, sleep_time))
-            time.sleep(sleep_time)
-
 
 if __name__ == '__main__':
     c = Chooser()
