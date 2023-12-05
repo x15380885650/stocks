@@ -111,12 +111,14 @@ class Chooser(object):
             if batch:
                 kline_history_list = self.ds.get_stock_list_kline_history(batch, end_date_str, end_date_str)
                 for stock_kline in kline_history_list:
-                    last_date = stock_kline['date']
-                    code = stock_kline['code']
+                    if not stock_kline:
+                        continue
+                    last_date = stock_kline[-1]['date']
+                    code = stock_kline[-1]['code']
                     if last_date != end_date_str:
                         print('code: {}, last_date: {} != end_date_str: {}'.format(code, last_date, end_date_str))
                         continue
-                    latest_pct_chg = float(stock_kline['pct_chg'])
+                    latest_pct_chg = float(stock_kline[-1]['pct_chg'])
                     pct_change_max = self.get_pct_change_max(code)
                     if latest_pct_chg < pct_change_max:
                         continue
