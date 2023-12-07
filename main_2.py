@@ -7,7 +7,7 @@ from data_source_bao import BaoDataSource
 from data_source_ef import EfDataSource
 from strategy import Strategy
 from constants import pct_change_max_i, pct_change_max_j
-from dumper_loader import load_data_append_by_json_dump, save_data_by_json_dump
+from dumper_loader import load_data_append_by_json_dump, save_data_append_by_json_dump
 from email_helper.email_sender import EmailSender
 
 # https://github.com/mouday/email_helper
@@ -124,7 +124,7 @@ class Chooser(object):
         stock_list = self.get_day_range_stock_list(end_date, min_day=min_day, max_day=max_day)
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
         notified_file_path = '{}/{}_codes_notified.json'.format(file_folder, end_date_str)
-        notified_list = load_data_append_by_json_dump(notified_file_path, ret_type=[])
+        notified_set = set(load_data_append_by_json_dump(notified_file_path, ret_type=[]))
         sleep_time = 20
         exclude_stock_list = []
         stock_value_checked = False
@@ -132,15 +132,6 @@ class Chooser(object):
         while True:
             filter_stock_list = []
             for code in stock_list:
-
-                strategy_6_ok = True
-                if strategy_6_ok and code not in notified_list:
-                    self.notify(code)
-                    print('join strategy_6 stock, code: {}'.format(code))
-                    notified_list.append(code)
-                    save_data_by_json_dump(notified_file_path, notified_list)
-
-
                 if code in exclude_stock_list:
                     continue
                 filtered = self.ds.is_code_filtered(code)
@@ -163,16 +154,11 @@ class Chooser(object):
             for stock_kilne in stock_list_kline_list:
                 code = stock_kilne[-1]['code']
                 strategy_6_ok = strategy.strategy_match_6(code, stock_kilne, exclude_stock_list, m_day=min_day)
-                if strategy_6_ok and code not in notified_list:
+                if strategy_6_ok and code not in notified_set:
                     self.notify(code)
                     print('join strategy_6 stock, code: {}'.format(code))
-                    save_data_by_json_dump(notified_file_path, notified_list)
-                    notified_list.append(code)
-                    # r_count = record_stock_dict.get(code, 0)
-                    #
-                    # if r_count <= 10:
-                    #     record_stock_dict[code] += 1
-                    #     print('join strategy_6 stock, code: {}'.format(code))
+                    save_data_append_by_json_dump(notified_file_path, code)
+                    notified_set.add(code)
             print('now: {}, sleep: {}'.format(datetime.now(), sleep_time))
             time.sleep(sleep_time)
 
@@ -180,7 +166,8 @@ class Chooser(object):
         email = EmailSender("xcg19865@126.com", "HIPJLVTIFUZQKEYB", server='smtp.126.com')
         email.set_header(code)
         email.add_text(code)
-        email.add_receiver("xucg021@163.com ")
+        # email.add_receiver("531309575@qq.com")
+        email.add_receiver("xucg025@qq.com")
         email.send()
 
 
