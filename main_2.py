@@ -125,10 +125,9 @@ class Chooser(object):
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
         notified_file_path = '{}/{}_codes_notified.json'.format(file_folder, end_date_str)
         notified_set = set(load_data_append_by_json_dump(notified_file_path, ret_type=[]))
-        sleep_time = 20
+        sleep_time = 10
         exclude_stock_list = []
         stock_value_checked = False
-        record_stock_dict = defaultdict(int)
         while True:
             filter_stock_list = []
             for code in stock_list:
