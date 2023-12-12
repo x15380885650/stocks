@@ -120,7 +120,7 @@ class Chooser(object):
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
-        min_day, max_day = 4, 14
+        min_day, max_day = 3, 14
         stock_list = self.get_day_range_stock_list(end_date, min_day=min_day, max_day=max_day)
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
         notified_file_path = '{}/{}_codes_notified.json'.format(file_folder, end_date_str)
@@ -129,35 +129,38 @@ class Chooser(object):
         exclude_stock_list = []
         stock_value_checked = False
         while True:
-            filter_stock_list = []
-            for code in stock_list:
-                if code in exclude_stock_list:
-                    continue
-                filtered = self.ds.is_code_filtered(code)
-                if filtered:
-                    continue
-                filter_stock_list.append(code)
-            if not stock_value_checked:
-                stocks_base_info = self.ds.get_stocks_base_info(filter_stock_list)
-                for base_info in stocks_base_info.iterrows():
-                    stock_value_checked = True
-                    code = base_info[1][0]
-                    stock_value = base_info[1][4] / 10000 / 10000
-                    if stock_value > stock_value_max or stock_value < stock_value_min:
-                        exclude_stock_list.append(code)
-                        if code in filter_stock_list:
-                            filter_stock_list.remove(code)
+            try:
+                filter_stock_list = []
+                for code in stock_list:
+                    if code in exclude_stock_list:
+                        continue
+                    filtered = self.ds.is_code_filtered(code)
+                    if filtered:
+                        continue
+                    filter_stock_list.append(code)
+                if not stock_value_checked:
+                    stocks_base_info = self.ds.get_stocks_base_info(filter_stock_list)
+                    for base_info in stocks_base_info.iterrows():
+                        stock_value_checked = True
+                        code = base_info[1][0]
+                        stock_value = base_info[1][4] / 10000 / 10000
+                        if stock_value > stock_value_max or stock_value < stock_value_min:
+                            exclude_stock_list.append(code)
+                            if code in filter_stock_list:
+                                filter_stock_list.remove(code)
 
-            stock_list_kline_list = self.get_valid_stock_list_kline_list(
-                filter_stock_list, start_date_str, end_date_str, exclude_stock_list)
-            for stock_kilne in stock_list_kline_list:
-                code = stock_kilne[-1]['code']
-                strategy_6_ok = strategy.strategy_match_6(code, stock_kilne, exclude_stock_list, m_day=min_day)
-                if strategy_6_ok and code not in notified_set:
-                    self.notify(code)
-                    print('join strategy_6 stock, code: {}'.format(code))
-                    save_data_append_by_json_dump(notified_file_path, code)
-                    notified_set.add(code)
+                stock_list_kline_list = self.get_valid_stock_list_kline_list(
+                    filter_stock_list, start_date_str, end_date_str, exclude_stock_list)
+                for stock_kilne in stock_list_kline_list:
+                    code = stock_kilne[-1]['code']
+                    strategy_6_ok = strategy.strategy_match_6(code, stock_kilne, exclude_stock_list, m_day=min_day)
+                    if strategy_6_ok and code not in notified_set:
+                        self.notify(code)
+                        print('join strategy_6 stock, code: {}'.format(code))
+                        save_data_append_by_json_dump(notified_file_path, code)
+                        notified_set.add(code)
+            except Exception as e:
+                print(e)
             print('now: {}, sleep: {}'.format(datetime.now(), sleep_time))
             time.sleep(sleep_time)
 

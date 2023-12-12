@@ -77,37 +77,39 @@ class Chooser(object):
         return end_date
 
     def get_top_pct_chg_code_list(self, end_date_str):
-        # return ['603336', '603629', '601595', '603106', '601900', '603283', '601136', '600864', '600610', '600531',
-        #         '600468', '600361', '600127', '002905', '002787', '002670', '002599', '002480', '002355', '002235',
-        #         '002084', '000936', '000719']
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
         if not os.path.exists(file_folder):
             os.makedirs(file_folder)
         file_path = '{}/{}_codes.json'.format(file_folder, end_date_str)
-        if os.path.exists(file_path):
+        file_path_all = '{}/{}_codes_all.json'.format(file_folder, end_date_str)
+        file_path_already = '{}/{}_codes_already.json'.format(file_folder, end_date_str)
+        if os.path.exists(file_path) and not os.path.exists(file_path_already) and not os.path.exists(file_path_all):
             print('get_top_pct_chg_code_list by file_path: {}'.format(file_path))
             top_pct_chg_code_list = load_data_append_by_json_dump(file_path, ret_type=[])
             # print(top_pct_chg_code_list)
             return top_pct_chg_code_list
-
-        code_list = self.ds.get_all_stock_code_list(end_date_str)
-        top_pct_chg_code_list = []
-        count = 0
+        all_code_list = load_data_append_by_json_dump(file_path_all, ret_type=[])
+        already_code_list = load_data_append_by_json_dump(file_path_already, ret_type=[])
         filtered_code_list = []
-        for index, code in enumerate(code_list):
+        if not all_code_list:
+            all_code_list = self.ds.get_all_stock_code_list(end_date_str)
+            save_data_list_append_by_json_dump(file_path_all, all_code_list)
+        for index, code in enumerate(all_code_list):
             filtered = self.ds.is_code_filtered(code)
             if filtered:
                 continue
+            if code in already_code_list:
+                continue
             filtered_code_list.append(code)
-        print('all_code_list: {}, filtered_code_list: {}'.format(len(code_list), len(filtered_code_list)))
-        # filtered_code_list = filtered_code_list[0: 500]
+        print('all_code_list: {}, filtered_code_list: {}'.format(len(all_code_list), len(filtered_code_list)))
         stream = iter(filtered_code_list)
         batch_size = 1000
+        count = 0
         while True:
+            batch_top_pct_chg_code_list = []
+            batch_already_code_list = []
             batch = list(islice(stream, 0, batch_size))
             count += len(batch)
-            if count % 1000 == 0 and count != 0:
-                print('count: {}, top_pct_chg_count: {}'.format(count, len(top_pct_chg_code_list)))
             if batch:
                 kline_history_list = self.ds.get_stock_list_kline_history(batch, end_date_str, end_date_str)
                 for stock_kline in kline_history_list:
@@ -115,6 +117,7 @@ class Chooser(object):
                         continue
                     last_date = stock_kline[-1]['date']
                     code = stock_kline[-1]['code']
+                    batch_already_code_list.append(code)
                     if last_date != end_date_str:
                         print('code: {}, last_date: {} != end_date_str: {}'.format(code, last_date, end_date_str))
                         continue
@@ -122,13 +125,15 @@ class Chooser(object):
                     pct_change_max = self.get_pct_change_max(code)
                     if latest_pct_chg < pct_change_max:
                         continue
-                    top_pct_chg_code_list.append(code)
+                    batch_top_pct_chg_code_list.append(code)
+                save_data_list_append_by_json_dump(file_path, batch_top_pct_chg_code_list)
+                save_data_list_append_by_json_dump(file_path_already, batch_already_code_list)
+                print('this loop: top_pct_chg_code_count: {}'.format(len(batch_top_pct_chg_code_list)))
             else:
+                os.remove(file_path_all)
+                os.remove(file_path_already)
                 break
-        print('count: {}, top_pct_chg_count: {}'.format(count, len(top_pct_chg_code_list)))
-        if top_pct_chg_code_list:
-            save_data_list_append_by_json_dump(file_path, top_pct_chg_code_list)
-        return top_pct_chg_code_list
+        return []
 
     def get_valid_k_line_list(self, code, start_date_str, end_date_str):
         filtered = self.ds.is_code_filtered(code)
