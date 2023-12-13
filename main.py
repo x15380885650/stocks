@@ -76,7 +76,40 @@ class Chooser(object):
                 break
         return end_date
 
-    def get_top_pct_chg_code_list(self, end_date_str):
+    def get_top_pct_chg_code_list_quick(self, end_date_str):
+        file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
+        if not os.path.exists(file_folder):
+            os.makedirs(file_folder)
+        file_path = '{}/{}_codes.json'.format(file_folder, end_date_str)
+        if os.path.exists(file_path):
+            print('get_top_pct_chg_code_list by file_path: {}'.format(file_path))
+            top_pct_chg_code_list = load_data_append_by_json_dump(file_path, ret_type=[])
+            # print(top_pct_chg_code_list)
+            return top_pct_chg_code_list
+        stock_list = self.ds.get_stocks_realtime_quotes()
+        filtered_list = []
+        for stock in stock_list.iterrows():
+            code = stock[1][0]
+            name = stock[1][1]
+            filtered = self.ds.is_code_filtered(code)
+            if filtered:
+                continue
+            if 'ST' in name:
+                continue
+            try:
+                pct_chg = float(stock[1][2])
+                pct_change_max = self.get_pct_change_max(code)
+                if pct_chg < pct_change_max:
+                    continue
+                filtered_list.append(code)
+            except Exception as e:
+                # print(e)
+                continue
+        if filtered_list:
+            save_data_list_append_by_json_dump(file_path, filtered_list)
+        return filtered_list
+
+    def get_top_pct_chg_code_list_slow(self, end_date_str):
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
         if not os.path.exists(file_folder):
             os.makedirs(file_folder)
@@ -134,6 +167,10 @@ class Chooser(object):
                 os.remove(file_path_already)
                 break
         return []
+
+    def get_top_pct_chg_code_list(self, end_date_str):
+        return self.get_top_pct_chg_code_list_quick(end_date_str)
+        # return self.get_top_pct_chg_code_list_slow(end_date_str)
 
     def get_valid_k_line_list(self, code, start_date_str, end_date_str):
         filtered = self.ds.is_code_filtered(code)

@@ -98,5 +98,8 @@ class EfDataSource(DataSource):
         base_info_list = ef.stock.get_base_info(code_list)
         return base_info_list
 
+    def get_stocks_realtime_quotes(self):
+        realtime_quotes = ef.stock.get_realtime_quotes()
+        return realtime_quotes
 
 

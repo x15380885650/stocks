@@ -598,3 +598,30 @@ class Strategy(object):
         if latest_pct_chg < 7:
             return False
         return True
+
+    def strategy_match_7(self, code, k_line_list, m_day):
+        k_line_list_m_day = k_line_list[-m_day:]
+        now_high_price = k_line_list[-1]['high']
+        x_max_high_price = self.get_max_high_price(k_line_list_m_day[:-1])
+        max_price_ratio = (now_high_price - x_max_high_price) / x_max_high_price * 100
+        if max_price_ratio <= 0:
+            return False
+        pct_chg_list = []
+        for k_line in k_line_list_m_day:
+            pct_chg = k_line['pct_chg']
+            if isinstance(pct_chg, str) and not pct_chg:
+                continue
+            pct_chg_max = pct_change_max_i
+            if code.startswith('sz.30') or code.startswith('30'):
+                pct_chg_max = pct_change_max_j
+            if float(pct_chg) >= pct_chg_max:
+                pct_chg_list.append(1)
+            else:
+                pct_chg_list.append(0)
+        index_list = []
+        for i, v in enumerate(pct_chg_list):
+            if v == 1:
+                index_list.append(i)
+        if len(index_list) >= 1:
+            return False
+        return True

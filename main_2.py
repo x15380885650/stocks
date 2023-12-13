@@ -102,7 +102,7 @@ class Chooser(object):
             if len(valid_file_path_list) >= 30:
                 break
             days += 1
-        range_file_path_list = valid_file_path_list[min_day:max_day]
+        range_file_path_list = valid_file_path_list[min_day:max_day+1]
         for file_path in range_file_path_list:
             print(file_path)
             top_pct_chg_code_list = load_data_append_by_json_dump(file_path, ret_type=[])
@@ -120,7 +120,7 @@ class Chooser(object):
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
-        min_day, max_day = 4, 14
+        min_day, max_day = 4, 9
         stock_list = self.get_day_range_stock_list(end_date, min_day=min_day, max_day=max_day)
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
         notified_file_path = '{}/{}_codes_notified.json'.format(file_folder, end_date_str)
