@@ -17,7 +17,7 @@ test_stock_list = [
 ]
 
 format_date = '%Y-%m-%d'
-minus_days = 30 * 2.5
+minus_days = 30 * 6
 
 
 class Chooser(object):
@@ -114,7 +114,7 @@ class Chooser(object):
                     monitor_stock_list, start_date_str, end_date_str)
                 for stock_kline in stock_list_kline_list:
                     code = stock_kline[-1]['code']
-                    strategy_7_ok = strategy.strategy_match_7(code, stock_kline, m_day=45)
+                    strategy_7_ok = strategy.strategy_match_7(code, stock_kline, m_day=90)
                     if strategy_7_ok and code not in notified_set:
                         self.notify(code)
                         print('join strategy_7_ok, code: {}'.format(code))
