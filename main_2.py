@@ -6,7 +6,7 @@ from chinese_calendar import is_holiday, is_workday
 from data_source_bao import BaoDataSource
 from data_source_ef import EfDataSource
 from strategy import Strategy
-from constants import pct_change_max_i, pct_change_max_j
+from constants import pct_change_max_i, pct_change_max_j, stock_value_max, stock_value_min
 from dumper_loader import load_data_append_by_json_dump, save_data_append_by_json_dump
 from email_helper.email_sender import EmailSender
 
@@ -17,8 +17,7 @@ test_stock_list = [
 
 format_date = '%Y-%m-%d'
 minus_days = 30 * 2.5
-stock_value_max = 100
-stock_value_min = 10
+
 
 
 class Chooser(object):
@@ -132,6 +131,8 @@ class Chooser(object):
             try:
                 filter_stock_list = []
                 for code in stock_list:
+                    # if code != '001300':
+                    #     continue
                     if code in exclude_stock_list:
                         continue
                     filtered = self.ds.is_code_filtered(code)

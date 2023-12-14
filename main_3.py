@@ -6,8 +6,9 @@ from chinese_calendar import is_holiday, is_workday
 from data_source_bao import BaoDataSource
 from data_source_ef import EfDataSource
 from strategy import Strategy
-from constants import pct_change_max_i, pct_change_max_j, latest_close_price_max, latest_close_price_min
-from dumper_loader import load_data_append_by_json_dump, save_data_append_by_json_dump, save_data_list_append_by_json_dump
+from constants import pct_change_max_i, pct_change_max_j, latest_close_price_max, latest_close_price_min, \
+    stock_value_min, stock_value_max
+from dumper_loader import load_data_append_by_json_dump, save_data_append_by_json_dump
 from email_helper.email_sender import EmailSender
 
 # https://github.com/mouday/email_helper
@@ -17,8 +18,6 @@ test_stock_list = [
 
 format_date = '%Y-%m-%d'
 minus_days = 30 * 2.5
-stock_value_max = 100
-stock_value_min = 10
 
 
 class Chooser(object):

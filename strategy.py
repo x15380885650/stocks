@@ -564,9 +564,27 @@ class Strategy(object):
         # # print('prev_prev_turn: {}, prev_turn: {}, now_turn: {}, code: {}'.format(prev_prev_turn, prev_turn, now_turn, code))
         # return True
 
+    def get_latest_top_pct_change_close_price(self, code, k_line_list):
+        for k_line in k_line_list[-2:0:-1]:
+            pct_chg = k_line['pct_chg']
+            if isinstance(pct_chg, str) and not pct_chg:
+                continue
+            pct_chg_max = pct_change_max_i
+            if code.startswith('sz.30') or code.startswith('30'):
+                pct_chg_max = pct_change_max_j
+            if float(pct_chg) >= pct_chg_max:
+                return k_line['close']
+        return -1
+
     def strategy_match_6(self, code, k_line_list, exclude_stock_list, m_day):
         latest_close_price = float(k_line_list[-1]['close'])
         if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
+            if code not in exclude_stock_list:
+                exclude_stock_list.append(code)
+            return False
+        close_price_a = self.get_latest_top_pct_change_close_price(code, k_line_list)
+        now_ideal_close_price = k_line_list[-2]['close'] * 1.1
+        if now_ideal_close_price < close_price_a:
             if code not in exclude_stock_list:
                 exclude_stock_list.append(code)
             return False
@@ -588,8 +606,6 @@ class Strategy(object):
         for i, v in enumerate(pct_chg_list):
             if v == 1:
                 index_list.append(i)
-        # if len(index_list) not in [1]:
-        #     return False
         if len(index_list) >= 1:
             if index_list[-1] < m_day and code not in exclude_stock_list:
                 exclude_stock_list.append(code)
@@ -601,9 +617,12 @@ class Strategy(object):
 
     def strategy_match_7(self, code, k_line_list, m_day):
         k_line_list_m_day = k_line_list[-m_day:]
-        now_high_price = k_line_list[-1]['high']
-        x_max_high_price = self.get_max_high_price(k_line_list_m_day[:-1])
-        max_price_ratio = (now_high_price - x_max_high_price) / x_max_high_price * 100
+        # now_high_price = k_line_list[-1]['high']
+        # x_max_high_price = self.get_max_high_price(k_line_list_m_day[:-1])
+        prev_close_price = k_line_list[-2]['close']
+        now_ideal_close_price = prev_close_price * 1.1
+        x_max_close_price = self.get_max_close_price(k_line_list_m_day[:-1])
+        max_price_ratio = (now_ideal_close_price - x_max_close_price) / x_max_close_price * 100
         if max_price_ratio <= 0:
             return False
         pct_chg_list = []
