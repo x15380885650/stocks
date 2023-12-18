@@ -85,7 +85,7 @@ class Chooser(object):
             print('get_top_pct_chg_code_list by file_path: {}'.format(file_path))
             top_pct_chg_code_list = load_data_append_by_json_dump(file_path, ret_type=[])
             # print(top_pct_chg_code_list)
-            return top_pct_chg_code_list
+            # return top_pct_chg_code_list
         stock_list = self.ds.get_stocks_realtime_quotes()
         filtered_list = []
         for stock in stock_list.iterrows():

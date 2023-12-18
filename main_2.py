@@ -152,9 +152,9 @@ class Chooser(object):
 
                 stock_list_kline_list = self.get_valid_stock_list_kline_list(
                     filter_stock_list, start_date_str, end_date_str, exclude_stock_list)
-                for stock_kilne in stock_list_kline_list:
-                    code = stock_kilne[-1]['code']
-                    strategy_6_ok = strategy.strategy_match_6(code, stock_kilne, exclude_stock_list, m_day=min_day)
+                for stock_kline in stock_list_kline_list:
+                    code = stock_kline[-1]['code']
+                    strategy_6_ok = strategy.strategy_match_6(code, stock_kline, exclude_stock_list, m_day=min_day)
                     if strategy_6_ok and code not in notified_set:
                         self.notify(code)
                         print('join strategy_6 stock, code: {}'.format(code))

@@ -105,7 +105,7 @@ class Chooser(object):
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
         notified_file_path = '{}/{}_codes_notified_a.json'.format(file_folder, end_date_str)
         notified_set = set(load_data_append_by_json_dump(notified_file_path, ret_type=[]))
-        sleep_time = 10
+        sleep_time = 5
         while True:
             try:
                 monitor_stock_list = self.get_monitor_code_list()

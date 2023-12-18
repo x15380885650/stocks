@@ -583,7 +583,7 @@ class Strategy(object):
                 exclude_stock_list.append(code)
             return False
         close_price_a = self.get_latest_top_pct_change_close_price(code, k_line_list)
-        now_ideal_close_price = k_line_list[-2]['close'] * 1.1
+        now_ideal_close_price = k_line_list[-2]['close'] * 1.098
         if now_ideal_close_price < close_price_a:
             if code not in exclude_stock_list:
                 exclude_stock_list.append(code)
