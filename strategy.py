@@ -611,7 +611,7 @@ class Strategy(object):
                 exclude_stock_list.append(code)
             return False
         latest_pct_chg = k_line_list_m_day[-1]['pct_chg']
-        if latest_pct_chg < 7:
+        if latest_pct_chg < 5:
             return False
         return True
 
