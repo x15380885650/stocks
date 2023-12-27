@@ -69,6 +69,8 @@ class Chooser(object):
         filtered_list = []
         for stock in stock_list.iterrows():
             code = stock[1][0]
+            # if code != '000536':
+            #     continue
             name = stock[1][1]
             filtered = self.ds.is_code_filtered(code)
             if filtered:
@@ -77,7 +79,7 @@ class Chooser(object):
                 continue
             try:
                 pct_chg = float(stock[1][2])
-                if pct_chg < 7:
+                if pct_chg < 5:
                     continue
                 pct_change_max = self.get_pct_change_max(code)
                 if pct_chg >= pct_change_max:
@@ -114,7 +116,7 @@ class Chooser(object):
                     monitor_stock_list, start_date_str, end_date_str)
                 for stock_kline in stock_list_kline_list:
                     code = stock_kline[-1]['code']
-                    strategy_7_ok = strategy.strategy_match_7(code, stock_kline, m_day=90)
+                    strategy_7_ok = strategy.strategy_match_7(code, stock_kline, m_day=35)
                     if strategy_7_ok and code not in notified_set:
                         self.notify(code)
                         print('join strategy_7_ok, code: {}'.format(code))
