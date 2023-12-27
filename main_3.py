@@ -100,7 +100,28 @@ class Chooser(object):
         import time
         strategy = Strategy()
         end_date = datetime.now().date()
-        # end_date = datetime.strptime('2023-11-10', '%Y-%m-%d')
+
+        # end_date = datetime.strptime('2023-12-21', '%Y-%m-%d')
+        # monitor_stock = '002748'
+
+        # end_date = datetime.strptime('2023-11-02', '%Y-%m-%d')
+        # monitor_stock = '002238'
+
+        # end_date = datetime.strptime('2023-12-07', '%Y-%m-%d')
+        # monitor_stock = '603660'
+
+        # end_date = datetime.strptime('2023-12-06', '%Y-%m-%d')
+        # monitor_stock = '600715'
+
+        # end_date = datetime.strptime('2023-11-24', '%Y-%m-%d')
+        # monitor_stock = '603536'
+
+        # end_date = datetime.strptime('2023-12-15', '%Y-%m-%d')
+        # monitor_stock = '603789'
+
+        # end_date = datetime.strptime('2023-11-28', '%Y-%m-%d')
+        # monitor_stock = '600250'
+
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
@@ -111,6 +132,7 @@ class Chooser(object):
         while True:
             try:
                 monitor_stock_list = self.get_monitor_code_list()
+                # monitor_stock_list = [monitor_stock]
                 print('monitor_stock_list_len: {}'.format(len(monitor_stock_list)))
                 stock_list_kline_list = self.get_valid_stock_list_kline_list(
                     monitor_stock_list, start_date_str, end_date_str)
