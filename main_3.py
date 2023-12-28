@@ -100,34 +100,32 @@ class Chooser(object):
         import time
         strategy = Strategy()
         end_date = datetime.now().date()
+        m_day = 35
+        test_code_dict = {
+            # '002456': '2023-09-28',
+            # '002238': '2023-11-02',
+            # '603536': '2023-11-24',
+            # '600250': '2023-11-28',
+            # '600678': '2023-12-05',
+            # '600715': '2023-12-06',
+            # '603660': '2023-12-07',
+            # '603789': '2023-12-15',
+            # '002748': '2023-12-21',
 
-        # end_date = datetime.strptime('2023-09-28', '%Y-%m-%d')
-        # monitor_stock = '002456'
+            # '600319': '2023-12-28',
+        }
 
-        # end_date = datetime.strptime('2023-12-05', '%Y-%m-%d')
-        # monitor_stock = '600678'
-
-        # end_date = datetime.strptime('2023-12-21', '%Y-%m-%d')
-        # monitor_stock = '002748'
-
-        # end_date = datetime.strptime('2023-11-02', '%Y-%m-%d')
-        # monitor_stock = '002238'
-
-        # end_date = datetime.strptime('2023-12-07', '%Y-%m-%d')
-        # monitor_stock = '603660'
-
-        # end_date = datetime.strptime('2023-12-06', '%Y-%m-%d')
-        # monitor_stock = '600715'
-
-        # end_date = datetime.strptime('2023-11-24', '%Y-%m-%d')
-        # monitor_stock = '603536'
-
-        # end_date = datetime.strptime('2023-12-15', '%Y-%m-%d')
-        # monitor_stock = '603789'
-
-        # end_date = datetime.strptime('2023-11-28', '%Y-%m-%d')
-        # monitor_stock = '600250'
-
+        if test_code_dict:
+            for stock_code, end_date_str in test_code_dict.items():
+                test_end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+                test_start_date = test_end_date - timedelta(days=minus_days)
+                start_date_str = test_start_date.strftime(format_date)
+                stock_list_kline_list = self.get_valid_stock_list_kline_list(
+                    [stock_code], start_date_str, end_date_str)
+                for stock_kline in stock_list_kline_list:
+                    code = stock_kline[-1]['code']
+                    strategy.strategy_match_7(code, stock_kline, m_day=m_day)
+            return
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
@@ -138,13 +136,12 @@ class Chooser(object):
         while True:
             try:
                 monitor_stock_list = self.get_monitor_code_list()
-                # monitor_stock_list = [monitor_stock]
                 print('monitor_stock_list_len: {}'.format(len(monitor_stock_list)))
                 stock_list_kline_list = self.get_valid_stock_list_kline_list(
                     monitor_stock_list, start_date_str, end_date_str)
                 for stock_kline in stock_list_kline_list:
                     code = stock_kline[-1]['code']
-                    strategy_7_ok = strategy.strategy_match_7(code, stock_kline, m_day=35)
+                    strategy_7_ok = strategy.strategy_match_7(code, stock_kline, m_day=m_day)
                     if strategy_7_ok and code not in notified_set:
                         self.notify(code)
                         print('join strategy_7_ok, code: {}'.format(code))

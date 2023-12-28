@@ -623,11 +623,12 @@ class Strategy(object):
         max_price_ratio = (now_ideal_close_price - x_max_close_price) / x_max_close_price * 100
         if max_price_ratio < 2:
             return False
-        avg_turn = self.get_avg_turn(k_line_list[-8:-1])
-        if avg_turn > 1.85:
+        avg_turn = self.get_avg_turn(k_line_list[-16:-1])
+        if avg_turn > 1.8:
             return False
         now_turn = k_line_list[-1]['turn']
         # print('avg_turn: {}, turn_ratio: {}, max_price_ratio: {}'.format(avg_turn, now_turn / avg_turn, max_price_ratio))
+        # return
         if float(now_turn) >= 5:
             return False
         pct_chg_list = []
