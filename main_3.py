@@ -79,7 +79,7 @@ class Chooser(object):
                 continue
             try:
                 pct_chg = float(stock[1][2])
-                if pct_chg < 5:
+                if pct_chg < 6:
                     continue
                 pct_change_max = self.get_pct_change_max(code)
                 if pct_chg >= pct_change_max:
@@ -132,7 +132,7 @@ class Chooser(object):
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
         notified_file_path = '{}/{}_codes_notified_a.json'.format(file_folder, end_date_str)
         notified_set = set(load_data_append_by_json_dump(notified_file_path, ret_type=[]))
-        sleep_time = 5
+        sleep_time = 2
         while True:
             try:
                 monitor_stock_list = self.get_monitor_code_list()
