@@ -101,6 +101,12 @@ class Chooser(object):
         strategy = Strategy()
         end_date = datetime.now().date()
 
+        # end_date = datetime.strptime('2023-09-28', '%Y-%m-%d')
+        # monitor_stock = '002456'
+
+        # end_date = datetime.strptime('2023-12-05', '%Y-%m-%d')
+        # monitor_stock = '600678'
+
         # end_date = datetime.strptime('2023-12-21', '%Y-%m-%d')
         # monitor_stock = '002748'
 

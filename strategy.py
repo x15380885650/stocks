@@ -617,13 +617,11 @@ class Strategy(object):
 
     def strategy_match_7(self, code, k_line_list, m_day):
         k_line_list_m_day = k_line_list[-m_day:]
-        # now_high_price = k_line_list[-1]['high']
-        # x_max_high_price = self.get_max_high_price(k_line_list_m_day[:-1])
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
         x_max_close_price = self.get_max_close_price(k_line_list_m_day[:-1])
         max_price_ratio = (now_ideal_close_price - x_max_close_price) / x_max_close_price * 100
-        if max_price_ratio < 4:
+        if max_price_ratio < 2:
             return False
         avg_turn = self.get_avg_turn(k_line_list[-8:-1])
         if avg_turn > 1.85:
