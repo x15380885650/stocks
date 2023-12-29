@@ -621,7 +621,7 @@ class Strategy(object):
         now_ideal_close_price = prev_close_price * 1.1
         x_max_close_price = self.get_max_close_price(k_line_list_m_day[:-1])
         max_price_ratio = (now_ideal_close_price - x_max_close_price) / x_max_close_price * 100
-        if max_price_ratio < 2:
+        if max_price_ratio < 0.5:
             return False
         avg_turn = self.get_avg_turn(k_line_list[-16:-1])
         if avg_turn > 1.8:
