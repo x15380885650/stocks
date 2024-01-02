@@ -26,6 +26,7 @@ class Chooser(object):
         self.e_count = 0
         # self.ds = BaoDataSource()
         self.ds = EfDataSource()
+        self.exclude_stock_set = set()
 
     def get_pct_change_max(self, code):
         if code.startswith('30') or code.startswith('sz.30'):
@@ -71,6 +72,8 @@ class Chooser(object):
             code = stock[1][0]
             # if code != '000536':
             #     continue
+            if code in self.exclude_stock_set:
+                continue
             name = stock[1][1]
             filtered = self.ds.is_code_filtered(code)
             if filtered:
@@ -102,17 +105,17 @@ class Chooser(object):
         end_date = datetime.now().date()
         m_day = 70
         test_code_dict = {
+            # '603106': '2023-08-04',
             # '002456': '2023-09-28',
             # '002238': '2023-11-02',
             # '603536': '2023-11-24',
             # '600250': '2023-11-28',
-            # '600678': '2023-12-05',
+            # # '600678': '2023-12-05',
             # '600715': '2023-12-06',
             # '603660': '2023-12-07',
             # '603789': '2023-12-15',
-            # # '002748': '2023-12-21',
-            #
-            # '600319': '2023-12-28',
+            # #
+            # # '600319': '2023-12-28',
         }
 
         if test_code_dict:
@@ -132,21 +135,30 @@ class Chooser(object):
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
         notified_file_path = '{}/{}_codes_notified_a.json'.format(file_folder, end_date_str)
         notified_set = set(load_data_append_by_json_dump(notified_file_path, ret_type=[]))
+        if notified_set:
+            self.exclude_stock_set.update(notified_set)
         sleep_time = 2
         while True:
             try:
                 monitor_stock_list = self.get_monitor_code_list()
                 print('monitor_stock_list_len: {}'.format(len(monitor_stock_list)))
+                if not monitor_stock_list:
+                    print('now: {}, sleep: {}'.format(datetime.now(), sleep_time))
+                    time.sleep(sleep_time)
+                    continue
                 stock_list_kline_list = self.get_valid_stock_list_kline_list(
                     monitor_stock_list, start_date_str, end_date_str)
                 for stock_kline in stock_list_kline_list:
                     code = stock_kline[-1]['code']
                     strategy_7_ok = strategy.strategy_match_7(code, stock_kline, m_day=m_day)
+                    if not strategy_7_ok:
+                        self.exclude_stock_set.add(code)
                     if strategy_7_ok and code not in notified_set:
                         self.notify(code)
                         print('join strategy_7_ok, code: {}'.format(code))
                         save_data_append_by_json_dump(notified_file_path, code)
                         notified_set.add(code)
+                        self.exclude_stock_set.add(code)
             except Exception as e:
                 print(e)
             print('now: {}, sleep: {}'.format(datetime.now(), sleep_time))

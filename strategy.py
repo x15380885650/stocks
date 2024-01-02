@@ -623,14 +623,22 @@ class Strategy(object):
         max_price_ratio = (now_ideal_close_price - x_max_close_price) / x_max_close_price * 100
         if max_price_ratio < 0.5:
             return False
-        avg_turn = self.get_avg_turn(k_line_list[-16:-1])
+        latest_half_month_k_line_list = k_line_list[-16:-1]
+        max_turn = self.get_max_turn(latest_half_month_k_line_list)
+        avg_turn = self.get_avg_turn(latest_half_month_k_line_list)
+        now_turn = k_line_list[-1]['turn']
+        turn_ratio = now_turn / avg_turn
+        # print('max_turn: {}, avg_turn: {}, now_turn: {}, turn_ratio: {}, max_price_ratio: {}, code: {}'
+        #       .format(max_turn, avg_turn, now_turn, turn_ratio, max_price_ratio, code))
         if avg_turn > 1.8:
             return False
-        now_turn = k_line_list[-1]['turn']
-        # print('avg_turn: {}, turn_ratio: {}, max_price_ratio: {}'.format(avg_turn, now_turn / avg_turn, max_price_ratio))
-        # return
-        if float(now_turn) >= 5:
+        if max_turn > 4:
             return False
+        if float(now_turn) > 4:
+            return False
+        if turn_ratio > 8:
+            return False
+        # return False
         pct_chg_list = []
         for k_line in k_line_list_m_day:
             pct_chg = k_line['pct_chg']
