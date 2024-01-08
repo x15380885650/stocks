@@ -170,8 +170,8 @@ class Chooser(object):
         return []
 
     def get_top_pct_chg_code_list(self, end_date_str):
-        # return self.get_top_pct_chg_code_list_quick(end_date_str)
-        return self.get_top_pct_chg_code_list_slow(end_date_str)
+        return self.get_top_pct_chg_code_list_quick(end_date_str)
+        # return self.get_top_pct_chg_code_list_slow(end_date_str)
 
     def get_valid_k_line_list(self, code, start_date_str, end_date_str):
         filtered = self.ds.is_code_filtered(code)
@@ -251,7 +251,7 @@ class Chooser(object):
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
-        end_date_str = '2024-01-02'
+        # end_date_str = '2024-01-02'
         # prev_end_date = end_date - timedelta(days=1)
         prev_end_date = self.get_valid_end_date(end_date - timedelta(days=1))
         prev_end_date_str = prev_end_date.strftime(format_date)
