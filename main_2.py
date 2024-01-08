@@ -67,8 +67,12 @@ class Chooser(object):
 
     def get_valid_stock_list_kline_list(self, code_list, start_date_str, end_date_str, exclude_code_list):
         stock_list_kline = self.ds.get_stock_list_kline_history(code_list, start_date_str, end_date_str)
+        if len(stock_list_kline) == 0:
+            return None
         new_stock_list_kline = []
         for stock_k_line in stock_list_kline:
+            if len(stock_k_line) == 0:
+                continue
             code = stock_k_line[-1]['code']
             name = stock_k_line[-1]['name']
             total_count = len(stock_k_line)
@@ -115,17 +119,39 @@ class Chooser(object):
         import time
         strategy = Strategy()
         end_date = datetime.now().date()
-        # end_date = datetime.strptime('2023-11-10', '%Y-%m-%d')
+        min_day, max_day = 2, 8
+        exclude_stock_list = []
+        test_code_dict = {
+            # '003015': '2023-09-19',
+            # '002771': '2023-10-16',
+            # '002176': '2023-10-19',
+            # '600178': '2023-11-23',
+            # '002786': '2023-11-10',
+            # '002323': '2024-01-05',
+        }
+
+        if test_code_dict:
+            for stock_code, end_date_str in test_code_dict.items():
+                test_end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+                test_start_date = test_end_date - timedelta(days=minus_days)
+                start_date_str = test_start_date.strftime(format_date)
+                stock_list_kline_list = self.get_valid_stock_list_kline_list(
+                    [stock_code], start_date_str, end_date_str, exclude_stock_list)
+                for stock_kline in stock_list_kline_list:
+                    code = stock_kline[-1]['code']
+                    strategy.strategy_match_6(code, stock_kline, exclude_stock_list, m_day=min_day)
+            return
+
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
-        min_day, max_day = 4, 9
+
         stock_list = self.get_day_range_stock_list(end_date, min_day=min_day, max_day=max_day)
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
         notified_file_path = '{}/{}_codes_notified.json'.format(file_folder, end_date_str)
         notified_set = set(load_data_append_by_json_dump(notified_file_path, ret_type=[]))
         sleep_time = 5
-        exclude_stock_list = []
+
         stock_value_checked = False
         while True:
             try:

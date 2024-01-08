@@ -576,6 +576,30 @@ class Strategy(object):
                 return k_line['close']
         return -1
 
+    def get_latest_two_top_pct_change_gap(self, k_line_list):
+        pct_chg_list = []
+        code = k_line_list[0]['code']
+        for k_line in k_line_list[-2:0:-1]:
+            pct_chg = k_line['pct_chg']
+            if isinstance(pct_chg, str) and not pct_chg:
+                continue
+            pct_chg_max = pct_change_max_i
+            if code.startswith('sz.30') or code.startswith('30'):
+                pct_chg_max = pct_change_max_j
+            if float(pct_chg) >= pct_chg_max:
+                pct_chg_list.append(1)
+            else:
+                pct_chg_list.append(0)
+            k_sum = sum(pct_chg_list)
+            if k_sum == 2:
+                break
+        if sum(pct_chg_list) != 2:
+            return -1
+        f_index = pct_chg_list.index(1)
+        l_index = len(pct_chg_list) - 1
+        l_f_index = l_index - f_index - 1
+        return l_f_index
+
     def strategy_match_6(self, code, k_line_list, exclude_stock_list, m_day):
         latest_close_price = float(k_line_list[-1]['close'])
         if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
@@ -584,7 +608,8 @@ class Strategy(object):
             return False
         close_price_a = self.get_latest_top_pct_change_close_price(code, k_line_list)
         now_ideal_close_price = k_line_list[-2]['close'] * 1.098
-        if now_ideal_close_price < close_price_a:
+        max_price_ratio = (now_ideal_close_price - close_price_a) / close_price_a * 100
+        if max_price_ratio < 0 and abs(max_price_ratio) > 2:
             if code not in exclude_stock_list:
                 exclude_stock_list.append(code)
             return False
@@ -610,6 +635,12 @@ class Strategy(object):
             if index_list[-1] < m_day and code not in exclude_stock_list:
                 exclude_stock_list.append(code)
             return False
+
+        t_gap = self.get_latest_two_top_pct_change_gap(k_line_list)
+        if t_gap < 0 or t_gap > 7:
+            exclude_stock_list.append(code)
+            return False
+
         latest_pct_chg = k_line_list_m_day[-1]['pct_chg']
         if latest_pct_chg < 5:
             return False

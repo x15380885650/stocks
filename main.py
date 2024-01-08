@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timedelta
 from itertools import islice
-from chinese_calendar import is_holiday, is_workday
+# from chinese_calendar import is_holiday, is_workday
 from data_source_bao import BaoDataSource
 from data_source_ef import EfDataSource
 from strategy import Strategy
@@ -58,13 +58,14 @@ class Chooser(object):
         return pct_change_max_i
 
     def is_deal_date(self, t_date):
-        t_holiday = is_holiday(t_date)
-        if t_holiday:
-            return False
-        day_of_week = t_date.weekday() + 1
-        if day_of_week in [6, 7]:
-            return False
         return True
+        # t_holiday = is_holiday(t_date)
+        # if t_holiday:
+        #     return False
+        # day_of_week = t_date.weekday() + 1
+        # if day_of_week in [6, 7]:
+        #     return False
+        # return True
 
     def get_valid_end_date(self, _end_date=None):
         end_date = self.ds.get_end_date() if not _end_date else _end_date
@@ -169,8 +170,8 @@ class Chooser(object):
         return []
 
     def get_top_pct_chg_code_list(self, end_date_str):
-        return self.get_top_pct_chg_code_list_quick(end_date_str)
-        # return self.get_top_pct_chg_code_list_slow(end_date_str)
+        # return self.get_top_pct_chg_code_list_quick(end_date_str)
+        return self.get_top_pct_chg_code_list_slow(end_date_str)
 
     def get_valid_k_line_list(self, code, start_date_str, end_date_str):
         filtered = self.ds.is_code_filtered(code)
@@ -250,6 +251,7 @@ class Chooser(object):
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)
+        end_date_str = '2024-01-02'
         # prev_end_date = end_date - timedelta(days=1)
         prev_end_date = self.get_valid_end_date(end_date - timedelta(days=1))
         prev_end_date_str = prev_end_date.strftime(format_date)
