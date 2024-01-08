@@ -607,9 +607,9 @@ class Strategy(object):
                 exclude_stock_list.append(code)
             return False
         close_price_a = self.get_latest_top_pct_change_close_price(code, k_line_list)
-        now_ideal_close_price = k_line_list[-2]['close'] * 1.098
+        now_ideal_close_price = k_line_list[-2]['close'] * 1.1
         max_price_ratio = (now_ideal_close_price - close_price_a) / close_price_a * 100
-        if max_price_ratio < 0 and abs(max_price_ratio) > 2:
+        if max_price_ratio < 0 and abs(max_price_ratio) > 0.5:
             if code not in exclude_stock_list:
                 exclude_stock_list.append(code)
             return False
@@ -637,7 +637,7 @@ class Strategy(object):
             return False
 
         t_gap = self.get_latest_two_top_pct_change_gap(k_line_list)
-        if t_gap < 0 or t_gap > 7:
+        if t_gap < 0 or t_gap > 6:
             exclude_stock_list.append(code)
             return False
 
