@@ -119,15 +119,15 @@ class Chooser(object):
         import time
         strategy = Strategy()
         end_date = datetime.now().date()
-        min_day, max_day = 2, 8
+        min_day, max_day = 3, 8
         exclude_stock_list = []
         test_code_dict = {
-            # '003015': '2023-09-19',
             # '002771': '2023-10-16',
             # '002176': '2023-10-19',
             # '002786': '2023-11-10',
             # '600178': '2023-11-23',
             # '002323': '2024-01-05',
+            # '002347': '2024-01-08',
         }
 
         if test_code_dict:
@@ -142,6 +142,7 @@ class Chooser(object):
                     strategy.strategy_match_6(code, stock_kline, exclude_stock_list, m_day=min_day)
             return
 
+        # end_date = end_date - timedelta(days=47)
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
         end_date_str = end_date.strftime(format_date)

@@ -601,6 +601,8 @@ class Strategy(object):
         return l_f_index
 
     def strategy_match_6(self, code, k_line_list, exclude_stock_list, m_day):
+        # if code != '600178':
+        #     return False
         latest_close_price = float(k_line_list[-1]['close'])
         if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
             if code not in exclude_stock_list:
@@ -627,6 +629,11 @@ class Strategy(object):
                 pct_chg_list.append(1)
             else:
                 pct_chg_list.append(0)
+        t_gap = self.get_latest_two_top_pct_change_gap(k_line_list)
+        if t_gap < 0 or t_gap > 6:
+            exclude_stock_list.append(code)
+            return False
+
         index_list = []
         for i, v in enumerate(pct_chg_list):
             if v == 1:
@@ -634,11 +641,6 @@ class Strategy(object):
         if len(index_list) >= 1:
             if index_list[-1] < m_day and code not in exclude_stock_list:
                 exclude_stock_list.append(code)
-            return False
-
-        t_gap = self.get_latest_two_top_pct_change_gap(k_line_list)
-        if t_gap < 0 or t_gap > 6:
-            exclude_stock_list.append(code)
             return False
 
         latest_pct_chg = k_line_list_m_day[-1]['pct_chg']
