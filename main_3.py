@@ -79,7 +79,7 @@ class Chooser(object):
                 continue
             try:
                 pct_chg = float(stock[1][2])
-                if pct_chg < 6:
+                if pct_chg < 4:
                     continue
                 pct_change_max = self.get_pct_change_max(code)
                 if pct_chg >= pct_change_max:
@@ -102,14 +102,10 @@ class Chooser(object):
         end_date = datetime.now().date()
         m_day = 60
         test_code_dict = {
-            # '603106': '2023-08-04',
             # '603536': '2023-11-24',
             # '000903': '2023-11-27',
-            # '600444': '2023-12-04',
             # '600302': '2023-12-06',
-            # '603660': '2023-12-07',
             # '002678': '2023-12-12',
-            # '603789': '2023-12-15',
             # '600819': '2024-01-12',
             # '002211': '2024-01-15',
         }
@@ -134,7 +130,7 @@ class Chooser(object):
         sleep_time = 2
         while True:
             hour, minute = datetime.now().hour, datetime.now().minute
-            if not (hour == 9 and (40 <= minute <= 50)):
+            if not (hour == 9 and (40 <= minute <= 59)):
                 continue
             try:
                 monitor_stock_list = self.get_monitor_code_list()
