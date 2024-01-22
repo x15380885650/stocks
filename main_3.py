@@ -135,7 +135,7 @@ class Chooser(object):
         while True:
             hour, minute = datetime.now().hour, datetime.now().minute
             if hour != 9 and not (40 <= minute <= 50):
-                break
+                continue
             try:
                 monitor_stock_list = self.get_monitor_code_list()
                 print('monitor_stock_list_len: {}'.format(len(monitor_stock_list)))
