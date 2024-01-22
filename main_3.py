@@ -100,19 +100,18 @@ class Chooser(object):
         import time
         strategy = Strategy()
         end_date = datetime.now().date()
-        m_day = 70
+        m_day = 60
         test_code_dict = {
-            # '002456': '2023-09-28',
-            # '002238': '2023-11-02',
+            # '603106': '2023-08-04',
             # '603536': '2023-11-24',
-            # '600250': '2023-11-28',
-            # '600678': '2023-12-05',
-            # '600715': '2023-12-06',
+            # '000903': '2023-11-27',
+            # '600444': '2023-12-04',
+            # '600302': '2023-12-06',
             # '603660': '2023-12-07',
+            # '002678': '2023-12-12',
             # '603789': '2023-12-15',
-            # # '002748': '2023-12-21',
-            #
-            # '600319': '2023-12-28',
+            # '600819': '2024-01-12',
+            # '002211': '2024-01-15',
         }
 
         if test_code_dict:
@@ -134,6 +133,9 @@ class Chooser(object):
         notified_set = set(load_data_append_by_json_dump(notified_file_path, ret_type=[]))
         sleep_time = 2
         while True:
+            hour, minute = datetime.now().hour, datetime.now().minute
+            if hour != 9 and not (40 <= minute <= 50):
+                break
             try:
                 monitor_stock_list = self.get_monitor_code_list()
                 print('monitor_stock_list_len: {}'.format(len(monitor_stock_list)))

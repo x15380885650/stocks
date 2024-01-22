@@ -654,7 +654,7 @@ class Strategy(object):
         now_ideal_close_price = prev_close_price * 1.1
         x_max_close_price = self.get_max_close_price(k_line_list_m_day[:-1])
         max_price_ratio = (now_ideal_close_price - x_max_close_price) / x_max_close_price * 100
-        if max_price_ratio < 0.5:
+        if max_price_ratio < 5:
             return False
         latest_half_month_k_line_list = k_line_list[-16:-1]
         max_turn = self.get_max_turn(latest_half_month_k_line_list)
@@ -663,12 +663,12 @@ class Strategy(object):
         turn_ratio = now_turn / avg_turn
         # print('max_turn: {}, avg_turn: {}, now_turn: {}, turn_ratio: {}, max_price_ratio: {}, code: {}'
         #       .format(max_turn, avg_turn, now_turn, turn_ratio, max_price_ratio, code))
-        if avg_turn > 1.8:
+        if avg_turn > 1.85:
             return False
         if max_turn > 4:
             return False
-        if float(now_turn) > 4:
-            return False
+        # if float(now_turn) > 4:
+        #     return False
         if turn_ratio > 8:
             return False
         # return False
