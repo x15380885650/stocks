@@ -131,6 +131,7 @@ class Chooser(object):
         while True:
             hour, minute = datetime.now().hour, datetime.now().minute
             if not (hour == 9 and (40 <= minute <= 59)):
+                time.sleep(1)
                 continue
             try:
                 monitor_stock_list = self.get_monitor_code_list()
