@@ -64,13 +64,13 @@ class Chooser(object):
             new_stock_list_kline.append(stock_k_line)
         return new_stock_list_kline
 
-    def get_monitor_code_list(self):
+    def get_monitor_code_list(self, exclude_stock_list):
         stock_list = self.ds.get_stocks_realtime_quotes()
         filtered_list = []
         for stock in stock_list.iterrows():
             code = stock[1][0]
-            # if code != '000536':
-            #     continue
+            if code in exclude_stock_list:
+                continue
             name = stock[1][1]
             filtered = self.ds.is_code_filtered(code)
             if filtered:
@@ -100,14 +100,18 @@ class Chooser(object):
         import time
         strategy = Strategy()
         end_date = datetime.now().date()
-        m_day = 60
+        m_day = 50
         test_code_dict = {
+            # '002103': '2023-11-16',
+            # '600053': '2023-11-21',
             # '603536': '2023-11-24',
             # '000903': '2023-11-27',
             # '600302': '2023-12-06',
             # '002678': '2023-12-12',
             # '600819': '2024-01-12',
-            # '002211': '2024-01-15',
+            # '001216': '2024-01-17',
+
+
         }
 
         if test_code_dict:
@@ -127,20 +131,23 @@ class Chooser(object):
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
         notified_file_path = '{}/{}_codes_notified_a.json'.format(file_folder, end_date_str)
         notified_set = set(load_data_append_by_json_dump(notified_file_path, ret_type=[]))
-        sleep_time = 2
+        sleep_time = 0
+        exclude_stock_set = set()
         while True:
             hour, minute = datetime.now().hour, datetime.now().minute
             if not (hour == 9 and (40 <= minute <= 59)):
                 time.sleep(1)
                 continue
             try:
-                monitor_stock_list = self.get_monitor_code_list()
+                monitor_stock_list = self.get_monitor_code_list(exclude_stock_set)
                 print('monitor_stock_list_len: {}'.format(len(monitor_stock_list)))
                 stock_list_kline_list = self.get_valid_stock_list_kline_list(
                     monitor_stock_list, start_date_str, end_date_str)
                 for stock_kline in stock_list_kline_list:
                     code = stock_kline[-1]['code']
                     strategy_7_ok = strategy.strategy_match_7(code, stock_kline, m_day=m_day)
+                    if not strategy_7_ok:
+                        exclude_stock_set.add(code)
                     if strategy_7_ok and code not in notified_set:
                         self.notify(code)
                         print('join strategy_7_ok, code: {}'.format(code))
