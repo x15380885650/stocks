@@ -653,7 +653,9 @@ class Strategy(object):
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
         x_max_close_price = self.get_max_close_price(k_line_list_m_day[:-1])
-        max_price_ratio = (now_ideal_close_price - x_max_close_price) / x_max_close_price * 100
+        x_max_high_price = self.get_max_high_price(k_line_list_m_day[:-1])
+        # max_price_ratio = (now_ideal_close_price - x_max_close_price) / x_max_close_price * 100
+        max_price_ratio = (now_ideal_close_price - x_max_high_price) / x_max_high_price * 100
         if max_price_ratio < 5:
             return False
         latest_days_k_line_list = k_line_list[-7:-1]
