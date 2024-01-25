@@ -79,7 +79,7 @@ class Chooser(object):
                 continue
             try:
                 pct_chg = float(stock[1][2])
-                if pct_chg < 4:
+                if pct_chg < 2:
                     continue
                 pct_change_max = self.get_pct_change_max(code)
                 if pct_chg >= pct_change_max:
@@ -139,6 +139,8 @@ class Chooser(object):
             try:
                 monitor_stock_list = self.get_monitor_code_list(exclude_stock_set)
                 print('monitor_stock_list_len: {}'.format(len(monitor_stock_list)))
+                if not monitor_stock_list:
+                    continue
                 stock_list_kline_list = self.get_valid_stock_list_kline_list(
                     monitor_stock_list, start_date_str, end_date_str)
                 for stock_kline in stock_list_kline_list:
