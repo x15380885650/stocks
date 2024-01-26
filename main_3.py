@@ -79,7 +79,7 @@ class Chooser(object):
                 continue
             try:
                 pct_chg = float(stock[1][2])
-                if pct_chg < 2:
+                if pct_chg < 4:
                     continue
                 pct_change_max = self.get_pct_change_max(code)
                 if pct_chg >= pct_change_max:
