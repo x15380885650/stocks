@@ -19,7 +19,8 @@ class CodeFetcher(object):
             os.makedirs(file_folder)
         file_path = '{}/{}_codes.json'.format(file_folder, end_date_str)
         if os.path.exists(file_path):
-            return True
+            print('fetch_zt_code_list_quick by file_path: {}'.format(file_path))
+            return load_data_append_by_json_dump(file_path, ret_type=[])
         stock_list = self.ds.get_stocks_realtime_quotes()
         filtered_list = []
         for stock in stock_list.iterrows():
@@ -50,7 +51,7 @@ class CodeFetcher(object):
         file_path_all = '{}/{}_codes_all.json'.format(file_folder, end_date_str)
         file_path_already = '{}/{}_codes_already.json'.format(file_folder, end_date_str)
         if os.path.exists(file_path) and not os.path.exists(file_path_already) and not os.path.exists(file_path_all):
-            print('get_top_pct_chg_code_list by file_path: {}'.format(file_path))
+            print('fetch_zt_code_list_slow by file_path: {}'.format(file_path))
             return load_data_append_by_json_dump(file_path, ret_type=[])
         all_code_list = load_data_append_by_json_dump(file_path_all, ret_type=[])
         already_code_list = load_data_append_by_json_dump(file_path_already, ret_type=[])
