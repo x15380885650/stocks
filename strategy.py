@@ -693,3 +693,56 @@ class Strategy(object):
         if len(index_list) >= 1:
             return False
         return True
+
+    def strategy_match_8(self, code, k_line_list, m_day):
+        k_line_list_m_day = k_line_list[-m_day:]
+        prev_close_price = k_line_list[-2]['close']
+        now_ideal_close_price = prev_close_price * 1.1
+        x_max_close_price = self.get_max_close_price(k_line_list_m_day[:-1])
+        x_max_high_price = self.get_max_high_price(k_line_list_m_day[:-1])
+        # max_price_ratio = (now_ideal_close_price - x_max_close_price) / x_max_close_price * 100
+        max_price_ratio = (now_ideal_close_price - x_max_high_price) / x_max_high_price * 100
+        if max_price_ratio < 9.5:
+            return False
+        latest_days_k_line_list = k_line_list[-7:-1]
+        max_turn = self.get_max_turn(latest_days_k_line_list)
+        avg_turn = self.get_avg_turn(latest_days_k_line_list)
+        now_turn = k_line_list[-1]['turn']
+        turn_ratio = now_turn / avg_turn
+        # print('max_turn: {}, avg_turn: {}, now_turn: {}, turn_ratio: {}, max_price_ratio: {}, code: {}'
+        #       .format(max_turn, avg_turn, now_turn, turn_ratio, max_price_ratio, code))
+        # if avg_turn > 3:
+        #     return False
+        # if max_turn > 4:
+        #     return False
+        # if float(now_turn) > 4:
+        #     return False
+        # if turn_ratio > 8:
+        #     return False
+        # return False
+        pct_chg_list = []
+        for k_line in k_line_list_m_day:
+            pct_chg = k_line['pct_chg']
+            if isinstance(pct_chg, str) and not pct_chg:
+                continue
+            pct_chg_max = pct_change_max_i
+            if code.startswith('sz.30') or code.startswith('30'):
+                pct_chg_max = pct_change_max_j
+            if float(pct_chg) >= pct_chg_max:
+                pct_chg_list.append(1)
+            else:
+                pct_chg_list.append(0)
+        index_list = []
+        for i, v in enumerate(pct_chg_list):
+            if v == 1:
+                index_list.append(i)
+        if len(index_list) != 2:
+            return False
+        if index_list[-1] != m_day - 1 or index_list[-2] != m_day - 2:
+            return False
+        last_k_line_data = k_line_list[-1]
+        last_k_line_open = last_k_line_data['open']
+        last_k_line_close = last_k_line_data['close']
+        if last_k_line_open != last_k_line_close:
+            return False
+        return True

@@ -102,8 +102,8 @@ class Chooser(object):
         end_date = datetime.now().date()
         m_day = 50
         test_code_dict = {
-            # '002103': '2023-11-16',
-            # '600053': '2023-11-21',
+            '603536': '2023-11-27',
+            # '605011': '2023-05-15',
             # '603536': '2023-11-24',
             # '000903': '2023-11-27',
             # '600302': '2023-12-06',
@@ -121,7 +121,7 @@ class Chooser(object):
                     [stock_code], start_date_str, end_date_str)
                 for stock_kline in stock_list_kline_list:
                     code = stock_kline[-1]['code']
-                    strategy.strategy_match_7(code, stock_kline, m_day=m_day)
+                    strategy.strategy_match_8(code, stock_kline, m_day=m_day)
             return
         start_date = end_date - timedelta(days=minus_days)
         start_date_str = start_date.strftime(format_date)
