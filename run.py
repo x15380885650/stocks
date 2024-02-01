@@ -61,7 +61,7 @@ class Runner(object):
                         if not s_res:
                             exclude_stock_set.add(code)
                         if s_res and code not in notified_set:
-                            self.notify(code)
+                            # self.notify(code)
                             print('join s_res, code: {}'.format(code))
                             save_data_append_by_json_dump(notified_file_path, code)
                             notified_set.add(code)
