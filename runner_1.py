@@ -2,10 +2,9 @@ import time
 from datetime import datetime
 from code_fetcher import CodeFetcher
 from date_chooser import DateChooser
-from data_source_ef import EfDataSource
 from strategist import Strategist
-from email_helper import EmailSender
 from dumper_loader import load_data_append_by_json_dump, save_data_append_by_json_dump
+from runner import Runner
 
 test_code_dict = {
             # '603536': '2023-11-27',
@@ -13,22 +12,10 @@ test_code_dict = {
         }
 
 
-class Runner(object):
-    def __init__(self):
-        self.ds = EfDataSource()
-        self.stock_days = 30 * 6
-
-    def notify(self, code):
-        email = EmailSender("xcg19865@126.com", "HIPJLVTIFUZQKEYB", server='smtp.126.com')
-        email.set_header(code)
-        email.add_text(code)
-        # email.add_receiver("531309575@qq.com")
-        email.add_receiver("xucg025@qq.com")
-        email.send()
-
+class FirstRunner(Runner):
     def run(self):
         m_day = 50
-        sleep_time = 0
+        sleep_time = 3600
         c_fetcher = CodeFetcher(ds=self.ds)
         d_chooser = DateChooser(ds=self.ds, delta_days=self.stock_days)
         s = Strategist()
@@ -49,7 +36,7 @@ class Runner(object):
                     [test_stock_code], test_start_date_str, test_end_date_str, stock_days=self.stock_days)
                 for stock_kline_list in stock_list_kline_list:
                     code = stock_kline_list[-1]['code']
-                    s.get_strategy_res(code, stock_kline_list, m_day=m_day)
+                    s.get_first_strategy_res(code, stock_kline_list, m_day=m_day)
         else:
             while True:
                 try:
@@ -57,7 +44,7 @@ class Runner(object):
                         code_list, start_date_str, end_date_str, stock_days=self.stock_days)
                     for stock_kline_list in stock_list_kline_list:
                         code = stock_kline_list[-1]['code']
-                        s_res = s.get_strategy_res(code, stock_kline_list, m_day=m_day)
+                        s_res = s.get_first_strategy_res(code, stock_kline_list, m_day=m_day)
                         if not s_res:
                             exclude_stock_set.add(code)
                         if s_res and code not in notified_set:
@@ -72,5 +59,5 @@ class Runner(object):
 
 
 if __name__ == '__main__':
-    runner = Runner()
+    runner = FirstRunner()
     runner.run()

@@ -1,7 +1,8 @@
 import os
 from itertools import islice
 from dumper_loader import load_data_append_by_json_dump, save_data_list_append_by_json_dump
-from constants import pct_change_max_i, pct_change_max_j
+from constants import pct_change_max_i, pct_change_max_j, latest_close_price_max, latest_close_price_min,\
+    stock_value_min, stock_value_max
 
 
 class CodeFetcher(object):
@@ -112,3 +113,33 @@ class CodeFetcher(object):
                 continue
             new_stock_list_kline.append(stock_k_line)
         return new_stock_list_kline
+
+    def fetch_real_time_filtered_code_list(self, pch_chg_min=4):
+        stock_list = self.ds.get_stocks_realtime_quotes()
+        filtered_list = []
+        for stock in stock_list.iterrows():
+            code = stock[1][0]
+            name = stock[1][1]
+            filtered = self.ds.is_code_filtered(code)
+            if filtered:
+                continue
+            if 'ST' in name:
+                continue
+            try:
+                pct_chg = float(stock[1][2])
+                if pct_chg < pch_chg_min:
+                    continue
+                pct_change_max = self.get_pct_change_max(code)
+                if pct_chg >= pct_change_max:
+                    continue
+                latest_close_price = float(stock[1][3])
+                if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
+                    continue
+                stock_value = stock[1][15] / 10000 / 10000
+                if stock_value > stock_value_max or stock_value < stock_value_min:
+                    continue
+            except Exception as e:
+                # print(e)
+                continue
+            filtered_list.append(code)
+        return filtered_list
