@@ -26,7 +26,7 @@ class FirstRunner(Runner):
         print('code_list: {}'.format(len(code_list)))
         exclude_stock_set = set()
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
-        notified_file_path = '{}/{}_codes_notified_a.json'.format(file_folder, end_date_str)
+        notified_file_path = '{}/{}_codes_notified_1.json'.format(file_folder, end_date_str)
         notified_set = set(load_data_append_by_json_dump(notified_file_path, ret_type=[]))
 
         if test_code_dict:

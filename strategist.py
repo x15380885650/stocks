@@ -278,3 +278,40 @@ class Strategist(object):
                 index_list.append(i)
         print('zt_count: {}'.format(len(index_list)))
         return True
+
+    def get_num_exceed(self, value, data_list):
+        _num = 0
+        for data in data_list:
+            pct_chg = data['pct_chg']
+            if pct_chg >= value:
+                _num += 1
+        return _num
+
+    def get_third_strategy_res(self, code, k_line_list, m_day):
+        pct_chg_max = 5.5
+        price_ratio_min = 0
+        k_line_list_m_day = k_line_list[-m_day:]
+        k_line_list_m_day_prev = k_line_list_m_day[-2::-1]
+        prev_close_price = k_line_list[-2]['close']
+        now_ideal_close_price = prev_close_price * 1.1
+        x_max_close_price = self.get_max_close_price(k_line_list_m_day[:-1])
+        x_max_high_price = self.get_max_high_price(k_line_list_m_day[:-1])
+        # max_price_ratio = (now_ideal_close_price - x_max_close_price) / x_max_close_price * 100
+        max_price_ratio = (now_ideal_close_price - x_max_high_price) / x_max_high_price * 100
+        max_pct_chg = self.get_max_pct_chg(k_line_list_m_day_prev)
+        min_low_price = self.get_min_low_price(k_line_list_m_day_prev)
+        min_low_price_a = self.get_min_low_price(k_line_list[-2:-75:-1])
+        low_price_prev = k_line_list_m_day[-2]['low']
+        low_low_price_ratio = 100 * (low_price_prev-min_low_price)/min_low_price
+        print('max_price_ratio: {}, max_pct_chg: {}, low_low_price_ratio: {}'
+              .format(max_price_ratio, max_pct_chg, low_low_price_ratio))
+        if min_low_price != min_low_price_a:
+            return False
+        if max_price_ratio < price_ratio_min:
+            return False
+        if max_pct_chg > pct_chg_max:
+            return False
+        _num = self.get_num_exceed(pct_chg_max, k_line_list_m_day_prev)
+        if _num > 1:
+            return False
+        return True
