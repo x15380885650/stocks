@@ -7,27 +7,21 @@ from dumper_loader import load_data_append_by_json_dump, save_data_append_by_jso
 from runner import Runner
 
 test_code_dict = {
-'603536': '2023-11-24',
-'605011': '2023-05-12',
-'600272': '2023-08-09',
-# '603767': '2023-06-16',
-'600250': '2023-11-28',
-'603660': '2023-12-07',
-#'603196': '2023-04-25',
-'600355': '2023-09-20',
-'603933': '2023-05-19',
+# '605011': '2023-05-12',
+# '603933': '2023-05-19',
+# '600355': '2023-09-20',
 # '002682': '2023-10-20',
-'002238': '2023-11-02',
-'000056': '2023-11-07',
-            #
-            # '000070': '2024-01-22',
-            # '603648': '2024-01-23',
-            # '600272': '2024-01-23',
-            # '600675': '2024-01-23',
-            # '600639': '2024-01-23',
-            # '600629': '2024-01-23',
-            # '002116': '2024-01-24',
-            # '603767': '2024-01-30',
+# '002238': '2023-11-02',
+# '000056': '2023-11-07',
+# '001300': '2023-11-10',
+# '603536': '2023-11-24',
+#
+# # '603660': '2023-12-07',
+# # '600250': '2023-11-28',
+# # '603196': '2023-04-25',
+# # '600272': '2023-08-09',
+# # '603767': '2023-06-16',
+
         }
 
 
@@ -39,7 +33,7 @@ class ThirdRunner(Runner):
         d_chooser = DateChooser(ds=self.ds, delta_days=self.stock_days)
         s = Strategist()
         start_date_str, end_date_str = d_chooser.get_start_and_end_date()
-        code_list = c_fetcher.fetch_real_time_filtered_code_list(pch_chg_min=4)
+        code_list = c_fetcher.fetch_real_time_filtered_code_list(pch_chg_min=5)
         print('{}--->{}'.format(start_date_str, end_date_str))
         print('code_list: {}'.format(len(code_list)))
         exclude_stock_set = set()

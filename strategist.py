@@ -287,31 +287,30 @@ class Strategist(object):
                 _num += 1
         return _num
 
+    def get_interval_to_latest(self, price, data_list, key):
+        for idx, data in enumerate(data_list[-1::-1]):
+            if data[key] == price:
+                return idx-1
+        return -1
+
     def get_third_strategy_res(self, code, k_line_list, m_day):
-        pct_chg_max = 5.5
-        price_ratio_min = 0
-        k_line_list_m_day = k_line_list[-m_day:]
-        k_line_list_m_day_prev = k_line_list_m_day[-2::-1]
-        prev_close_price = k_line_list[-2]['close']
-        now_ideal_close_price = prev_close_price * 1.1
-        x_max_close_price = self.get_max_close_price(k_line_list_m_day[:-1])
-        x_max_high_price = self.get_max_high_price(k_line_list_m_day[:-1])
-        # max_price_ratio = (now_ideal_close_price - x_max_close_price) / x_max_close_price * 100
-        max_price_ratio = (now_ideal_close_price - x_max_high_price) / x_max_high_price * 100
-        max_pct_chg = self.get_max_pct_chg(k_line_list_m_day_prev)
-        min_low_price = self.get_min_low_price(k_line_list_m_day_prev)
-        min_low_price_a = self.get_min_low_price(k_line_list[-2:-75:-1])
-        low_price_prev = k_line_list_m_day[-2]['low']
-        low_low_price_ratio = 100 * (low_price_prev-min_low_price)/min_low_price
-        print('max_price_ratio: {}, max_pct_chg: {}, low_low_price_ratio: {}'
-              .format(max_price_ratio, max_pct_chg, low_low_price_ratio))
-        if min_low_price != min_low_price_a:
+        range_days = 75
+        k_line_list_range_day = k_line_list[-range_days:]
+        min_low_price = self.get_min_low_price(k_line_list_range_day)
+        interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
+        if not 7 <= interval < 25:
             return False
-        if max_price_ratio < price_ratio_min:
+        k_line_list_interval = k_line_list[-interval-1:-1]
+        up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
+        up_ratio_interval_day = 100 * up_num / (up_num+down_num)
+        pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
+        print('interval: {}, up_ratio_interval_day: {}, pch_chg_interval_day: {}'
+              .format(interval, up_ratio_interval_day, pct_chg_interval_day))
+        if not 60 <= up_ratio_interval_day < 75:
             return False
-        if max_pct_chg > pct_chg_max:
+        if not 5 <= pct_chg_interval_day < 15:
             return False
-        _num = self.get_num_exceed(pct_chg_max, k_line_list_m_day_prev)
+        _num = self.get_num_exceed(5, k_line_list_interval)
         if _num > 1:
             return False
         return True
