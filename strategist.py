@@ -238,45 +238,25 @@ class Strategist(object):
         return True
 
     def get_second_strategy_res(self, code, k_line_list, m_day):
-        k_line_list_m_day = k_line_list[-m_day:]
-        m_min_low_price = self.get_min_low_price(k_line_list_m_day)
-        now_low_price = k_line_list[-1]['low']
-        m_min_low_price_ok = False
-        for _ in k_line_list_m_day[-1:-6:-1]:
-            if float(_['low']) == m_min_low_price:
-                m_min_low_price_ok = True
-                break
-        if not m_min_low_price_ok:
+        range_days = 75
+        k_line_list_range_day = k_line_list[-range_days:]
+        min_low_price = self.get_min_low_price(k_line_list_range_day)
+        interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
+        if interval != -1:
             return False
-        low_price_ratio = 100 * (now_low_price - m_min_low_price) / m_min_low_price
-        if low_price_ratio >= 5:
-            return False
-        # print('low_price_ratio: {}'.format(low_price_ratio))
-        m_max_high_price = self.get_max_high_price(k_line_list_m_day)
-        high_low_ratio = 100 * (m_max_high_price - m_min_low_price) / m_min_low_price
-        # print('high_price/low_price={}'.format(high_low_ratio))
-        if high_low_ratio < 30:
-            return False
-        pch_chg_max_m = self.get_max_pct_chg(k_line_list[-2:-12:-1])
-        if pch_chg_max_m > 3.5:
-            return False
-        pct_chg_list = []
-        for k_line in k_line_list_m_day:
-            pct_chg = k_line['pct_chg']
-            if isinstance(pct_chg, str) and not pct_chg:
-                continue
-            pct_chg_max = pct_change_max_i
-            if code.startswith('sz.30') or code.startswith('30'):
-                pct_chg_max = pct_change_max_j
-            if float(pct_chg) >= pct_chg_max:
-                pct_chg_list.append(1)
-            else:
-                pct_chg_list.append(0)
-        index_list = []
-        for i, v in enumerate(pct_chg_list):
-            if v == 1:
-                index_list.append(i)
-        print('zt_count: {}'.format(len(index_list)))
+        # k_line_list_interval = k_line_list[-interval - 1:-1]
+        # up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
+        # up_ratio_interval_day = 100 * up_num / (up_num + down_num)
+        # pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
+        # print('interval: {}, up_ratio_interval_day: {}, pch_chg_interval_day: {}'
+        #       .format(interval, up_ratio_interval_day, pct_chg_interval_day))
+        # if not 60 <= up_ratio_interval_day < 75:
+        #     return False
+        # if not 5 <= pct_chg_interval_day < 15:
+        #     return False
+        # _num = self.get_num_exceed(5, k_line_list_interval)
+        # if _num > 1:
+        #     return False
         return True
 
     def get_num_exceed(self, value, data_list):
@@ -291,7 +271,7 @@ class Strategist(object):
         for idx, data in enumerate(data_list[-1::-1]):
             if data[key] == price:
                 return idx-1
-        return -1
+        return -100
 
     def get_third_strategy_res(self, code, k_line_list, m_day):
         range_days = 75

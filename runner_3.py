@@ -38,6 +38,7 @@ class ThirdRunner(Runner):
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
         notified_file_path = '{}/{}_codes_notified_3.json'.format(file_folder, end_date_str)
         notified_set = set(load_data_append_by_json_dump(notified_file_path, ret_type=[]))
+        exclude_stock_set.update(notified_set)
 
         if test_code_dict:
             for test_stock_code, test_end_date_str in test_code_dict.items():
