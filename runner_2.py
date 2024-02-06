@@ -44,7 +44,7 @@ class SecondRunner(Runner):
             for test_stock_code, test_end_date_str in test_code_dict.items():
                 test_start_date_str, test_end_date_str = d_chooser.get_start_and_end_date(test_end_date_str)
                 stock_list_kline_list = c_fetcher.get_stock_list_kline_list(
-                    [test_stock_code], test_start_date_str, test_end_date_str, stock_days=self.stock_days)
+                    [test_stock_code], test_start_date_str, test_end_date_str)
                 for stock_kline_list in stock_list_kline_list:
                     code = stock_kline_list[-1]['code']
                     s.get_second_strategy_res(code, stock_kline_list, m_day=m_day)
@@ -62,9 +62,12 @@ class SecondRunner(Runner):
                         time.sleep(sleep_time)
                         continue
                     stock_list_kline_list = c_fetcher.get_stock_list_kline_list(
-                        new_code_list, start_date_str, end_date_str, stock_days=self.stock_days)
+                        new_code_list, start_date_str, end_date_str)
                     for stock_kline_list in stock_list_kline_list:
                         code = stock_kline_list[-1]['code']
+                        if len(stock_kline_list) < int(self.stock_days/2):
+                            exclude_stock_set.add(code)
+                            continue
                         s_res = s.get_second_strategy_res(code, stock_kline_list, m_day=m_day)
                         if not s_res:
                             exclude_stock_set.add(code)

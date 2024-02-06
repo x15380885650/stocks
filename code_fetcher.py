@@ -101,13 +101,10 @@ class CodeFetcher(object):
                 break
         return load_data_append_by_json_dump(file_path, ret_type=[])
 
-    def get_stock_list_kline_list(self, code_list, start_date_str, end_date_str, stock_days):
+    def get_stock_list_kline_list(self, code_list, start_date_str, end_date_str):
         stock_list_kline = self.ds.get_stock_list_kline_history(code_list, start_date_str, end_date_str)
         new_stock_list_kline = []
         for stock_k_line in stock_list_kline:
-            total_count = len(stock_k_line)
-            if total_count < int(stock_days / 2):
-                continue
             last_date = stock_k_line[-1]['date']
             if last_date != end_date_str:
                 continue
