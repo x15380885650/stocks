@@ -33,9 +33,7 @@ class ThirdRunner(Runner):
         d_chooser = DateChooser(ds=self.ds, delta_days=self.stock_days)
         s = Strategist()
         start_date_str, end_date_str = d_chooser.get_start_and_end_date()
-        code_list = c_fetcher.fetch_real_time_filtered_code_list(pch_chg_min=5)
         print('{}--->{}'.format(start_date_str, end_date_str))
-        print('code_list: {}'.format(len(code_list)))
         exclude_stock_set = set()
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
         notified_file_path = '{}/{}_codes_notified_3.json'.format(file_folder, end_date_str)
@@ -52,8 +50,18 @@ class ThirdRunner(Runner):
         else:
             while True:
                 try:
+                    code_list = c_fetcher.fetch_real_time_filtered_code_list(pch_chg_min=5)
+                    new_code_list = []
+                    for c in code_list:
+                        if c not in exclude_stock_set:
+                            new_code_list.append(c)
+                    print('code_list: {}'.format(len(new_code_list)))
+                    if not new_code_list:
+                        print('now: {}, sleep: {}'.format(datetime.now(), sleep_time))
+                        time.sleep(sleep_time)
+                        continue
                     stock_list_kline_list = c_fetcher.get_stock_list_kline_list(
-                        code_list, start_date_str, end_date_str, stock_days=self.stock_days)
+                        new_code_list, start_date_str, end_date_str, stock_days=self.stock_days)
                     for stock_kline_list in stock_list_kline_list:
                         code = stock_kline_list[-1]['code']
                         s_res = s.get_third_strategy_res(code, stock_kline_list, m_day=m_day)
