@@ -16,6 +16,7 @@ test_code_dict = {
 # '001300': '2023-11-10',
 # '603536': '2023-11-24',
 # '002441': '2023-01-05',
+# '600679': '2023-11-07',
 #
 # # '603660': '2023-12-07',
 # # '600250': '2023-11-28',
@@ -28,7 +29,6 @@ test_code_dict = {
 
 class ThirdRunner(Runner):
     def run(self):
-        m_day = 20
         sleep_time = 0
         c_fetcher = CodeFetcher(ds=self.ds)
         d_chooser = DateChooser(ds=self.ds, delta_days=self.stock_days)
