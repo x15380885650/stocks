@@ -20,7 +20,7 @@ class Runner(object):
         import calendar
         now = datetime.now()
         day_of_week = calendar.weekday(now.year, now.month, now.day)
-        print(day_of_week, now)
+        # print(day_of_week, now)
         if not 0 <= day_of_week <= 4:
             return False
         start_time = datetime(now.year, now.month, now.day, 9, 30)
