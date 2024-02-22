@@ -272,15 +272,15 @@ class Strategist(object):
     def get_interval_to_latest(self, price, data_list, key):
         for idx, data in enumerate(data_list[-1::-1]):
             if data[key] == price:
-                return idx-1
+                return idx - 1
         return -100
 
     def get_third_strategy_res(self, code, k_line_list):
-        range_days = 75
+        range_days = 50
         k_line_list_range_day = k_line_list[-range_days:]
         min_low_price = self.get_min_low_price(k_line_list_range_day)
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
-        if not 7 <= interval <= 25:
+        if not 6 <= interval <= 20:
             return False
         k_line_list_interval = k_line_list[-interval-1:-1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
@@ -288,11 +288,11 @@ class Strategist(object):
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
         print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}'
               .format(interval, up_ratio_interval_day, pct_chg_interval_day))
-        if not 60 <= up_ratio_interval_day <= 80:
+        if not 50 <= up_ratio_interval_day <= 90:
             return False
-        if not 2 <= pct_chg_interval_day <= 15:
+        if not 5 <= pct_chg_interval_day <= 15:
             return False
         _num = self.get_num_exceed(5, k_line_list_interval)
-        if _num > 1:
+        if _num > 2:
             return False
         return True

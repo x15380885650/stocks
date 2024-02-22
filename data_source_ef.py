@@ -9,12 +9,12 @@ class EfDataSource(DataSource):
         super(EfDataSource, self).__init__()
 
     def get_end_date(self):
-        # return datetime.now().date()
-        now_hour = datetime.now().hour
-        if now_hour >= 15:
-            return datetime.now().date()
-        else:
-            return datetime.now().date() - timedelta(days=1)
+        return datetime.now().date()
+        # now_hour = datetime.now().hour
+        # if now_hour >= 15:
+        #     return datetime.now().date()
+        # else:
+        #     return datetime.now().date() - timedelta(days=1)
 
     def is_code_filtered(self, code):
         if not code.startswith('00') and not code.startswith('60'):
