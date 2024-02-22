@@ -50,6 +50,10 @@ class SecondRunner(Runner):
         else:
             while True:
                 try:
+                    trade_ok = self.is_trade()
+                    if not trade_ok:
+                        time.sleep(1)
+                        continue
                     code_list = c_fetcher.fetch_real_time_filtered_code_list(pch_chg_min=6)
                     new_code_list = []
                     for c in code_list:
