@@ -280,7 +280,7 @@ class Strategist(object):
         k_line_list_range_day = k_line_list[-range_days:]
         min_low_price = self.get_min_low_price(k_line_list_range_day)
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
-        if not 6 <= interval <= 20:
+        if not 7 <= interval <= 25:
             return False
         k_line_list_interval = k_line_list[-interval-1:-1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
@@ -293,6 +293,6 @@ class Strategist(object):
         if not 5 <= pct_chg_interval_day <= 15:
             return False
         _num = self.get_num_exceed(5, k_line_list_interval)
-        if _num > 2:
+        if _num > 1:
             return False
         return True
