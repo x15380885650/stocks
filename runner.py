@@ -1,5 +1,5 @@
 from data_source_ef import EfDataSource
-from email_helper import EmailSender
+from email_util.email_sender import EmailSender
 
 
 class Runner(object):
@@ -8,7 +8,7 @@ class Runner(object):
         self.stock_days = 30 * 6
 
     def notify(self, code):
-        email = EmailSender("xcg19865@126.com", "HIPJLVTIFUZQKEYB", server='smtp.126.com')
+        email = EmailSender("xcg19865@126.com", "HIPJLVTIFUZQKEYB", server='smtp.126.com', port=465)
         email.set_header(code)
         email.add_text(code)
         # email.add_receiver("531309575@qq.com")

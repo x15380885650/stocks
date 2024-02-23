@@ -26,6 +26,7 @@ test_code_dict = {
 
 class ThirdRunner(Runner):
     def run(self):
+        self.notify('123456789')
         sleep_time = 0
         c_fetcher = CodeFetcher(ds=self.ds)
         d_chooser = DateChooser(ds=self.ds, delta_days=self.stock_days)
