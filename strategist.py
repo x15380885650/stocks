@@ -255,6 +255,7 @@ class Strategist(object):
 
     def get_second_strategy_res(self, code, k_line_list):
         range_days = 70
+        close_price = k_line_list[-1]['close']
         k_line_list_range_day = k_line_list[-range_days:]
         min_low_price = self.get_min_low_price(k_line_list_range_day)
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
@@ -264,8 +265,8 @@ class Strategist(object):
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = 100 * up_num / (up_num+down_num)
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
-        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}'
-              .format(interval, up_ratio_interval_day, pct_chg_interval_day))
+        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, close_price: {}'
+              .format(interval, up_ratio_interval_day, pct_chg_interval_day, close_price))
         # if not 50 <= up_ratio_interval_day <= 90:
         #     return False
         if not 5 <= pct_chg_interval_day <= 20:
@@ -277,6 +278,7 @@ class Strategist(object):
 
     def get_third_strategy_res(self, code, k_line_list):
         range_days = 50
+        close_price = k_line_list[-1]['close']
         k_line_list_range_day = k_line_list[-range_days:]
         min_low_price = self.get_min_low_price(k_line_list_range_day)
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
@@ -286,8 +288,8 @@ class Strategist(object):
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = 100 * up_num / (up_num+down_num)
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
-        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}'
-              .format(interval, up_ratio_interval_day, pct_chg_interval_day))
+        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, close_price: {}'
+              .format(interval, up_ratio_interval_day, pct_chg_interval_day, close_price))
         if not 50 <= up_ratio_interval_day <= 90:
             return False
         if not 5 <= pct_chg_interval_day <= 15:
