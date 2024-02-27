@@ -82,6 +82,7 @@ class ThirdRunner(Runner):
                             print('join s_res, code: {}'.format(code))
                             save_data_append_by_json_dump(notified_file_path, code)
                             notified_set.add(code)
+                            exclude_stock_set.add(code)
                 except Exception as e:
                     print(e)
                 print('now: {}, sleep: {}'.format(datetime.now(), sleep_time))
