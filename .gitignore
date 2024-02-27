@@ -3,4 +3,5 @@
 *.pyc
 .idea/*
 .idea
+data/*
 !.gitignore

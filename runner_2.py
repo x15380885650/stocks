@@ -1,4 +1,4 @@
-import time
+import time, os
 from datetime import datetime
 from code_fetcher import CodeFetcher
 from date_chooser import DateChooser
@@ -33,6 +33,8 @@ class SecondRunner(Runner):
         print('{}--->{}'.format(start_date_str, end_date_str))
         exclude_stock_set = set()
         file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
+        if not os.path.exists(file_folder):
+            os.makedirs(file_folder)
         notified_file_path = '{}/{}_codes_notified_2.json'.format(file_folder, end_date_str)
         notified_set = set(load_data_append_by_json_dump(notified_file_path, ret_type=[]))
         exclude_stock_set.update(notified_set)
