@@ -57,7 +57,7 @@ class ThirdRunner(Runner):
                     if not trade_ok:
                         time.sleep(1)
                         continue
-                    code_list = c_fetcher.fetch_real_time_filtered_code_list(pch_chg_min=7.5)
+                    code_list = c_fetcher.fetch_real_time_filtered_code_list(pch_chg_min=6.5)
                     new_code_list = []
                     for c in code_list:
                         if c not in exclude_stock_set:
