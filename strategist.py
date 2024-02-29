@@ -301,8 +301,10 @@ class Strategist(object):
             return False
         # if prev_macd_value < -0.1 or opt_macd_value < 0:
         #     return False
-        if opt_macd_value < 0:
+        if opt_macd_value < 0 and abs(opt_macd_value) > 0.02:
             return False
+        # if opt_macd_value < 0:
+        #     return False
         k_line_list_interval = k_line_list[-interval-1:-1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = 100 * up_num / (up_num+down_num)
@@ -318,7 +320,6 @@ class Strategist(object):
         _num = self.get_num_exceed(5, k_line_list_interval)
         if _num > 1:
             return False
-
         return True
 
     def get_macd_value(self, data_list):
