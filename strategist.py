@@ -1,5 +1,5 @@
-from constants import latest_close_price_min, latest_close_price_max, pct_change_max_i, pct_change_max_j, turn_max_i, \
-    turn_max_i_instant, turn_min_i, turn_max_j, turn_max_j_instant
+from constants import pct_change_max_i, pct_change_max_j
+from technical_indicator.momentum import MACD
 
 
 class Strategist(object):
@@ -120,6 +120,13 @@ class Strategist(object):
                 continue
             sum_turn += float(turn)
         return sum_turn / count
+
+    def get_close_price_list(self, data_list):
+        close_price_list = []
+        for data in data_list:
+            close = data['close']
+            close_price_list.append(float(close))
+        return close_price_list
 
     def is_stock_whole_up(self, data_list):
         pct_chg_list = []
@@ -280,17 +287,30 @@ class Strategist(object):
         range_days = 50
         close_price = k_line_list[-1]['close']
         open_price = k_line_list[-1]['open']
+        prev_close_price = k_line_list[-2]['close']
+        now_ideal_close_price = prev_close_price * 1.1
         k_line_list_range_day = k_line_list[-range_days:]
         min_low_price = self.get_min_low_price(k_line_list_range_day)
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
+        prev_macd_value = self.get_macd_value(data_list=k_line_list[0:-1])
+        import copy
+        k_line_list_opt = copy.deepcopy(k_line_list)
+        k_line_list_opt[-1]['close'] = now_ideal_close_price
+        opt_macd_value = self.get_macd_value(data_list=k_line_list_opt)
         if not 7 <= interval < 20:
+            return False
+        # if prev_macd_value < -0.1 or opt_macd_value < 0:
+        #     return False
+        if opt_macd_value < 0:
             return False
         k_line_list_interval = k_line_list[-interval-1:-1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = 100 * up_num / (up_num+down_num)
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
-        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, open_price: {}, close_price: {}'
-              .format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price))
+        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, open_price: {}, close_price: {}, '
+              'prev_macd_value: {}, opt_macd_value: {}'
+              .format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, prev_macd_value,
+                      opt_macd_value))
         if not 50 < up_ratio_interval_day <= 90:
             return False
         if not 5 < pct_chg_interval_day <= 15:
@@ -298,4 +318,16 @@ class Strategist(object):
         _num = self.get_num_exceed(5, k_line_list_interval)
         if _num > 1:
             return False
+
         return True
+
+    def get_macd_value(self, data_list):
+        fast_period = 12
+        slow_period = 26
+        close_price_list = self.get_close_price_list(data_list)
+        m = MACD(close_price_list, fast_period, slow_period)
+        v = m.calculate_macd()
+        rounded_v = round(v, 2)
+        return rounded_v
+
+
