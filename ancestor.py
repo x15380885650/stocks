@@ -1,19 +1,13 @@
 from data_source_ef import EfDataSource
-from email_util.email_sender import EmailSender
+
+from persister import Persister
 
 
-class Runner(object):
-    def __init__(self):
+class Ancestor(object):
+    def __init__(self, key_prefix):
         self.ds = EfDataSource()
         self.stock_days = 30 * 6
-
-    def notify(self, code):
-        email = EmailSender("xcg19865@126.com", "HIPJLVTIFUZQKEYB", server='smtp.126.com', port=465)
-        email.set_header(code)
-        email.add_text(code)
-        # email.add_receiver("531309575@qq.com")
-        email.add_receiver("xucg025@qq.com")
-        email.send()
+        self.persister = Persister(key_prefix)
 
     def is_trade(self):
         from datetime import datetime

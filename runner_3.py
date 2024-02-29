@@ -3,8 +3,7 @@ from datetime import datetime
 from code_fetcher import CodeFetcher
 from date_chooser import DateChooser
 from strategist import Strategist
-from dumper_loader import load_data_append_by_json_dump, save_data_append_by_json_dump
-from runner import Runner
+from ancestor import Ancestor
 
 test_code_dict = {
 # '002808': '2023-01-12',
@@ -32,7 +31,10 @@ test_code_dict = {
 }
 
 
-class ThirdRunner(Runner):
+class ThirdRunner(Ancestor):
+    def __init__(self):
+        super(ThirdRunner, self).__init__(key_prefix='runner_3')
+        
     def run(self):
         sleep_time = 0
         c_fetcher = CodeFetcher(ds=self.ds)
@@ -41,12 +43,6 @@ class ThirdRunner(Runner):
         start_date_str, end_date_str = d_chooser.get_start_and_end_date()
         print('{}--->{}'.format(start_date_str, end_date_str))
         exclude_stock_set = set()
-        file_folder = 'data/{}'.format(end_date_str[:end_date_str.rfind('-')])
-        if not os.path.exists(file_folder):
-            os.makedirs(file_folder)
-        notified_file_path = '{}/{}_codes_notified_3.json'.format(file_folder, end_date_str)
-        notified_set = set(load_data_append_by_json_dump(notified_file_path, ret_type=[]))
-        exclude_stock_set.update(notified_set)
 
         if test_code_dict:
             for test_stock_code, test_end_date_str in test_code_dict.items():
@@ -65,7 +61,7 @@ class ThirdRunner(Runner):
                     if not trade_ok:
                         time.sleep(1)
                         continue
-                    code_list = c_fetcher.fetch_real_time_filtered_code_list(pch_chg_min=5)
+                    code_list = c_fetcher.fetch_real_time_filtered_code_list(pch_chg_min=4)
                     new_code_list = []
                     for c in code_list:
                         if c not in exclude_stock_set:
@@ -85,11 +81,9 @@ class ThirdRunner(Runner):
                         s_res = s.get_third_strategy_res(code, stock_kline_list)
                         if not s_res:
                             exclude_stock_set.add(code)
-                        if s_res and code not in notified_set:
-                            self.notify(code)
-                            print('join s_res, code: {}'.format(code))
-                            save_data_append_by_json_dump(notified_file_path, code)
-                            notified_set.add(code)
+                        else:
+                            print('push to redis, code: {}'.format(code))
+                            self.persister.save_code_to_monitor(end_date_str, code)
                             exclude_stock_set.add(code)
                 except Exception as e:
                     print(e)

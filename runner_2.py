@@ -4,7 +4,7 @@ from code_fetcher import CodeFetcher
 from date_chooser import DateChooser
 from strategist import Strategist
 from dumper_loader import load_data_append_by_json_dump, save_data_append_by_json_dump
-from runner import Runner
+from ancestor import Runner
 
 test_code_dict = {
 # '601566': '2023-02-24',
