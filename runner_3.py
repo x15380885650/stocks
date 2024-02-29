@@ -10,6 +10,7 @@ test_code_dict = {
 # '002808': '2023-01-12',
 # '002835': '2023-01-20',
 # '002877': '2023-01-30',
+# '605011': '2023-05-12',
 # '603933': '2023-05-19',
 # '002173': '2023-05-26',
 # # '600280': '2023-07-14',
@@ -64,7 +65,7 @@ class ThirdRunner(Runner):
                     if not trade_ok:
                         time.sleep(1)
                         continue
-                    code_list = c_fetcher.fetch_real_time_filtered_code_list(pch_chg_min=4)
+                    code_list = c_fetcher.fetch_real_time_filtered_code_list(pch_chg_min=5)
                     new_code_list = []
                     for c in code_list:
                         if c not in exclude_stock_set:
