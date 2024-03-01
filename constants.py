@@ -1,4 +1,4 @@
-latest_close_price_min = 2
+latest_close_price_min = 3
 latest_close_price_max = 20
 
 pct_change_max_i = 9.8
@@ -14,6 +14,6 @@ turn_max_j_instant = 40
 
 turn_min_i = 3.5
 
-stock_value_max = 60
+stock_value_max = 70
 stock_value_min = 1
 
