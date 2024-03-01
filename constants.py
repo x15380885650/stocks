@@ -16,3 +16,4 @@ turn_min_i = 3.5
 
 stock_value_max = 60
 stock_value_min = 1
+

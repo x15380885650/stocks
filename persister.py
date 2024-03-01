@@ -21,11 +21,43 @@ class Persister(object):
         diff = self.redis.sdiff(monitor_key, notifier_key)
         return list(diff)
 
-    def get_monitor_pch_chg(self):
-        key = '{}:pct_chg'.format(self.key_prefix)
+    def get_min_pct_chg_notifier(self):
+        key = '{}:min_pct_chg_notifier'.format(self.key_prefix)
         pct_chg = self.redis.get(key)
         if pct_chg is None:
             pct_chg = 8
             self.redis.set(key, pct_chg)
         return float(pct_chg)
+
+    def get_min_pct_chg_monitor(self):
+        key = '{}:min_pct_chg_monitor'.format(self.key_prefix)
+        pct_chg = self.redis.get(key)
+        if pct_chg is None:
+            pct_chg = 4
+            self.redis.set(key, pct_chg)
+        return float(pct_chg)
+
+    def get_sleep_time_notifier(self):
+        key = '{}:sleep_time_notifier'.format(self.key_prefix)
+        sleep_time = self.redis.get(key)
+        if sleep_time is None:
+            sleep_time = 0.5
+            self.redis.set(key, sleep_time)
+        return float(sleep_time)
+
+    def get_sleep_time_monitor(self):
+        key = '{}:sleep_time_monitor'.format(self.key_prefix)
+        sleep_time = self.redis.get(key)
+        if sleep_time is None:
+            sleep_time = 0.5
+            self.redis.set(key, sleep_time)
+        return float(sleep_time)
+
+    def get_min_opt_macd(self):
+        key = '{}:min_opt_macd'.format(self.key_prefix)
+        macd_value = self.redis.get(key)
+        if macd_value is None:
+            macd_value = 0
+            self.redis.set(key, macd_value)
+        return float(macd_value)
 

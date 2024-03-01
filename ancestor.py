@@ -1,5 +1,5 @@
 from data_source_ef import EfDataSource
-
+from email_util.email_sender import EmailSender
 from persister import Persister
 
 
@@ -22,3 +22,10 @@ class Ancestor(object):
         if not start_time <= now <= end_time:
             return False
         return True
+
+    def notify(self, code):
+        email = EmailSender("xcg19865@126.com", "HIPJLVTIFUZQKEYB", server='smtp.126.com', port=465)
+        email.set_header(code)
+        email.add_text(code)
+        email.add_receiver("xucg025@qq.com")
+        email.send()
