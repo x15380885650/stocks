@@ -24,6 +24,7 @@ class FirstNotifier(Ancestor):
                     continue
                 monitor_code_list = self.persister.get_monitor_code_list(end_date_str)
                 if not monitor_code_list:
+                    time.sleep(1)
                     continue
                 min_pct_chg_notifier = self.persister.get_min_pct_chg_notifier()
                 sleep_time = self.persister.get_sleep_time_notifier()
