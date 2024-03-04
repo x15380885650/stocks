@@ -8,34 +8,28 @@ from strategist import Strategist
 from ancestor import Ancestor
 
 test_code_dict = {
-# '002808': '2023-01-12',
-# '002835': '2023-01-20',
-# '002877': '2023-01-30',
-# '605011': '2023-05-12',
-# '603933': '2023-05-19',
-# '002173': '2023-05-26',
-# # '600280': '2023-07-14',
-# '600355': '2023-09-20',
-# '002682': '2023-10-20',
-# '000056': '2023-11-07',
-# '002584': '2023-11-08',
-# '001300': '2023-11-10',
-# '600053': '2023-11-21',
-# '000017': '2024-01-09',
+# '601566': '2023-02-24',
+# '603767': '2023-06-16',
+# '002377': '2023-07-26',
+# '002456': '2023-09-28',
+#
+# # '600272': '2023-08-09',
+# # '603536': '2023-11-24',
+# # '600250': '2023-11-28',
+# # # '600571': '2023-11-30',
+# '600661': '2023-12-01',
+# '600678': '2023-12-05',
+# # # # '603660': '2023-12-07',
+# '600712': '2023-12-11',
+# '600715': '2023-12-06',
 
-# '600238': '2024-02-27',
-# '000797': '2024-02-28',
-# '002166': '2024-02-28',
-# '600616': '2024-02-29',
-# '000505': '2024-02-28',
-# '002713': '2024-02-28',
-# '600127': '2024-02-28',
+
 }
 
 
-class FirstMonitor(Ancestor):
+class SecondMonitor(Ancestor):
     def __init__(self):
-        super(FirstMonitor, self).__init__(key_prefix='monitor_1')
+        super(SecondMonitor, self).__init__(key_prefix='monitor_2')
         
     def run(self):
         sleep_time = 0
@@ -53,7 +47,7 @@ class FirstMonitor(Ancestor):
                     code = stock_kline_list[-1]['code']
                     if len(stock_kline_list) < int(self.stock_days / 2):
                         continue
-                    s.get_first_strategy_res(code, stock_kline_list)
+                    s.get_second_strategy_res(code, stock_kline_list)
         else:
             while True:
                 try:
@@ -82,7 +76,7 @@ class FirstMonitor(Ancestor):
                         if len(stock_kline_list) < int(self.stock_days/2):
                             exclude_stock_set.add(code)
                             continue
-                        s_res = s.get_first_strategy_res(code, stock_kline_list, min_opt_macd_diff)
+                        s_res = s.get_second_strategy_res(code, stock_kline_list, min_opt_macd_diff)
                         if not s_res:
                             exclude_stock_set.add(code)
                         else:
@@ -96,5 +90,5 @@ class FirstMonitor(Ancestor):
 
 
 if __name__ == '__main__':
-    monitor = FirstMonitor()
+    monitor = SecondMonitor()
     monitor.run()

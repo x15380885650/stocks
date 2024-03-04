@@ -195,58 +195,58 @@ class Strategist(object):
             pct_chg_sum += pct_chg
         return pct_chg_sum
 
-    def get_first_strategy_res(self, code, k_line_list, m_day):
-        k_line_list_m_day = k_line_list[-m_day:]
-        prev_close_price = k_line_list[-2]['close']
-        now_ideal_close_price = prev_close_price * 1.1
-        x_max_close_price = self.get_max_close_price(k_line_list_m_day[:-1])
-        x_max_high_price = self.get_max_high_price(k_line_list_m_day[:-1])
-        # max_price_ratio = (now_ideal_close_price - x_max_close_price) / x_max_close_price * 100
-        max_price_ratio = (now_ideal_close_price - x_max_high_price) / x_max_high_price * 100
-        if max_price_ratio < 9.5:
-            return False
-        latest_days_k_line_list = k_line_list[-7:-1]
-        max_turn = self.get_max_turn(latest_days_k_line_list)
-        avg_turn = self.get_avg_turn(latest_days_k_line_list)
-        now_turn = k_line_list[-1]['turn']
-        turn_ratio = now_turn / avg_turn
-        # print('max_turn: {}, avg_turn: {}, now_turn: {}, turn_ratio: {}, max_price_ratio: {}, code: {}'
-        #       .format(max_turn, avg_turn, now_turn, turn_ratio, max_price_ratio, code))
-        # if avg_turn > 3:
-        #     return False
-        # if max_turn > 4:
-        #     return False
-        # if float(now_turn) > 4:
-        #     return False
-        # if turn_ratio > 8:
-        #     return False
-        # return False
-        pct_chg_list = []
-        for k_line in k_line_list_m_day:
-            pct_chg = k_line['pct_chg']
-            if isinstance(pct_chg, str) and not pct_chg:
-                continue
-            pct_chg_max = pct_change_max_i
-            if code.startswith('sz.30') or code.startswith('30'):
-                pct_chg_max = pct_change_max_j
-            if float(pct_chg) >= pct_chg_max:
-                pct_chg_list.append(1)
-            else:
-                pct_chg_list.append(0)
-        index_list = []
-        for i, v in enumerate(pct_chg_list):
-            if v == 1:
-                index_list.append(i)
-        if len(index_list) != 2:
-            return False
-        if index_list[-1] != m_day - 1 or index_list[-2] != m_day - 2:
-            return False
-        last_k_line_data = k_line_list[-1]
-        last_k_line_open = last_k_line_data['open']
-        last_k_line_close = last_k_line_data['close']
-        if last_k_line_open != last_k_line_close:
-            return False
-        return True
+    # def get_first_strategy_res(self, code, k_line_list, m_day):
+    #     k_line_list_m_day = k_line_list[-m_day:]
+    #     prev_close_price = k_line_list[-2]['close']
+    #     now_ideal_close_price = prev_close_price * 1.1
+    #     x_max_close_price = self.get_max_close_price(k_line_list_m_day[:-1])
+    #     x_max_high_price = self.get_max_high_price(k_line_list_m_day[:-1])
+    #     # max_price_ratio = (now_ideal_close_price - x_max_close_price) / x_max_close_price * 100
+    #     max_price_ratio = (now_ideal_close_price - x_max_high_price) / x_max_high_price * 100
+    #     if max_price_ratio < 9.5:
+    #         return False
+    #     latest_days_k_line_list = k_line_list[-7:-1]
+    #     max_turn = self.get_max_turn(latest_days_k_line_list)
+    #     avg_turn = self.get_avg_turn(latest_days_k_line_list)
+    #     now_turn = k_line_list[-1]['turn']
+    #     turn_ratio = now_turn / avg_turn
+    #     # print('max_turn: {}, avg_turn: {}, now_turn: {}, turn_ratio: {}, max_price_ratio: {}, code: {}'
+    #     #       .format(max_turn, avg_turn, now_turn, turn_ratio, max_price_ratio, code))
+    #     # if avg_turn > 3:
+    #     #     return False
+    #     # if max_turn > 4:
+    #     #     return False
+    #     # if float(now_turn) > 4:
+    #     #     return False
+    #     # if turn_ratio > 8:
+    #     #     return False
+    #     # return False
+    #     pct_chg_list = []
+    #     for k_line in k_line_list_m_day:
+    #         pct_chg = k_line['pct_chg']
+    #         if isinstance(pct_chg, str) and not pct_chg:
+    #             continue
+    #         pct_chg_max = pct_change_max_i
+    #         if code.startswith('sz.30') or code.startswith('30'):
+    #             pct_chg_max = pct_change_max_j
+    #         if float(pct_chg) >= pct_chg_max:
+    #             pct_chg_list.append(1)
+    #         else:
+    #             pct_chg_list.append(0)
+    #     index_list = []
+    #     for i, v in enumerate(pct_chg_list):
+    #         if v == 1:
+    #             index_list.append(i)
+    #     if len(index_list) != 2:
+    #         return False
+    #     if index_list[-1] != m_day - 1 or index_list[-2] != m_day - 2:
+    #         return False
+    #     last_k_line_data = k_line_list[-1]
+    #     last_k_line_open = last_k_line_data['open']
+    #     last_k_line_close = last_k_line_data['close']
+    #     if last_k_line_open != last_k_line_close:
+    #         return False
+    #     return True
 
     def get_num_exceed(self, value, data_list):
         _num = 0
@@ -262,9 +262,19 @@ class Strategist(object):
                 return idx - 1
         return -100
 
-    def get_second_strategy_res(self, code, k_line_list):
+    def get_second_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
+        if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
+            return False
+        is_gold = self.is_macd_latest_gold(k_line_list)
+        if not is_gold:
+            return False
+        # price_exceed_ma_20 = self.is_close_price_exceed_ma_20(k_line_list, days=3)
+        # if not price_exceed_ma_20:
+        #     return False
         range_days = 70
         close_price = k_line_list[-1]['close']
+        open_price = k_line_list[-1]['open']
         k_line_list_range_day = k_line_list[-range_days:]
         min_low_price = self.get_min_low_price(k_line_list_range_day)
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
@@ -274,8 +284,8 @@ class Strategist(object):
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = 100 * up_num / (up_num+down_num)
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
-        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, close_price: {}'
-              .format(interval, up_ratio_interval_day, pct_chg_interval_day, close_price))
+        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, close_price: {}, open_price: {}'
+              .format(interval, up_ratio_interval_day, pct_chg_interval_day, close_price, open_price))
         # if not 50 <= up_ratio_interval_day <= 90:
         #     return False
         if not 5 <= pct_chg_interval_day <= 20:
@@ -285,12 +295,12 @@ class Strategist(object):
             return False
         return True
 
-    def get_third_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
-        opt_macd_diff = self.get_stock_opt_macd_diff(k_line_list)
-        if opt_macd_diff < min_opt_macd_diff:
+    def get_first_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
+        if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
             return False
-        exceed_ma_20 = self.is_close_price_exceed_ma_20(k_line_list)
-        if not exceed_ma_20:
+        price_exceed_ma_20 = self.is_close_price_exceed_ma_20(k_line_list, days=3)
+        if not price_exceed_ma_20:
             return False
         range_days = 50
         close_price = k_line_list[-1]['close']
@@ -316,6 +326,7 @@ class Strategist(object):
         return True
 
     def get_stock_tech(self, k_line_list):
+        # https://github.com/jealous/stockstats
         temp_list = []
         for k_line in k_line_list:
             temp_list.append([k_line['date'], k_line['open'], k_line['high'], k_line['low'],
@@ -325,7 +336,7 @@ class Strategist(object):
         stock_tech = StockDataFrame.retype(pd_data)
         return stock_tech
 
-    def get_stock_opt_macd_diff(self, k_line_list):
+    def get_stock_opt_macd(self, k_line_list):
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
         # prev_macd_value = self.get_macd_value(data_list=k_line_list[0:-1])
@@ -334,9 +345,8 @@ class Strategist(object):
         k_line_list_opt = copy.deepcopy(k_line_list)
         k_line_list_opt[-1]['close'] = now_ideal_close_price
         stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
-        diff, _ = stock_tech['macd'].iloc[-1], stock_tech['macds'].iloc[-1]
-        # print(diff, _)
-        return diff
+        diff, dea = stock_tech['macd'].iloc[-1], stock_tech['macds'].iloc[-1]
+        return round(diff, 2), round(dea, 2)
 
     def is_close_price_exceed_ma_20(self, k_line_list, days=3):
         stock_tech = self.get_stock_tech(k_line_list=k_line_list)
@@ -349,6 +359,22 @@ class Strategist(object):
             if close_price < ma_20_price:
                 return False
         return True
+
+    def is_macd_latest_gold(self, k_line_list):
+        prev_close_price = k_line_list[-2]['close']
+        now_ideal_close_price = prev_close_price * 1.1
+        k_line_list_opt = copy.deepcopy(k_line_list)
+        k_line_list_opt[-1]['close'] = now_ideal_close_price
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
+        is_gold = False
+        for i in range(1, 6):
+            diff_prev, dea_prev = round(stock_tech['macd'].iloc[-i-1], 2), round(stock_tech['macds'].iloc[-i-1], 2)
+            diff, dea = round(stock_tech['macd'].iloc[-i], 2), round(stock_tech['macds'].iloc[-i], 2)
+            r = (diff_prev-dea_prev) * (diff-dea)
+            if r <= 0:
+                is_gold = True
+                break
+        return is_gold
 
 
 
