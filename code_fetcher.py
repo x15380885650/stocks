@@ -132,7 +132,8 @@ class CodeFetcher(object):
                 latest_close_price = float(stock[1][3])
                 if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
                     continue
-                stock_value = stock[1][15] / 10000 / 10000
+                # stock_value = stock[1][15] / 10000 / 10000
+                stock_value = stock[1].iloc[15] / 10000 / 10000
                 if stock_value > stock_value_max or stock_value < stock_value_min:
                     continue
             except Exception as e:
