@@ -1,4 +1,5 @@
-import time, os
+from __future__ import annotations
+import time
 from datetime import datetime
 from code_fetcher import CodeFetcher
 from date_chooser import DateChooser
