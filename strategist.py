@@ -1,6 +1,6 @@
 import copy
 import pandas as pd
-from stockstats import wrap
+from stockstats import wrap, StockDataFrame
 from constants import pct_change_max_i, pct_change_max_j
 
 
@@ -322,7 +322,7 @@ class Strategist(object):
                               k_line['close'], k_line['volume']])
         pd_data = pd.DataFrame(temp_list, columns=['date', 'Open', 'High', 'Low', 'Close', 'Volume'])
         pd_data.set_index('date')
-        stock_tech = wrap(pd_data)
+        stock_tech = StockDataFrame.retype(pd_data)
         return stock_tech
 
     def get_stock_opt_macd_diff(self, k_line_list):
