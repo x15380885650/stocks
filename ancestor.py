@@ -17,11 +17,15 @@ class Ancestor(object):
         # print(day_of_week, now)
         if not 0 <= day_of_week <= 4:
             return False
-        start_time = datetime(now.year, now.month, now.day, 9, 30)
-        end_time = datetime(now.year, now.month, now.day, 15, 0)
-        if not start_time <= now <= end_time:
-            return False
-        return True
+        start_time_1 = datetime(now.year, now.month, now.day, 9, 30)
+        end_time_1 = datetime(now.year, now.month, now.day, 11, 30)
+
+        start_time_2 = datetime(now.year, now.month, now.day, 13, 00)
+        end_time_2 = datetime(now.year, now.month, now.day, 15, 00)
+
+        if start_time_1 <= now <= end_time_1 or start_time_2 <= now <= end_time_2:
+            return True
+        return False
 
     def notify(self, code):
         email = EmailSender("xcg19865@126.com", "HIPJLVTIFUZQKEYB", server='smtp.126.com', port=465)
