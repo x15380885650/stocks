@@ -13,8 +13,6 @@ class FirstNotifier(Ancestor):
         sleep_time = 0
         c_fetcher = CodeFetcher(ds=self.ds)
         d_chooser = DateChooser(ds=self.ds, delta_days=self.stock_days)
-        start_date_str, end_date_str = d_chooser.get_start_and_end_date()
-        print('{}--->{}'.format(start_date_str, end_date_str))
 
         while True:
             try:
@@ -22,6 +20,7 @@ class FirstNotifier(Ancestor):
                 if not trade_ok:
                     time.sleep(1)
                     continue
+                start_date_str, end_date_str = d_chooser.get_start_and_end_date()
                 monitor_code_list = self.persister.get_monitor_code_list(end_date_str)
                 if not monitor_code_list:
                     time.sleep(1)

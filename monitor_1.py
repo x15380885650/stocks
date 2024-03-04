@@ -40,8 +40,6 @@ class FirstMonitor(Ancestor):
         c_fetcher = CodeFetcher(ds=self.ds)
         d_chooser = DateChooser(ds=self.ds, delta_days=self.stock_days)
         s = Strategist()
-        start_date_str, end_date_str = d_chooser.get_start_and_end_date()
-        print('{}--->{}'.format(start_date_str, end_date_str))
         exclude_stock_set = set()
 
         if test_code_dict:
@@ -61,6 +59,7 @@ class FirstMonitor(Ancestor):
                     if not trade_ok:
                         time.sleep(1)
                         continue
+                    start_date_str, end_date_str = d_chooser.get_start_and_end_date()
                     min_pct_chg_monitor = self.persister.get_min_pct_chg_monitor()
                     sleep_time = self.persister.get_sleep_time_monitor()
                     code_list = c_fetcher.fetch_real_time_filtered_code_list(pch_chg_min=min_pct_chg_monitor)
@@ -75,13 +74,13 @@ class FirstMonitor(Ancestor):
                         continue
                     stock_list_kline_list = c_fetcher.get_stock_list_kline_list(
                         new_code_list, start_date_str, end_date_str)
-                    min_opt_macd = self.persister.get_min_opt_macd()
+                    min_opt_macd_diff = self.persister.get_min_opt_macd_diff()
                     for stock_kline_list in stock_list_kline_list:
                         code = stock_kline_list[-1]['code']
                         if len(stock_kline_list) < int(self.stock_days/2):
                             exclude_stock_set.add(code)
                             continue
-                        s_res = s.get_third_strategy_res(code, stock_kline_list, min_opt_macd)
+                        s_res = s.get_third_strategy_res(code, stock_kline_list, min_opt_macd_diff)
                         if not s_res:
                             exclude_stock_set.add(code)
                         else:

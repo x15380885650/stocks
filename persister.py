@@ -53,8 +53,8 @@ class Persister(object):
             self.redis.set(key, sleep_time)
         return float(sleep_time)
 
-    def get_min_opt_macd(self):
-        key = '{}:min_opt_macd'.format(self.key_prefix)
+    def get_min_opt_macd_diff(self):
+        key = '{}:min_opt_macd_diff'.format(self.key_prefix)
         macd_value = self.redis.get(key)
         if macd_value is None:
             macd_value = 0

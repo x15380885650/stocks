@@ -1,6 +1,7 @@
 import copy
+import pandas as pd
+from stockstats import wrap
 from constants import pct_change_max_i, pct_change_max_j
-from technical_indicator.momentum import MACD
 
 
 class Strategist(object):
@@ -284,9 +285,12 @@ class Strategist(object):
             return False
         return True
 
-    def get_third_strategy_res(self, code, k_line_list, min_opt_macd=0):
-        opt_macd = self.get_stock_opt_macd(k_line_list)
-        if opt_macd < min_opt_macd:
+    def get_third_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        opt_macd_diff = self.get_stock_opt_macd_diff(k_line_list)
+        if opt_macd_diff < min_opt_macd_diff:
+            return False
+        exceed_ma_20 = self.is_close_price_exceed_ma_20(k_line_list)
+        if not exceed_ma_20:
             return False
         range_days = 50
         close_price = k_line_list[-1]['close']
@@ -311,7 +315,17 @@ class Strategist(object):
             return False
         return True
 
-    def get_stock_opt_macd(self, k_line_list):
+    def get_stock_tech(self, k_line_list):
+        temp_list = []
+        for k_line in k_line_list:
+            temp_list.append([k_line['date'], k_line['open'], k_line['high'], k_line['low'],
+                              k_line['close'], k_line['volume']])
+        pd_data = pd.DataFrame(temp_list, columns=['date', 'Open', 'High', 'Low', 'Close', 'Volume'])
+        pd_data.set_index('date')
+        stock_tech = wrap(pd_data)
+        return stock_tech
+
+    def get_stock_opt_macd_diff(self, k_line_list):
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
         # prev_macd_value = self.get_macd_value(data_list=k_line_list[0:-1])
@@ -319,16 +333,22 @@ class Strategist(object):
         #     return False
         k_line_list_opt = copy.deepcopy(k_line_list)
         k_line_list_opt[-1]['close'] = now_ideal_close_price
-        opt_value = self.get_macd(data_list=k_line_list_opt)
-        return opt_value
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
+        diff, _ = stock_tech['macd'].iloc[-1], stock_tech['macds'].iloc[-1]
+        # print(diff, _)
+        return diff
 
-    def get_macd(self, data_list):
-        fast_period = 12
-        slow_period = 26
-        close_price_list = self.get_close_price_list(data_list)
-        m = MACD(close_price_list, fast_period, slow_period)
-        v = m.calculate_macd()
-        rounded_v = round(v, 2)
-        return rounded_v
+    def is_close_price_exceed_ma_20(self, k_line_list, days=3):
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list)
+        boll = stock_tech['boll']
+        boll_price_series = boll.iloc[-days-1:-1]
+        for k_line in k_line_list[-days-1: -1]:
+            close_price = round(k_line['close'], 2)
+            ma_20_price = round(boll_price_series[k_line['date']], 2)
+            print('close_price: {}, ma_20_price: {}'.format(close_price, ma_20_price))
+            if close_price < ma_20_price:
+                return False
+        return True
+
 
 
