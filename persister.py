@@ -4,7 +4,12 @@ from redis import StrictRedis
 class Persister(object):
     def __init__(self, key_prefix):
         redis_conf = {'host': '127.0.0.1', 'port': 6408, 'password': 'iscas139', 'db': 0}
-        self.redis = StrictRedis(**redis_conf, decode_responses=True)
+        try:
+            self.redis = StrictRedis(**redis_conf, decode_responses=True)
+        except Exception as e:
+            print(e)
+            import time
+            time.sleep(100)
         self.key_prefix = key_prefix
 
     def save_code_to_monitor(self, date, code):
