@@ -1,5 +1,6 @@
-from __future__ import annotations
 import time
+import warnings
+warnings.filterwarnings('ignore')
 from datetime import datetime
 from code_fetcher import CodeFetcher
 from date_chooser import DateChooser
