@@ -18,9 +18,6 @@ class SecondNotifier(Ancestor):
 
         while True:
             try:
-                if self.persister.get_script_stop_status():
-                    print('stop_status: 1, exited')
-                    return
                 trade_ok = self.is_trade()
                 if not trade_ok:
                     time.sleep(1)
