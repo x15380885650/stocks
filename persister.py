@@ -62,3 +62,11 @@ class Persister(object):
             self.redis.set(key, macd_value)
         return float(macd_value)
 
+    def get_script_stop_status(self):
+        script_stop_key = '{}:script_stop'.format(self.key_prefix)
+        stop_status = self.redis.get(script_stop_key)
+        if stop_status is None:
+            stop_status = 0
+        stop_status = int(stop_status)
+        return stop_status
+

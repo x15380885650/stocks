@@ -48,10 +48,10 @@ class ScriptManager(object):
             self.redis.set(parallel_key, default_parallels)
         return self.redis.get(parallel_key)
 
-    def set_redis_crawler_stop_status(self, script, stop_status):
+    def set_redis_script_stop_status(self, script, stop_status):
         redis_prefix = script['redis_prefix']
-        crawler_stop_key = '{}:crawler_stop'.format(redis_prefix)
-        self.redis.set(crawler_stop_key, stop_status)
+        script_stop_key = '{}:script_stop'.format(redis_prefix)
+        self.redis.set(script_stop_key, stop_status)
 
     def set_redis_restart_time(self, script, restart_time=None):
         redis_prefix = script['redis_prefix']
@@ -79,7 +79,7 @@ class ScriptManager(object):
             if len(pid_list) == parallels:
                 self.set_redis_restart_time(script)
                 continue
-            self.set_redis_crawler_stop_status(script, stop_status=1)
+            self.set_redis_script_stop_status(script, stop_status=1)
             pid_list = self.get_pid_list_by_name(py_name)
             if len(pid_list) != 0:
                 restart_time = self.get_redis_restart_time(script)
@@ -88,7 +88,7 @@ class ScriptManager(object):
                 else:
                     interval = int(time.time() - int(restart_time))
                     print('py_name: {}, interval: {}'.format(py_name, interval))
-                    if interval >= 600:
+                    if interval >= 10:
                         for p_id in pid_list:
                             self.kill_process_by_pid(p_id)
             pid_list = self.get_pid_list_by_name(py_name)
@@ -99,7 +99,7 @@ class ScriptManager(object):
                     self.start_process(scrip_file_path, log_file_path)
                 if parallels != 0:
                     print('py_name: {}, restarted {} scrips'.format(py_name, parallels))
-                self.set_redis_crawler_stop_status(script, stop_status=0)
+                self.set_redis_script_stop_status(script, stop_status=0)
                 self.set_redis_restart_time(script)
             # print('-----------script end-----------')
 
