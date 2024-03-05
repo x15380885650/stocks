@@ -75,12 +75,13 @@ class ScriptManager(object):
             scrip_name = script['name']
             py_name = '{}.py'.format(scrip_name)
             pid_list = self.get_pid_list_by_name(py_name)
-            print('py_name: {}, {} scrips is running...'.format(py_name, len(pid_list)))
+            print('py_name: {}, {} scripts is running...'.format(py_name, len(pid_list)))
             if len(pid_list) == parallels:
                 self.set_redis_restart_time(script)
                 continue
             self.set_redis_script_stop_status(script, stop_status=1)
             pid_list = self.get_pid_list_by_name(py_name)
+            print(pid_list)
             if len(pid_list) != 0:
                 restart_time = self.get_redis_restart_time(script)
                 if not restart_time:
