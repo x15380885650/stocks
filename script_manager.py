@@ -53,19 +53,6 @@ class ScriptManager(object):
         script_stop_key = '{}:script_stop'.format(redis_prefix)
         self.redis.set(script_stop_key, stop_status)
 
-    def set_redis_restart_time(self, script, restart_time=None):
-        redis_prefix = script['redis_prefix']
-        restart_time_key = '{}:restart_time'.format(redis_prefix)
-        if restart_time is None:
-            self.redis.delete(restart_time_key)
-        else:
-            self.redis.set(restart_time_key, restart_time)
-
-    def get_redis_restart_time(self, script):
-        redis_prefix = script['redis_prefix']
-        restart_time_key = '{}:restart_time'.format(redis_prefix)
-        return self.redis.get(restart_time_key)
-
     def run(self):
         logs_path = '{}/logs'.format(PARENT_PATH)
         for script in self.scrip_list:
@@ -77,21 +64,13 @@ class ScriptManager(object):
             pid_list = self.get_pid_list_by_name(py_name)
             print('py_name: {}, {} scripts is running...'.format(py_name, len(pid_list)))
             if len(pid_list) == parallels:
-                self.set_redis_restart_time(script)
                 continue
             self.set_redis_script_stop_status(script, stop_status=1)
             pid_list = self.get_pid_list_by_name(py_name)
             print(pid_list)
             if len(pid_list) != 0:
-                restart_time = self.get_redis_restart_time(script)
-                if not restart_time:
-                    self.set_redis_restart_time(script, int(time.time()))
-                else:
-                    interval = int(time.time() - int(restart_time))
-                    print('py_name: {}, interval: {}'.format(py_name, interval))
-                    if interval >= 10:
-                        for p_id in pid_list:
-                            self.kill_process_by_pid(p_id)
+                for p_id in pid_list:
+                    self.kill_process_by_pid(p_id)
             pid_list = self.get_pid_list_by_name(py_name)
             scrip_file_path = '{}/{}'.format(PARENT_PATH, py_name)
             if len(pid_list) == 0:
@@ -99,9 +78,8 @@ class ScriptManager(object):
                     log_file_path = '{}/{}.log'.format(logs_path, scrip_name)
                     self.start_process(scrip_file_path, log_file_path)
                 if parallels != 0:
-                    print('py_name: {}, restarted {} scrips'.format(py_name, parallels))
+                    print('py_name: {}, restarted {} scripts'.format(py_name, parallels))
                 self.set_redis_script_stop_status(script, stop_status=0)
-                self.set_redis_restart_time(script)
             # print('-----------script end-----------')
 
 
