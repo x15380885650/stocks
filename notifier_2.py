@@ -34,6 +34,7 @@ class SecondNotifier(Ancestor):
                 for stock_kline_list in stock_list_kline_list:
                     code = stock_kline_list[-1]['code']
                     pct_chg = stock_kline_list[-1]['pct_chg']
+                    print('code: {}, pct_chg: {}'.format(code, pct_chg))
                     if pct_chg < min_pct_chg_notifier:
                         continue
                     self.notify(code)
