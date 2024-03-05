@@ -355,7 +355,7 @@ class Strategist(object):
         for k_line in k_line_list[-days-1: -1]:
             close_price = round(k_line['close'], 2)
             ma_20_price = round(boll_price_series[k_line['date']], 2)
-            print('close_price: {}, ma_20_price: {}'.format(close_price, ma_20_price))
+            # print('close_price: {}, ma_20_price: {}'.format(close_price, ma_20_price))
             if close_price < ma_20_price:
                 return False
         return True
