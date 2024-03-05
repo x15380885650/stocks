@@ -361,15 +361,15 @@ class Strategist(object):
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
         # avg_turn = self.get_avg_turn(data_list=k_line_list_interval)
         # print('avg_turn: {}'.format(avg_turn))
-        print('interval: {}, up_ratio: {}, pct_chg: {}, open_price: {}, close_price: {}, '
-              'code: {}'.format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
         if not 50 < up_ratio_interval_day <= 90:
             return False
-        if not 2 < pct_chg_interval_day <= 15:
+        if not 2.5 < pct_chg_interval_day <= 13.5:
             return False
         _num = self.get_num_exceed(5, k_line_list_interval)
         if _num > 1:
             return False
+        print('interval: {}, up_ratio: {}, pct_chg: {}, open_price: {}, close_price: {}, '
+              'code: {}'.format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
         return True
 
     def get_second_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
