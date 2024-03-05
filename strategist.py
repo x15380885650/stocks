@@ -193,7 +193,7 @@ class Strategist(object):
         for d in data_list:
             pct_chg = float(d['pct_chg'])
             pct_chg_sum += pct_chg
-        return pct_chg_sum
+        return round(pct_chg_sum, 2)
 
     # def get_first_strategy_res(self, code, k_line_list, m_day):
     #     k_line_list_m_day = k_line_list[-m_day:]
@@ -312,7 +312,7 @@ class Strategist(object):
             return False
         k_line_list_interval = k_line_list[-interval-1:-1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
-        up_ratio_interval_day = 100 * up_num / (up_num+down_num)
+        up_ratio_interval_day = round(100 * up_num / (up_num+down_num), 2)
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
         print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, open_price: {}, close_price: {}'
               .format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price))
