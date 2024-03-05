@@ -318,7 +318,7 @@ class Strategist(object):
               .format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price))
         if not 50 < up_ratio_interval_day <= 90:
             return False
-        if not 5 < pct_chg_interval_day <= 15:
+        if not 2 < pct_chg_interval_day <= 15:
             return False
         _num = self.get_num_exceed(5, k_line_list_interval)
         if _num > 1:
