@@ -284,8 +284,8 @@ class Strategist(object):
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = 100 * up_num / (up_num+down_num)
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
-        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, close_price: {}, open_price: {}'
-              .format(interval, up_ratio_interval_day, pct_chg_interval_day, close_price, open_price))
+        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, close_price: {}, open_price: {}, code: {}'
+              .format(interval, up_ratio_interval_day, pct_chg_interval_day, close_price, open_price, code))
         # if not 50 <= up_ratio_interval_day <= 90:
         #     return False
         if not 5 <= pct_chg_interval_day <= 20:
@@ -314,8 +314,8 @@ class Strategist(object):
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = round(100 * up_num / (up_num+down_num), 2)
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
-        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, open_price: {}, close_price: {}'
-              .format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price))
+        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, open_price: {}, close_price: {}, code: {}'
+              .format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
         if not 50 < up_ratio_interval_day <= 90:
             return False
         if not 2 < pct_chg_interval_day <= 15:
