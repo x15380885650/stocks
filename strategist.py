@@ -195,6 +195,31 @@ class Strategist(object):
             pct_chg_sum += pct_chg
         return round(pct_chg_sum, 2)
 
+    def get_zt_pct_chg_bitmap(self, code, k_line_list):
+        pct_chg_bitmap = []
+        for k_line in k_line_list:
+            pct_chg = k_line['pct_chg']
+            if isinstance(pct_chg, str) and not pct_chg:
+                continue
+            pct_chg_max = pct_change_max_i
+            if code.startswith('sz.30') or code.startswith('30'):
+                pct_chg_max = pct_change_max_j
+            if float(pct_chg) >= pct_chg_max:
+                pct_chg_bitmap.append(1)
+            else:
+                pct_chg_bitmap.append(0)
+        return pct_chg_bitmap
+
+    def get_zt_pct_chg_index_list(self, code, k_line_list):
+        pct_chg_bitmap = self.get_zt_pct_chg_bitmap(code, k_line_list)
+        index_list = []
+        for i, v in enumerate(pct_chg_bitmap):
+            if v == 1:
+                index_list.append(i)
+        return index_list
+
+
+
     # def get_first_strategy_res(self, code, k_line_list, m_day):
     #     k_line_list_m_day = k_line_list[-m_day:]
     #     prev_close_price = k_line_list[-2]['close']
@@ -262,69 +287,6 @@ class Strategist(object):
                 return idx - 1
         return -100
 
-    def get_second_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
-        opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
-        if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
-            return False
-        is_gold = self.is_macd_latest_gold(k_line_list)
-        if not is_gold:
-            return False
-        # price_exceed_ma_20 = self.is_close_price_exceed_ma_20(k_line_list, days=3)
-        # if not price_exceed_ma_20:
-        #     return False
-        range_days = 70
-        close_price = k_line_list[-1]['close']
-        open_price = k_line_list[-1]['open']
-        k_line_list_range_day = k_line_list[-range_days:]
-        min_low_price = self.get_min_low_price(k_line_list_range_day)
-        interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
-        if not 20 <= interval <= 35:
-            return False
-        k_line_list_interval = k_line_list[-interval-1:-1]
-        up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
-        up_ratio_interval_day = 100 * up_num / (up_num+down_num)
-        pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
-        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, close_price: {}, open_price: {}, code: {}'
-              .format(interval, up_ratio_interval_day, pct_chg_interval_day, close_price, open_price, code))
-        # if not 50 <= up_ratio_interval_day <= 90:
-        #     return False
-        if not 5 <= pct_chg_interval_day <= 20:
-            return False
-        _num = self.get_num_exceed(5, k_line_list_interval)
-        if _num > 2:
-            return False
-        return True
-
-    def get_first_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
-        opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
-        if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
-            return False
-        price_exceed_ma_20 = self.is_close_price_exceed_ma_20(k_line_list, days=3)
-        if not price_exceed_ma_20:
-            return False
-        range_days = 50
-        close_price = k_line_list[-1]['close']
-        open_price = k_line_list[-1]['open']
-        k_line_list_range_day = k_line_list[-range_days:]
-        min_low_price = self.get_min_low_price(k_line_list_range_day)
-        interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
-        if not 7 <= interval < 20:
-            return False
-        k_line_list_interval = k_line_list[-interval-1:-1]
-        up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
-        up_ratio_interval_day = round(100 * up_num / (up_num+down_num), 2)
-        pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
-        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, open_price: {}, close_price: {}, code: {}'
-              .format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
-        if not 50 < up_ratio_interval_day <= 90:
-            return False
-        if not 2 < pct_chg_interval_day <= 15:
-            return False
-        _num = self.get_num_exceed(5, k_line_list_interval)
-        if _num > 1:
-            return False
-        return True
-
     def get_stock_tech(self, k_line_list):
         # https://github.com/jealous/stockstats
         temp_list = []
@@ -377,6 +339,107 @@ class Strategist(object):
                 is_gold = True
                 break
         return is_gold
+
+    def get_first_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
+        if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
+            return False
+        price_exceed_ma_20 = self.is_close_price_exceed_ma_20(k_line_list, days=3)
+        if not price_exceed_ma_20:
+            return False
+        range_days = 50
+        close_price = k_line_list[-1]['close']
+        open_price = k_line_list[-1]['open']
+        k_line_list_range_day = k_line_list[-range_days:]
+        min_low_price = self.get_min_low_price(k_line_list_range_day)
+        interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
+        if not 7 <= interval < 20:
+            return False
+        k_line_list_interval = k_line_list[-interval - 1:-1]
+        up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
+        up_ratio_interval_day = round(100 * up_num / (up_num + down_num), 2)
+        pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
+        # avg_turn = self.get_avg_turn(data_list=k_line_list_interval)
+        # print('avg_turn: {}'.format(avg_turn))
+        print('interval: {}, up_ratio: {}, pct_chg: {}, open_price: {}, close_price: {}, '
+              'code: {}'.format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
+        if not 50 < up_ratio_interval_day <= 90:
+            return False
+        if not 2 < pct_chg_interval_day <= 15:
+            return False
+        _num = self.get_num_exceed(5, k_line_list_interval)
+        if _num > 1:
+            return False
+        return True
+
+    def get_second_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
+        if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
+            return False
+        is_gold = self.is_macd_latest_gold(k_line_list)
+        if not is_gold:
+            return False
+        # price_exceed_ma_20 = self.is_close_price_exceed_ma_20(k_line_list, days=3)
+        # if not price_exceed_ma_20:
+        #     return False
+        range_days = 70
+        close_price = k_line_list[-1]['close']
+        open_price = k_line_list[-1]['open']
+        k_line_list_range_day = k_line_list[-range_days:]
+        min_low_price = self.get_min_low_price(k_line_list_range_day)
+        interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
+        if not 20 <= interval <= 35:
+            return False
+        k_line_list_interval = k_line_list[-interval-1:-1]
+        up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
+        up_ratio_interval_day = 100 * up_num / (up_num+down_num)
+        pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
+        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, close_price: {}, open_price: {}, code: {}'
+              .format(interval, up_ratio_interval_day, pct_chg_interval_day, close_price, open_price, code))
+        # if not 50 <= up_ratio_interval_day <= 90:
+        #     return False
+        if not 5 <= pct_chg_interval_day <= 20:
+            return False
+        _num = self.get_num_exceed(5, k_line_list_interval)
+        if _num > 2:
+            return False
+        return True
+
+    def get_third_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        # opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
+        # if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
+        #     return False
+        # price_exceed_ma_20 = self.is_close_price_exceed_ma_20(k_line_list, days=3)
+        # if not price_exceed_ma_20:
+        #     return False
+        range_days = 10
+        close_price = k_line_list[-1]['close']
+        open_price = k_line_list[-1]['open']
+        k_line_list_range_day = k_line_list[-range_days:]
+        zt_pct_chg_index_list = self.get_zt_pct_chg_index_list(code, k_line_list[-range_days:-1])
+        if len(zt_pct_chg_index_list) not in [2, 3]:
+            return False
+        if zt_pct_chg_index_list[-1] != range_days - 2:
+            return False
+        latest_2_zt_gap = zt_pct_chg_index_list[-1] - zt_pct_chg_index_list[-2] - 1
+        if not 6 <= latest_2_zt_gap <= 7:
+            return False
+        k_line_list_interval = k_line_list_range_day[zt_pct_chg_index_list[-2]+1:zt_pct_chg_index_list[-1]]
+        up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
+        up_ratio_interval_day = round(100 * up_num / (up_num + down_num), 2)
+        pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
+        if not 50 < up_ratio_interval_day <= 100:
+            return False
+        if not 0 < pct_chg_interval_day <= 5:
+            return False
+        # _num = self.get_num_exceed(5, k_line_list_interval)
+        # if _num > 1:
+        #     return False
+        return True
+
+
+
+
 
 
 
