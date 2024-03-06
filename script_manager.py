@@ -12,8 +12,7 @@ class ScriptManager(object):
             {'name': 'notifier_1', 'redis_prefix': 'monitor_1', 'parallels': 1},
             {'name': 'notifier_2', 'redis_prefix': 'monitor_2', 'parallels': 1},
         ]
-        # self.redis_conf = {'host': '127.0.0.1', 'port': 6408, 'password': 'iscas139', 'db': 0}
-        self.redis_conf = {'host': '127.0.0.1', 'port': 6408, 'db': 0}
+        self.redis_conf = {'host': '127.0.0.1', 'port': 6408, 'password': 'iscas139', 'db': 0}
         self.redis = StrictRedis(**self.redis_conf, decode_responses=True)
 
     def get_pid_list_by_name(self, script_name):

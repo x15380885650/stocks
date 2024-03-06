@@ -195,23 +195,20 @@ class Strategist(object):
             pct_chg_sum += pct_chg
         return round(pct_chg_sum, 2)
 
-    def get_zt_pct_chg_bitmap(self, code, k_line_list):
+    def get_pct_chg_bitmap(self, k_line_list, pct_chg_max):
         pct_chg_bitmap = []
         for k_line in k_line_list:
             pct_chg = k_line['pct_chg']
             if isinstance(pct_chg, str) and not pct_chg:
                 continue
-            pct_chg_max = pct_change_max_i
-            if code.startswith('sz.30') or code.startswith('30'):
-                pct_chg_max = pct_change_max_j
             if float(pct_chg) >= pct_chg_max:
                 pct_chg_bitmap.append(1)
             else:
                 pct_chg_bitmap.append(0)
         return pct_chg_bitmap
 
-    def get_zt_pct_chg_index_list(self, code, k_line_list):
-        pct_chg_bitmap = self.get_zt_pct_chg_bitmap(code, k_line_list)
+    def get_pct_chg_index_list(self, k_line_list, pct_chg_max):
+        pct_chg_bitmap = self.get_pct_chg_bitmap(k_line_list, pct_chg_max)
         index_list = []
         for i, v in enumerate(pct_chg_bitmap):
             if v == 1:
@@ -273,11 +270,20 @@ class Strategist(object):
     #         return False
     #     return True
 
+
     def get_num_exceed(self, value, data_list):
         _num = 0
         for data in data_list:
             pct_chg = data['pct_chg']
             if pct_chg >= value:
+                _num += 1
+        return _num
+
+    def get_num_less(self, value, data_list):
+        _num = 0
+        for data in data_list:
+            pct_chg = data['pct_chg']
+            if pct_chg <= value:
                 _num += 1
         return _num
 
@@ -368,6 +374,9 @@ class Strategist(object):
         _num = self.get_num_exceed(5, k_line_list_interval)
         if _num > 1:
             return False
+        __num = self.get_num_less(-5, k_line_list_interval)
+        if __num > 0:
+            return False
         print('interval: {}, up_ratio: {}, pct_chg: {}, open_price: {}, close_price: {}, '
               'code: {}'.format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
         return True
@@ -403,6 +412,10 @@ class Strategist(object):
         _num = self.get_num_exceed(5, k_line_list_interval)
         if _num > 2:
             return False
+        __num = self.get_num_less(-5, k_line_list_interval)
+        print(__num)
+        if __num > 0:
+            return False
         return True
 
     def get_third_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
@@ -416,15 +429,15 @@ class Strategist(object):
         close_price = k_line_list[-1]['close']
         open_price = k_line_list[-1]['open']
         k_line_list_range_day = k_line_list[-range_days:]
-        zt_pct_chg_index_list = self.get_zt_pct_chg_index_list(code, k_line_list[-range_days:-1])
-        if len(zt_pct_chg_index_list) not in [2, 3]:
+        pct_chg_index_list = self.get_pct_chg_index_list(k_line_list[-range_days:-1], pct_chg_max=8.0)
+        if len(pct_chg_index_list) not in [1, 2]:
             return False
-        if zt_pct_chg_index_list[-1] != range_days - 2:
-            return False
-        latest_2_zt_gap = zt_pct_chg_index_list[-1] - zt_pct_chg_index_list[-2] - 1
+        # if zt_pct_chg_index_list[-1] != range_days - 2:
+        #     return False
+        latest_2_zt_gap = range_days - 1 - pct_chg_index_list[-1] - 1
         if not 6 <= latest_2_zt_gap <= 7:
             return False
-        k_line_list_interval = k_line_list_range_day[zt_pct_chg_index_list[-2]+1:zt_pct_chg_index_list[-1]]
+        k_line_list_interval = k_line_list_range_day[pct_chg_index_list[-1]+1:-1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = round(100 * up_num / (up_num + down_num), 2)
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)

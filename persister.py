@@ -3,8 +3,8 @@ from redis import StrictRedis
 
 class Persister(object):
     def __init__(self, key_prefix):
-        # redis_conf = {'host': '127.0.0.1', 'port': 6408, 'password': 'iscas139', 'db': 0}
-        redis_conf = {'host': '127.0.0.1', 'port': 6408, 'db': 0}
+        # config set requirepass iscas139
+        redis_conf = {'host': '127.0.0.1', 'port': 6408, 'password': 'iscas139', 'db': 0}
         self.redis = StrictRedis(**redis_conf, decode_responses=True)
         self.key_prefix = key_prefix
 
