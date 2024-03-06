@@ -347,6 +347,8 @@ class Strategist(object):
         return is_gold
 
     def get_first_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        # prev_macd_diff, prev_macd_dea = self.get_stock_opt_macd(k_line_list[0:-1])
+        # print('prev_macd_diff: {}, prev_macd_dea: {}'.format(prev_macd_diff, prev_macd_dea))
         opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
         if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
             return False

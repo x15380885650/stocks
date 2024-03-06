@@ -53,6 +53,7 @@ class SecondMonitor(Ancestor):
                 try:
                     trade_ok = self.is_trade()
                     if not trade_ok:
+                        exclude_stock_set.clear()
                         time.sleep(1)
                         continue
                     start_date_str, end_date_str = d_chooser.get_start_and_end_date()
