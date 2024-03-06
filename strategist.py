@@ -403,6 +403,10 @@ class Strategist(object):
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
         if not 20 <= interval <= 35:
             return False
+        key_k_line = k_line_list[-interval - 2]
+        key_k_line_pct_chg = key_k_line['pct_chg']
+        if key_k_line_pct_chg >= 5:
+            return False
         k_line_list_interval = k_line_list[-interval-1:-1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = 100 * up_num / (up_num+down_num)
