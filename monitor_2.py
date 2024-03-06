@@ -64,7 +64,7 @@ class SecondMonitor(Ancestor):
                     for c in code_list:
                         if c not in exclude_stock_set:
                             new_code_list.append(c)
-                    print('code_list: {}'.format(len(new_code_list)))
+                    print('code_list: {}, exclude_code_list: {}'.format(len(new_code_list), len(exclude_stock_set)))
                     if not new_code_list:
                         print('now: {}, sleep: {}'.format(datetime.now(), sleep_time))
                         time.sleep(sleep_time)
