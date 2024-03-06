@@ -310,7 +310,7 @@ class Strategist(object):
         diff, dea = stock_tech['macd'].iloc[-1], stock_tech['macds'].iloc[-1]
         return round(diff, 2), round(dea, 2)
 
-    def is_close_price_exceed_ma_20(self, k_line_list, days=3):
+    def is_close_price_exceed_ma_20(self, k_line_list, days=4):
         stock_tech = self.get_stock_tech(k_line_list=k_line_list)
         boll = stock_tech['boll']
         boll_price_series = boll.iloc[-days-1:-1]
@@ -344,7 +344,7 @@ class Strategist(object):
         opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
         if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
             return False
-        price_exceed_ma_20 = self.is_close_price_exceed_ma_20(k_line_list, days=3)
+        price_exceed_ma_20 = self.is_close_price_exceed_ma_20(k_line_list, days=4)
         if not price_exceed_ma_20:
             return False
         range_days = 50
