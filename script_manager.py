@@ -88,7 +88,7 @@ if __name__ == '__main__':
     while True:
         try:
             script_manager.run()
-            time.sleep(10)
+            time.sleep(30)
         except redis.exceptions.ConnectionError:
             print('redis.exceptions.ConnectionError, sleep: {}'.format(120))
             time.sleep(120)
