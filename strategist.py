@@ -377,11 +377,11 @@ class Strategist(object):
             return False
         if not 2.5 < pct_chg_interval_day <= 13.5:
             return False
-        _num = self.get_num_exceed(5, k_line_list_interval)
-        if _num > 1:
+        num_exceed = self.get_num_exceed(5, k_line_list_interval)
+        if num_exceed > 1:
             return False
-        __num = self.get_num_less(-5, k_line_list_interval)
-        if __num > 0:
+        num_less = self.get_num_less(-5, k_line_list_interval)
+        if num_less > 0:
             return False
         print('interval: {}, up_ratio: {}, pct_chg: {}, open_price: {}, close_price: {}, '
               'code: {}'.format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
