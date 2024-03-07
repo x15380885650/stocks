@@ -270,7 +270,6 @@ class Strategist(object):
     #         return False
     #     return True
 
-
     def get_num_exceed(self, value, data_list):
         _num = 0
         for data in data_list:
@@ -292,6 +291,12 @@ class Strategist(object):
             if data[key] == price:
                 return idx - 1
         return -100
+
+    def get_pct_chg_2(self, d):
+        close_price = float(d['close'])
+        open_price = float(d['open'])
+        r = (float(close_price) - float(open_price)) / float(open_price) * 100
+        return r
 
     def get_stock_tech(self, k_line_list):
         # https://github.com/jealous/stockstats
@@ -365,7 +370,9 @@ class Strategist(object):
             return False
         key_k_line = k_line_list[-interval-2]
         key_k_line_pct_chg = key_k_line['pct_chg']
-        if key_k_line_pct_chg >= 2:
+        key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
+        key_ptc_chg_max = 2.5
+        if key_k_line_pct_chg >= key_ptc_chg_max or key_k_line_pct_chg_2 >= key_ptc_chg_max:
             return False
         k_line_list_interval = k_line_list[-interval - 1:-1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
