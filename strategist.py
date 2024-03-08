@@ -270,7 +270,7 @@ class Strategist(object):
     #         return False
     #     return True
 
-    def get_num_exceed(self, value, data_list):
+    def get_pct_chg_num_exceed(self, value, data_list):
         _num = 0
         for data in data_list:
             pct_chg = data['pct_chg']
@@ -278,11 +278,27 @@ class Strategist(object):
                 _num += 1
         return _num
 
-    def get_num_less(self, value, data_list):
+    def get_pct_chg_2_num_exceed(self, value, data_list):
+        _num = 0
+        for data in data_list:
+            pct_chg_2 = self.get_pct_chg_2(d=data)
+            if pct_chg_2 >= value:
+                _num += 1
+        return _num
+
+    def get_pct_chg_num_less(self, value, data_list):
         _num = 0
         for data in data_list:
             pct_chg = data['pct_chg']
             if pct_chg <= value:
+                _num += 1
+        return _num
+
+    def get_pct_chg_2_num_less(self, value, data_list):
+        _num = 0
+        for data in data_list:
+            pct_chg_2 = self.get_pct_chg_2(d=data)
+            if pct_chg_2 <= value:
                 _num += 1
         return _num
 
@@ -384,11 +400,13 @@ class Strategist(object):
             return False
         if not 2.5 < pct_chg_interval_day <= 13.5:
             return False
-        num_exceed = self.get_num_exceed(5, k_line_list_interval)
-        if num_exceed > 1:
+        pct_chg_num_exceed = self.get_pct_chg_num_exceed(5, k_line_list_interval)
+        pct_chg_2_num_exceed = self.get_pct_chg_2_num_exceed(5, k_line_list_interval)
+        if pct_chg_num_exceed > 1 or pct_chg_2_num_exceed > 1:
             return False
-        num_less = self.get_num_less(-5, k_line_list_interval)
-        if num_less > 0:
+        pct_chg_num_less = self.get_pct_chg_num_less(-5, k_line_list_interval)
+        pct_chg_2_num_less = self.get_pct_chg_2_num_less(-4, k_line_list_interval)
+        if pct_chg_num_less > 0 or pct_chg_2_num_less > 0:
             return False
         print('interval: {}, up_ratio: {}, pct_chg: {}, open_price: {}, close_price: {}, '
               'code: {}'.format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
@@ -428,47 +446,21 @@ class Strategist(object):
         #     return False
         if not 5 <= pct_chg_interval_day <= 20:
             return False
-        _num = self.get_num_exceed(5, k_line_list_interval)
-        if _num > 2:
+        # _num = self.get_pct_chg_num_exceed(5, k_line_list_interval)
+        # if _num > 2:
+        #     return False
+        # __num = self.get_pct_chg_num_less(-5, k_line_list_interval)
+        # if __num > 0:
+        #     return False
+        pct_chg_num_exceed = self.get_pct_chg_num_exceed(5, k_line_list_interval)
+        pct_chg_2_num_exceed = self.get_pct_chg_2_num_exceed(5, k_line_list_interval)
+        if pct_chg_num_exceed > 2 or pct_chg_2_num_exceed > 2:
             return False
-        __num = self.get_num_less(-5, k_line_list_interval)
-        if __num > 0:
+        pct_chg_num_less = self.get_pct_chg_num_less(-5, k_line_list_interval)
+        pct_chg_2_num_less = self.get_pct_chg_2_num_less(-4, k_line_list_interval)
+        if pct_chg_num_less > 0 or pct_chg_2_num_less > 0:
             return False
         return True
-
-    def get_third_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
-        # opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
-        # if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
-        #     return False
-        # price_exceed_ma_20 = self.is_close_price_exceed_ma_20(k_line_list, days=3)
-        # if not price_exceed_ma_20:
-        #     return False
-        range_days = 10
-        close_price = k_line_list[-1]['close']
-        open_price = k_line_list[-1]['open']
-        k_line_list_range_day = k_line_list[-range_days:]
-        pct_chg_index_list = self.get_pct_chg_index_list(k_line_list[-range_days:-1], pct_chg_max=8.0)
-        if len(pct_chg_index_list) not in [1, 2]:
-            return False
-        # if zt_pct_chg_index_list[-1] != range_days - 2:
-        #     return False
-        latest_2_zt_gap = range_days - 1 - pct_chg_index_list[-1] - 1
-        if not 6 <= latest_2_zt_gap <= 7:
-            return False
-        k_line_list_interval = k_line_list_range_day[pct_chg_index_list[-1]+1:-1]
-        up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
-        up_ratio_interval_day = round(100 * up_num / (up_num + down_num), 2)
-        pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
-        if not 50 < up_ratio_interval_day <= 100:
-            return False
-        if not 0 < pct_chg_interval_day <= 5:
-            return False
-        # _num = self.get_num_exceed(5, k_line_list_interval)
-        # if _num > 1:
-        #     return False
-        return True
-
-
 
 
 
