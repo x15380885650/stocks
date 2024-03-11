@@ -278,11 +278,27 @@ class Strategist(object):
                 _num += 1
         return _num
 
+    def get_pct_chg_num_between(self, v1, v2, data_list):
+        _num = 0
+        for data in data_list:
+            pct_chg = data['pct_chg']
+            if v1 <= pct_chg <= v2:
+                _num += 1
+        return _num
+
     def get_pct_chg_2_num_exceed(self, value, data_list):
         _num = 0
         for data in data_list:
             pct_chg_2 = self.get_pct_chg_2(d=data)
             if pct_chg_2 >= value:
+                _num += 1
+        return _num
+
+    def get_pct_chg_2_num_between(self, v1, v2, data_list):
+        _num = 0
+        for data in data_list:
+            pct_chg_2 = self.get_pct_chg_2(d=data)
+            if v1 <= pct_chg_2 <= v2:
                 _num += 1
         return _num
 
@@ -404,6 +420,10 @@ class Strategist(object):
         pct_chg_2_num_exceed = self.get_pct_chg_2_num_exceed(5, k_line_list_interval)
         if pct_chg_num_exceed > 1 or pct_chg_2_num_exceed > 1:
             return False
+        pct_chg_num_exceed_2 = self.get_pct_chg_num_exceed(6, k_line_list_interval)
+        pct_chg_2_num_exceed_2 = self.get_pct_chg_2_num_exceed(7, k_line_list_interval)
+        if pct_chg_num_exceed_2 > 0 or pct_chg_2_num_exceed_2 > 0:
+            return False
         pct_chg_num_less = self.get_pct_chg_num_less(-5, k_line_list_interval)
         pct_chg_2_num_less = self.get_pct_chg_2_num_less(-4, k_line_list_interval)
         if pct_chg_num_less > 0 or pct_chg_2_num_less > 0:
@@ -440,18 +460,12 @@ class Strategist(object):
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = 100 * up_num / (up_num+down_num)
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
-        print('interval: {}, up_ratio_interval_day: {}, pct_chg_interval_day: {}, close_price: {}, open_price: {}, code: {}'
+        print('interval: {}, up_ratio: {}, pct_chg: {}, close_price: {}, open_price: {}, code: {}'
               .format(interval, up_ratio_interval_day, pct_chg_interval_day, close_price, open_price, code))
-        # if not 50 <= up_ratio_interval_day <= 90:
-        #     return False
+        if not 40 <= up_ratio_interval_day <= 70:
+            return False
         if not 5 <= pct_chg_interval_day <= 20:
             return False
-        # _num = self.get_pct_chg_num_exceed(5, k_line_list_interval)
-        # if _num > 2:
-        #     return False
-        # __num = self.get_pct_chg_num_less(-5, k_line_list_interval)
-        # if __num > 0:
-        #     return False
         pct_chg_num_exceed = self.get_pct_chg_num_exceed(5, k_line_list_interval)
         pct_chg_2_num_exceed = self.get_pct_chg_2_num_exceed(5, k_line_list_interval)
         if pct_chg_num_exceed > 2 or pct_chg_2_num_exceed > 2:
