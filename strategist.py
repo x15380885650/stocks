@@ -458,8 +458,8 @@ class Strategist(object):
         key_k_line = k_line_list[-interval - 2]
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
-        key_ptc_chg_max = 3
-        if key_k_line_pct_chg >= key_ptc_chg_max or key_k_line_pct_chg_2 >= key_ptc_chg_max:
+        key_ptc_chg_max = 3.5
+        if key_k_line_pct_chg >= key_ptc_chg_max and key_k_line_pct_chg_2 >= key_ptc_chg_max:
             return False
         k_line_list_interval = k_line_list[-interval-1:-1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
