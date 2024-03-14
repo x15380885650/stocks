@@ -111,33 +111,44 @@ class CodeFetcher(object):
             new_stock_list_kline.append(stock_k_line)
         return new_stock_list_kline
 
-    def fetch_real_time_filtered_code_list(self, pch_chg_min=4):
+    def fetch_real_time_filtered_code_list(self, pct_chg_min=4):
         stock_list = self.ds.get_stocks_realtime_quotes()
         filtered_list = []
+        stock_up_count = 0
+        stock_down_count = 0
+        stock_total_count = 0
+        stock_pct_chg_count = 0
         for stock in stock_list.iterrows():
-            code = stock[1][0]
-            name = stock[1][1]
-            filtered = self.ds.is_code_filtered(code)
-            if filtered:
-                continue
-            if 'ST' in name:
-                continue
             try:
+                code = stock[1][0]
+                name = stock[1][1]
                 pct_chg = float(stock[1][2])
-                if pct_chg < pch_chg_min:
-                    continue
-                pct_change_max = self.get_pct_change_max(code)
-                if pct_chg >= pct_change_max:
-                    continue
                 latest_close_price = float(stock[1][3])
+                stock_value = stock[1].iloc[15] / 10000 / 10000
+                if 'ST' in name:
+                    continue
+                filtered = self.ds.is_code_filtered(code)
+                if filtered:
+                    continue
                 if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
                     continue
-                # stock_value = stock[1][15] / 10000 / 10000
-                stock_value = stock[1].iloc[15] / 10000 / 10000
                 if stock_value > stock_value_max or stock_value < stock_value_min:
+                    continue
+                stock_total_count += 1
+                if pct_chg > 0:
+                    stock_up_count += 1
+                elif pct_chg < 0:
+                    stock_down_count += 1
+                if pct_chg < pct_chg_min:
+                    continue
+                stock_pct_chg_count += 1
+                pct_change_max = self.get_pct_change_max(code)
+                if pct_chg >= pct_change_max:
                     continue
             except Exception as e:
                 # print(e)
                 continue
             filtered_list.append(code)
+        print('stock_total_count: {}, stock_up_count: {}, stock_down_count: {}, pct_chg>={} count:{}'.format(
+            stock_total_count, stock_up_count, stock_down_count, pct_chg_min, stock_pct_chg_count))
         return filtered_list

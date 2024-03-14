@@ -58,7 +58,7 @@ class SecondMonitor(Ancestor):
                     start_date_str, end_date_str = d_chooser.get_start_and_end_date()
                     min_pct_chg_monitor = self.persister.get_min_pct_chg_monitor()
                     sleep_time = self.persister.get_sleep_time_monitor()
-                    code_list = c_fetcher.fetch_real_time_filtered_code_list(pch_chg_min=min_pct_chg_monitor)
+                    code_list = c_fetcher.fetch_real_time_filtered_code_list(pct_chg_min=min_pct_chg_monitor)
                     new_code_list = []
                     for c in code_list:
                         if c not in exclude_stock_set:
