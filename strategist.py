@@ -384,6 +384,8 @@ class Strategist(object):
         return is_gold
 
     def get_first_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        prev_close_price = k_line_list[-2]['close']
+        now_ideal_close_price = prev_close_price * 1.1
         range_days = 50
         close_price = k_line_list[-1]['close']
         open_price = k_line_list[-1]['open']
@@ -399,6 +401,9 @@ class Strategist(object):
         if not price_exceed_ma_20:
             return False
         k_line_list_interval = k_line_list[-interval - 1:-1]
+        max_close_price_interval = self.get_max_close_price(k_line_list_interval)
+        if max_close_price_interval > now_ideal_close_price:
+            return False
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = round(100 * up_num / (up_num + down_num), 2)
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
@@ -438,6 +443,8 @@ class Strategist(object):
         return True
 
     def get_second_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        prev_close_price = k_line_list[-2]['close']
+        now_ideal_close_price = prev_close_price * 1.1
         opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
         if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
             return False
@@ -462,6 +469,9 @@ class Strategist(object):
         if key_k_line_pct_chg >= key_ptc_chg_max and key_k_line_pct_chg_2 >= key_ptc_chg_max:
             return False
         k_line_list_interval = k_line_list[-interval-1:-1]
+        max_close_price_interval = self.get_max_close_price(k_line_list_interval)
+        if max_close_price_interval > now_ideal_close_price:
+            return False
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = 100 * up_num / (up_num+down_num)
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
