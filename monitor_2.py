@@ -51,6 +51,7 @@ class SecondMonitor(Ancestor):
             while True:
                 try:
                     trade_ok = self.is_trade()
+                    # trade_ok = True
                     if not trade_ok:
                         exclude_stock_set.clear()
                         time.sleep(1)

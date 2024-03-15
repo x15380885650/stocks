@@ -409,21 +409,23 @@ class Strategist(object):
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
         if not 50 < up_ratio_interval_day <= 90:
             return False
-        if not 2.5 < pct_chg_interval_day <= 13.5:
+        if not 2 < pct_chg_interval_day <= 15:
             return False
+        # ddd = pct_chg_interval_day / interval
+        # print('ddd: {}'.format(ddd))
         pct_chg_num_exceed = self.get_pct_chg_num_exceed(5, k_line_list_interval)
         pct_chg_2_num_exceed = self.get_pct_chg_2_num_exceed(5, k_line_list_interval)
         if pct_chg_num_exceed > 1 or pct_chg_2_num_exceed > 1:
             return False
         pct_chg_num_less = self.get_pct_chg_num_less(-5, k_line_list_interval)
-        pct_chg_2_num_less = self.get_pct_chg_2_num_less(-4, k_line_list_interval)
+        pct_chg_2_num_less = self.get_pct_chg_2_num_less(-5, k_line_list_interval)
         if pct_chg_num_less > 0 or pct_chg_2_num_less > 0:
             return False
         key_k_line = k_line_list[-interval-2]
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
         # key_ptc_chg_max = 2.5
-        key_ptc_chg_max = 4
+        key_ptc_chg_max = 5
         if key_k_line_pct_chg >= key_ptc_chg_max and key_k_line_pct_chg_2 >= key_ptc_chg_max:
             return False
 
@@ -465,7 +467,7 @@ class Strategist(object):
         key_k_line = k_line_list[-interval - 2]
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
-        key_ptc_chg_max = 4
+        key_ptc_chg_max = 5
         if key_k_line_pct_chg >= key_ptc_chg_max and key_k_line_pct_chg_2 >= key_ptc_chg_max:
             return False
         k_line_list_interval = k_line_list[-interval-1:-1]
@@ -477,14 +479,14 @@ class Strategist(object):
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
         if not 40 <= up_ratio_interval_day <= 70:
             return False
-        if not 5.5 <= pct_chg_interval_day <= 16.5:
+        if not 5 <= pct_chg_interval_day <= 20:
             return False
         pct_chg_num_exceed = self.get_pct_chg_num_exceed(5, k_line_list_interval)
         pct_chg_2_num_exceed = self.get_pct_chg_2_num_exceed(5, k_line_list_interval)
         if pct_chg_num_exceed > 2 or pct_chg_2_num_exceed > 2:
             return False
         pct_chg_num_less = self.get_pct_chg_num_less(-5, k_line_list_interval)
-        pct_chg_2_num_less = self.get_pct_chg_2_num_less(-4, k_line_list_interval)
+        pct_chg_2_num_less = self.get_pct_chg_2_num_less(-5, k_line_list_interval)
         if pct_chg_num_less > 0 or pct_chg_2_num_less > 0:
             return False
         print('interval: {}, up_ratio: {}, pct_chg: {}, close_price: {}, open_price: {}, code: {}'
