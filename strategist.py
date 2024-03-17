@@ -353,17 +353,22 @@ class Strategist(object):
         diff, dea = stock_tech['macd'].iloc[-1], stock_tech['macds'].iloc[-1]
         return round(diff, 2), round(dea, 2)
 
-    def is_close_price_exceed_ma_20(self, k_line_list, days=4):
+    def is_close_price_exceed_ma(self, k_line_list, boll_days=20, days_count=4):
+        count = 0
         stock_tech = self.get_stock_tech(k_line_list=k_line_list)
-        boll = stock_tech['boll']
-        boll_price_series = boll.iloc[-days-1:-1]
-        for k_line in k_line_list[-days-1: -1]:
+        boll = stock_tech['boll_{}'.format(boll_days)]
+        boll_price_series = boll.iloc[-days_count-1:-1]
+        for k_line in k_line_list[-days_count-1: -1]:
             close_price = round(k_line['close'], 2)
-            ma_20_price = round(boll_price_series[k_line['date']], 2)
+            ma_price = round(boll_price_series[k_line['date']], 2)
             # print('close_price: {}, ma_20_price: {}'.format(close_price, ma_20_price))
-            if close_price < ma_20_price:
+            if close_price < ma_price:
                 return False
-        return True
+            if close_price > ma_price:
+                count += 1
+        if count >= days_count-1:
+            return True
+        return False
 
     def is_macd_latest_gold(self, k_line_list):
         prev_close_price = k_line_list[-2]['close']
@@ -397,8 +402,11 @@ class Strategist(object):
         opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
         if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
             return False
-        price_exceed_ma_20 = self.is_close_price_exceed_ma_20(k_line_list, days=4)
+        price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=20, days_count=3)
         if not price_exceed_ma_20:
+            return False
+        price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=3)
+        if not price_exceed_ma_15:
             return False
         k_line_list_interval = k_line_list[-interval - 1:-1]
         max_close_price_interval = self.get_max_close_price(k_line_list_interval)
@@ -453,9 +461,6 @@ class Strategist(object):
         is_gold = self.is_macd_latest_gold(k_line_list)
         if not is_gold:
             return False
-        # price_exceed_ma_20 = self.is_close_price_exceed_ma_20(k_line_list, days=3)
-        # if not price_exceed_ma_20:
-        #     return False
         range_days = 70
         close_price = k_line_list[-1]['close']
         open_price = k_line_list[-1]['open']
