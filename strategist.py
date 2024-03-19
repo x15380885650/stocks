@@ -353,6 +353,18 @@ class Strategist(object):
         diff, dea = stock_tech['macd'].iloc[-1], stock_tech['macds'].iloc[-1]
         return round(diff, 2), round(dea, 2)
 
+    def get_stock_prev_macd(self, k_line_list):
+        # prev_close_price = k_line_list[-2]['close']
+        # now_ideal_close_price = prev_close_price * 1.1
+        # # prev_macd_value = self.get_macd_value(data_list=k_line_list[0:-1])
+        # # if prev_macd_value < -0.1 or opt_macd_value < 0:
+        # #     return False
+        # k_line_list_opt = copy.deepcopy(k_line_list)
+        # k_line_list_opt[-1]['close'] = now_ideal_close_price
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list)
+        diff, dea = stock_tech['macd'].iloc[-2], stock_tech['macds'].iloc[-2]
+        return round(diff, 2), round(dea, 2)
+
     def is_close_price_exceed_ma(self, k_line_list, boll_days=20, days_count=4):
         count = 0
         stock_tech = self.get_stock_tech(k_line_list=k_line_list)
@@ -422,8 +434,8 @@ class Strategist(object):
         if max_close_price_interval > now_ideal_close_price:
             return False
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
-        up_ratio_interval_day = round(100 * up_num / (up_num + down_num), 2)
-        pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
+        up_ratio_interval_day = round(round(100 * up_num / (up_num + down_num), 2), 0)
+        pct_chg_interval_day = round(self.get_pct_chg_sum(k_line_list_interval), 0)
         if not 50 < up_ratio_interval_day <= 90:
             return False
         if not 2 < pct_chg_interval_day <= 15:
@@ -443,22 +455,21 @@ class Strategist(object):
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
         # key_ptc_chg_max = 2.5
         key_ptc_chg_max = 5
-        if key_k_line_pct_chg >= key_ptc_chg_max and key_k_line_pct_chg_2 >= key_ptc_chg_max:
+        if key_k_line_pct_chg >= key_ptc_chg_max or key_k_line_pct_chg_2 >= key_ptc_chg_max:
             return False
 
         additional_list = []
-        pct_chg_num_exceed_2 = self.get_pct_chg_num_exceed(6, k_line_list_interval)
-        pct_chg_2_num_exceed_2 = self.get_pct_chg_2_num_exceed(7, k_line_list_interval)
-        if pct_chg_num_exceed_2 > 0 or pct_chg_2_num_exceed_2 > 0:
-            additional_list.append(0)
-        else:
-            additional_list.append(1)
+        # pct_chg_num_exceed_2 = self.get_pct_chg_num_exceed(6, k_line_list_interval)
+        # pct_chg_2_num_exceed_2 = self.get_pct_chg_2_num_exceed(7, k_line_list_interval)
+        # if pct_chg_num_exceed_2 > 0 or pct_chg_2_num_exceed_2 > 0:
+        #     additional_list.append(0)
+        # else:
+        #     additional_list.append(1)
 
-        true_count = sum(additional_list)
-        additional_true_ratio = 100 * true_count/len(additional_list)
-        print('interval: {}, up_ratio: {}, pct_chg: {}, open_price: {}, close_price: {}, additional_true_ratio: {}, '
-              'code: {}'.format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price,
-                                additional_true_ratio, code))
+        # true_count = sum(additional_list)
+        # additional_true_ratio = 100 * true_count/len(additional_list)
+        print('interval: {}, up_ratio: {}, pct_chg: {}, open_price: {}, close_price: {},code: {}'
+              .format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
         return True
 
     def get_second_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
@@ -488,7 +499,7 @@ class Strategist(object):
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
         key_ptc_chg_max = 5
-        if key_k_line_pct_chg >= key_ptc_chg_max and key_k_line_pct_chg_2 >= key_ptc_chg_max:
+        if key_k_line_pct_chg >= key_ptc_chg_max or key_k_line_pct_chg_2 >= key_ptc_chg_max:
             return False
         k_line_list_interval = k_line_list[-interval-1:-1]
         max_close_price_interval = self.get_max_close_price(k_line_list_interval)
