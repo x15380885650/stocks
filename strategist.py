@@ -377,16 +377,25 @@ class Strategist(object):
         k_line_list_opt[-1]['close'] = now_ideal_close_price
         stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
         is_gold = False
+        app_is_gold = False
         for i in range(1, 6):
             diff_prev, dea_prev = round(stock_tech['macd'].iloc[-i-1], 2), round(stock_tech['macds'].iloc[-i-1], 2)
             diff, dea = round(stock_tech['macd'].iloc[-i], 2), round(stock_tech['macds'].iloc[-i], 2)
             if dea > diff:
                 continue
             r = (diff_prev-dea_prev) * (diff-dea)
+            # r_app = round(r, 3)
+            if (diff-dea) <= 0.01:
+                app_is_gold = True
             if r <= 0:
                 is_gold = True
                 break
-        return is_gold
+        if is_gold:
+            return is_gold
+        else:
+            if app_is_gold:
+                return app_is_gold
+        return False
 
     def get_first_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         prev_close_price = k_line_list[-2]['close']
@@ -483,11 +492,12 @@ class Strategist(object):
             return False
         k_line_list_interval = k_line_list[-interval-1:-1]
         max_close_price_interval = self.get_max_close_price(k_line_list_interval)
+        # max_high_price_interval = self.get_max_high_price(k_line_list_interval)
         if max_close_price_interval > now_ideal_close_price:
             return False
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
-        up_ratio_interval_day = 100 * up_num / (up_num+down_num)
-        pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
+        up_ratio_interval_day = round(100 * up_num / (up_num+down_num), 0)
+        pct_chg_interval_day = round(self.get_pct_chg_sum(k_line_list_interval), 0)
         if not 40 <= up_ratio_interval_day <= 90:
             return False
         if not 5 <= pct_chg_interval_day <= 20:
