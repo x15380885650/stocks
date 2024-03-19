@@ -431,8 +431,6 @@ class Strategist(object):
             return False
         if not 2 < pct_chg_interval_day <= 15:
             return False
-        # ddd = pct_chg_interval_day / interval
-        # print('ddd: {}'.format(ddd))
         pct_chg_num_exceed = self.get_pct_chg_num_exceed(5, k_line_list_interval)
         pct_chg_2_num_exceed = self.get_pct_chg_2_num_exceed(5, k_line_list_interval)
         if pct_chg_num_exceed > 1 or pct_chg_2_num_exceed > 1:
@@ -448,17 +446,6 @@ class Strategist(object):
         key_ptc_chg_max = 5
         if key_k_line_pct_chg >= key_ptc_chg_max or key_k_line_pct_chg_2 >= key_ptc_chg_max:
             return False
-
-        additional_list = []
-        # pct_chg_num_exceed_2 = self.get_pct_chg_num_exceed(6, k_line_list_interval)
-        # pct_chg_2_num_exceed_2 = self.get_pct_chg_2_num_exceed(7, k_line_list_interval)
-        # if pct_chg_num_exceed_2 > 0 or pct_chg_2_num_exceed_2 > 0:
-        #     additional_list.append(0)
-        # else:
-        #     additional_list.append(1)
-
-        # true_count = sum(additional_list)
-        # additional_true_ratio = 100 * true_count/len(additional_list)
         print('interval: {}, up_ratio: {}, pct_chg: {}, open_price: {}, close_price: {},code: {}'
               .format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
         return True
