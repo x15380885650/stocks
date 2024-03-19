@@ -9,3 +9,4 @@ class SecondNotifier(Notifier):
 if __name__ == '__main__':
     notifier = SecondNotifier()
     notifier.run()
+

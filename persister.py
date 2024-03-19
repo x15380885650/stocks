@@ -46,6 +46,14 @@ class Persister(object):
             self.redis.set(key, sleep_time)
         return float(sleep_time)
 
+    def get_stop_status(self):
+        key = '{}:is_stop'.format(self.key_prefix)
+        is_stop = self.redis.get(key)
+        if is_stop is None:
+            is_stop = 0
+            self.redis.set(key, is_stop)
+        return int(is_stop)
+
     def get_sleep_time_monitor(self):
         key = '{}:sleep_time_monitor'.format(self.key_prefix)
         sleep_time = self.redis.get(key)

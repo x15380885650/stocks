@@ -37,12 +37,18 @@ class Monitor(Ancestor):
         else:
             while True:
                 try:
+                    is_stop = self.persister.get_stop_status()
+                    if is_stop:
+                        print('script stop, exit!!!')
+                        return
+
                     trade_ok = self.is_trade()
                     # trade_ok = True
                     if not trade_ok:
                         exclude_stock_set.clear()
                         time.sleep(1)
                         continue
+
                     start_date_str, end_date_str = d_chooser.get_start_and_end_date()
                     min_pct_chg_monitor = self.persister.get_min_pct_chg_monitor()
                     sleep_time = self.persister.get_sleep_time_monitor()

@@ -7,10 +7,10 @@ PARENT_PATH = '/home/stocks'
 class ScriptManager(object):
     def __init__(self):
         self.scrip_list = [
-            {'name': 'monitor_1', 'redis_prefix': 'monitor_1', 'parallels': 1},
-            {'name': 'monitor_2', 'redis_prefix': 'monitor_2', 'parallels': 1},
-            {'name': 'notifier_1', 'redis_prefix': 'monitor_1', 'parallels': 1},
-            {'name': 'notifier_2', 'redis_prefix': 'monitor_2', 'parallels': 1},
+            {'name': 'monitor_1', 'redis_prefix': 'monitor_1'},
+            {'name': 'monitor_2', 'redis_prefix': 'monitor_2'},
+            {'name': 'notifier_1', 'redis_prefix': 'monitor_1'},
+            {'name': 'notifier_2', 'redis_prefix': 'monitor_2'},
         ]
         self.redis_conf = {'host': '127.0.0.1', 'port': 6408, 'password': 'iscas139', 'db': 0}
         self.redis = StrictRedis(**self.redis_conf, decode_responses=True)
@@ -38,47 +38,47 @@ class ScriptManager(object):
         start_cmd_result = os.system(start_cmd)
         print('start_cmd_result: {}'.format(start_cmd_result))
 
-    def get_redis_parallel_num(self, script):
-        redis_prefix = script['redis_prefix']
-        default_parallels = script['parallels']
-        parallel_key = '{}:parallels'.format(redis_prefix)
-        parallel_num = self.redis.get(parallel_key)
-        if parallel_num is None:
-            self.redis.set(parallel_key, default_parallels)
-        return self.redis.get(parallel_key)
-
-    def set_redis_script_stop_status(self, script, stop_status):
-        redis_prefix = script['redis_prefix']
-        script_stop_key = '{}:script_stop'.format(redis_prefix)
-        self.redis.set(script_stop_key, stop_status)
+    def get_script_stop_status(self, script):
+        key = '{}:is_stop'.format(script['redis_prefix'])
+        is_stop = self.redis.get(key)
+        if is_stop is None:
+            is_stop = 0
+            self.redis.set(key, is_stop)
+        return int(is_stop)
 
     def run(self):
         logs_path = '{}/logs'.format(PARENT_PATH)
         for script in self.scrip_list:
-            # print('-----------script begin-----------')
-            parallels = self.get_redis_parallel_num(script)
-            parallels = int(parallels)
             scrip_name = script['name']
             py_name = '{}.py'.format(scrip_name)
             pid_list = self.get_pid_list_by_name(py_name)
             print('py_name: {}, {} scripts is running...'.format(py_name, len(pid_list)))
-            if len(pid_list) == parallels:
+            if len(pid_list) == 1:
                 continue
-            self.set_redis_script_stop_status(script, stop_status=1)
-            pid_list = self.get_pid_list_by_name(py_name)
-            print(pid_list)
-            if len(pid_list) != 0:
+            if len(pid_list) > 1:
                 for p_id in pid_list:
                     self.kill_process_by_pid(p_id)
-            pid_list = self.get_pid_list_by_name(py_name)
-            scrip_file_path = '{}/{}'.format(PARENT_PATH, py_name)
-            if len(pid_list) == 0:
-                for _ in range(parallels):
-                    log_file_path = '{}/{}.log'.format(logs_path, scrip_name)
-                    self.start_process(scrip_file_path, log_file_path)
-                if parallels != 0:
-                    print('py_name: {}, restarted {} scripts'.format(py_name, parallels))
-                self.set_redis_script_stop_status(script, stop_status=0)
+            is_stop = self.get_script_stop_status(script)
+            if not is_stop:
+                scrip_file_path = '{}/{}'.format(PARENT_PATH, py_name)
+                log_file_path = '{}/{}.log'.format(logs_path, scrip_name)
+                self.start_process(scrip_file_path, log_file_path)
+
+            # self.set_redis_script_stop_status(script, stop_status=1)
+            # pid_list = self.get_pid_list_by_name(py_name)
+            # print(pid_list)
+            # if len(pid_list) != 0:
+            #     for p_id in pid_list:
+            #         self.kill_process_by_pid(p_id)
+            # pid_list = self.get_pid_list_by_name(py_name)
+            # scrip_file_path = '{}/{}'.format(PARENT_PATH, py_name)
+            # if len(pid_list) == 0:
+            #     for _ in range(parallels):
+            #         log_file_path = '{}/{}.log'.format(logs_path, scrip_name)
+            #         self.start_process(scrip_file_path, log_file_path)
+            #     if parallels != 0:
+            #         print('py_name: {}, restarted {} scripts'.format(py_name, parallels))
+            #     self.set_redis_script_stop_status(script, stop_status=0)
             # print('-----------script end-----------')
 
 

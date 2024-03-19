@@ -18,10 +18,16 @@ class Notifier(Ancestor):
 
         while True:
             try:
+                is_stop = self.persister.get_stop_status()
+                if is_stop:
+                    print('script stop, exit!!!')
+                    return
+
                 trade_ok = self.is_trade()
                 if not trade_ok:
                     time.sleep(1)
                     continue
+
                 start_date_str, end_date_str = d_chooser.get_start_and_end_date()
                 monitor_code_list = self.persister.get_monitor_code_list(end_date_str)
                 if not monitor_code_list:
