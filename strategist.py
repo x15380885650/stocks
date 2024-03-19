@@ -389,25 +389,16 @@ class Strategist(object):
         k_line_list_opt[-1]['close'] = now_ideal_close_price
         stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
         is_gold = False
-        app_is_gold = False
         for i in range(1, 6):
             diff_prev, dea_prev = round(stock_tech['macd'].iloc[-i-1], 2), round(stock_tech['macds'].iloc[-i-1], 2)
             diff, dea = round(stock_tech['macd'].iloc[-i], 2), round(stock_tech['macds'].iloc[-i], 2)
             if dea > diff:
                 continue
             r = (diff_prev-dea_prev) * (diff-dea)
-            # r_app = round(r, 3)
-            if (diff-dea) <= 0.01:
-                app_is_gold = True
             if r <= 0:
                 is_gold = True
                 break
-        if is_gold:
-            return is_gold
-        else:
-            if app_is_gold:
-                return app_is_gold
-        return False
+        return is_gold
 
     def get_first_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         prev_close_price = k_line_list[-2]['close']
