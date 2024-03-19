@@ -469,6 +469,12 @@ class Strategist(object):
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
         if not 20 <= interval <= 35:
             return False
+        # price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=20, days_count=2)
+        # if not price_exceed_ma_20:
+        #     return False
+        # price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=2)
+        # if not price_exceed_ma_15:
+        #     return False
         key_k_line = k_line_list[-interval - 2]
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
@@ -482,7 +488,7 @@ class Strategist(object):
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = 100 * up_num / (up_num+down_num)
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
-        if not 40 <= up_ratio_interval_day <= 70:
+        if not 40 <= up_ratio_interval_day <= 90:
             return False
         if not 5 <= pct_chg_interval_day <= 20:
             return False
