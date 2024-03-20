@@ -48,12 +48,12 @@ class ScriptManager(object):
         return int(is_stop)
 
     def set_script_start_time(self, script):
-        key = '{}:{}:start_time'.format(script['redis_prefix'], script['name'])
+        key = '{}:{}_start_time'.format(script['redis_prefix'], script['name'])
         now_time = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
         self.redis.set(key, now_time)
 
     def get_script_start_time(self, script):
-        key = '{}:{}:start_time'.format(script['redis_prefix'], script['name'])
+        key = '{}:{}_start_time'.format(script['redis_prefix'], script['name'])
         return self.redis.get(key)
 
     def kill_process_by_id_list(self, pid_list):
