@@ -60,6 +60,16 @@ class Strategist(object):
                 down_num += 1
         return up_num, down_num
 
+    def get_max_high_close_ratio(self, data_list):
+        max_ratio = 0
+        for data in data_list:
+            close_price = data['close']
+            high_price = data['high']
+            ratio = high_price / close_price
+            if ratio > max_ratio:
+                max_ratio = ratio
+        return max_ratio
+
     def get_max_pct_chg(self, data_list):
         max_pct_chg = float(data_list[0]['pct_chg'])
         for data in data_list:
@@ -404,7 +414,6 @@ class Strategist(object):
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
         range_days = 50
-        # range_days = 40
         close_price = k_line_list[-1]['close']
         open_price = k_line_list[-1]['open']
         k_line_list_range_day = k_line_list[-range_days:]
@@ -443,7 +452,6 @@ class Strategist(object):
         key_k_line = k_line_list[-interval-2]
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
-        # key_ptc_chg_max = 2.5
         key_ptc_chg_max = 5
         if key_k_line_pct_chg >= key_ptc_chg_max or key_k_line_pct_chg_2 >= key_ptc_chg_max:
             return False
@@ -468,12 +476,6 @@ class Strategist(object):
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
         if not 20 <= interval <= 35:
             return False
-        # price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=20, days_count=2)
-        # if not price_exceed_ma_20:
-        #     return False
-        # price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=2)
-        # if not price_exceed_ma_15:
-        #     return False
         key_k_line = k_line_list[-interval - 2]
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
@@ -482,7 +484,6 @@ class Strategist(object):
             return False
         k_line_list_interval = k_line_list[-interval-1:-1]
         max_close_price_interval = self.get_max_close_price(k_line_list_interval)
-        # max_high_price_interval = self.get_max_high_price(k_line_list_interval)
         if max_close_price_interval > now_ideal_close_price:
             return False
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
