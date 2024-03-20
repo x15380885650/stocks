@@ -403,8 +403,8 @@ class Strategist(object):
     def get_first_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
-        # range_days = 50
-        range_days = 40
+        range_days = 50
+        # range_days = 40
         close_price = k_line_list[-1]['close']
         open_price = k_line_list[-1]['open']
         k_line_list_range_day = k_line_list[-range_days:]

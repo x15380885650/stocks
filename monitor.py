@@ -21,10 +21,10 @@ class Monitor(Ancestor):
         sleep_time = 0
         c_fetcher = CodeFetcher(ds=self.ds)
         d_chooser = DateChooser(ds=self.ds, delta_days=self.stock_days)
-        s = Strategist()
         exclude_stock_set = set()
 
         if self.test_code_dict:
+            s_count = 0
             for test_stock_code, test_end_date_str in self.test_code_dict.items():
                 test_start_date_str, test_end_date_str = d_chooser.get_start_and_end_date(test_end_date_str)
                 stock_list_kline_list = c_fetcher.get_stock_list_kline_list(
@@ -33,7 +33,10 @@ class Monitor(Ancestor):
                     code = stock_kline_list[-1]['code']
                     if len(stock_kline_list) < int(self.stock_days / 2):
                         continue
-                    self.get_strategy_res(code, stock_kline_list)
+                    s_res = self.get_strategy_res(code, stock_kline_list)
+                    if s_res:
+                        s_count += 1
+            print('s_count: {}, test_count: {}'.format(s_count, len(self.test_code_dict)))
         else:
             while True:
                 try:

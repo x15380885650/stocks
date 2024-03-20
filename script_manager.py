@@ -64,23 +64,6 @@ class ScriptManager(object):
                 log_file_path = '{}/{}.log'.format(logs_path, scrip_name)
                 self.start_process(scrip_file_path, log_file_path)
 
-            # self.set_redis_script_stop_status(script, stop_status=1)
-            # pid_list = self.get_pid_list_by_name(py_name)
-            # print(pid_list)
-            # if len(pid_list) != 0:
-            #     for p_id in pid_list:
-            #         self.kill_process_by_pid(p_id)
-            # pid_list = self.get_pid_list_by_name(py_name)
-            # scrip_file_path = '{}/{}'.format(PARENT_PATH, py_name)
-            # if len(pid_list) == 0:
-            #     for _ in range(parallels):
-            #         log_file_path = '{}/{}.log'.format(logs_path, scrip_name)
-            #         self.start_process(scrip_file_path, log_file_path)
-            #     if parallels != 0:
-            #         print('py_name: {}, restarted {} scripts'.format(py_name, parallels))
-            #     self.set_redis_script_stop_status(script, stop_status=0)
-            # print('-----------script end-----------')
-
 
 if __name__ == '__main__':
     script_manager = ScriptManager()
