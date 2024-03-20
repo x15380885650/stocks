@@ -23,7 +23,7 @@ class Monitor(Ancestor):
         c_fetcher = CodeFetcher(ds=self.ds)
         d_chooser = DateChooser(ds=self.ds, delta_days=self.stock_days)
         exclude_stock_set = set()
-        cond_dict = defaultdict(int)
+        cond_dict = defaultdict(list)
         monitor_stock_count = 0
 
         if self.test_code_dict:
@@ -60,13 +60,24 @@ class Monitor(Ancestor):
                     start_date_str, end_date_str = d_chooser.get_start_and_end_date()
                     min_pct_chg_monitor = self.persister.get_min_pct_chg_monitor()
                     sleep_time = self.persister.get_sleep_time_monitor()
+                    show_code = self.persister.get_show_code_status()
                     code_list = c_fetcher.fetch_real_time_filtered_code_list(pct_chg_min=min_pct_chg_monitor)
                     new_code_list = []
                     for c in code_list:
                         if c not in exclude_stock_set:
                             new_code_list.append(c)
                     print('code_list: {}, exclude_code_list: {}'.format(len(new_code_list), len(exclude_stock_set)))
-                    print('monitor_stock_count: {}, cond_dict: {}'.format(monitor_stock_count, dict(cond_dict)))
+                    if show_code:
+                        cond_show_dict = {}
+                        for t_cond, t_code_list in cond_dict.items():
+                            if len(t_code_list) <= 10:
+                                cond_show_dict[t_cond] = t_code_list
+                        print('monitor_stock_count: {}, cond_show_dict: {}'.format(monitor_stock_count, cond_show_dict))
+                    else:
+                        cond_count_dict = {}
+                        for t_cond, t_code_list in cond_dict.items():
+                            cond_count_dict[t_cond] = len(t_code_list)
+                        print('monitor_stock_count: {}, cond_count_dict: {}'.format(monitor_stock_count, cond_count_dict))
                     if not new_code_list:
                         print('now: {}, sleep: {}'.format(datetime.now(), sleep_time))
                         time.sleep(sleep_time)
@@ -81,7 +92,7 @@ class Monitor(Ancestor):
                             continue
                         monitor_stock_count += 1
                         res_ok, cond = self.get_strategy_res(code, stock_kline_list, min_opt_macd_diff)
-                        cond_dict[cond] += 1
+                        cond_dict[cond].append(code)
                         if not res_ok:
                             exclude_stock_set.add(code)
                         else:
