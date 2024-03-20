@@ -1,6 +1,7 @@
 import time
 import warnings
 warnings.filterwarnings('ignore')
+from collections import defaultdict
 from datetime import datetime
 from code_fetcher import CodeFetcher
 from date_chooser import DateChooser
@@ -22,6 +23,8 @@ class Monitor(Ancestor):
         c_fetcher = CodeFetcher(ds=self.ds)
         d_chooser = DateChooser(ds=self.ds, delta_days=self.stock_days)
         exclude_stock_set = set()
+        cond_dict = defaultdict(int)
+        monitor_stock_count = 0
 
         if self.test_code_dict:
             s_count = 0
@@ -33,8 +36,8 @@ class Monitor(Ancestor):
                     code = stock_kline_list[-1]['code']
                     if len(stock_kline_list) < int(self.stock_days / 2):
                         continue
-                    s_res = self.get_strategy_res(code, stock_kline_list)
-                    if s_res:
+                    res_ok, cond = self.get_strategy_res(code, stock_kline_list)
+                    if res_ok:
                         s_count += 1
             print('s_count: {}, test_count: {}'.format(s_count, len(self.test_code_dict)))
         else:
@@ -49,6 +52,8 @@ class Monitor(Ancestor):
                     # trade_ok = True
                     if not trade_ok:
                         exclude_stock_set.clear()
+                        monitor_stock_count = 0
+                        cond_dict.clear()
                         time.sleep(1)
                         continue
 
@@ -61,6 +66,7 @@ class Monitor(Ancestor):
                         if c not in exclude_stock_set:
                             new_code_list.append(c)
                     print('code_list: {}, exclude_code_list: {}'.format(len(new_code_list), len(exclude_stock_set)))
+                    print('monitor_stock_count: {}, cond_dict: {}'.format(monitor_stock_count, dict(cond_dict)))
                     if not new_code_list:
                         print('now: {}, sleep: {}'.format(datetime.now(), sleep_time))
                         time.sleep(sleep_time)
@@ -73,8 +79,10 @@ class Monitor(Ancestor):
                         if len(stock_kline_list) < int(self.stock_days/2):
                             exclude_stock_set.add(code)
                             continue
-                        s_res = self.get_strategy_res(code, stock_kline_list, min_opt_macd_diff)
-                        if not s_res:
+                        monitor_stock_count += 1
+                        res_ok, cond = self.get_strategy_res(code, stock_kline_list, min_opt_macd_diff)
+                        cond_dict[cond] += 1
+                        if not res_ok:
                             exclude_stock_set.add(code)
                         else:
                             print('push to redis, code: {}'.format(code))
