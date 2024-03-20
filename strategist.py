@@ -426,7 +426,7 @@ class Strategist(object):
         if max_close_price_interval > now_ideal_close_price:
             return False
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
-        up_ratio_interval_day = round(round(100 * up_num / (up_num + down_num), 2), 0)
+        up_ratio_interval_day = round(100 * up_num / (up_num + down_num), 0)
         pct_chg_interval_day = round(self.get_pct_chg_sum(k_line_list_interval), 0)
         if not 50 < up_ratio_interval_day <= 90:
             return False
