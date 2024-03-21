@@ -30,18 +30,25 @@ class Notifier(Ancestor):
 
                 start_date_str, end_date_str = d_chooser.get_start_and_end_date()
                 monitor_code_list = self.persister.get_monitor_code_list(end_date_str)
-                if not monitor_code_list:
+                buy_code_list = self.persister.get_buy_code_list()
+                if not monitor_code_list and not buy_code_list:
                     time.sleep(1)
                     continue
+                code_dict = {}
+                for monitor_code in monitor_code_list:
+                    code_dict[monitor_code] = 'to buy'
+                for buy_code in buy_code_list:
+                    code_dict[buy_code] = 'already buy'
+                all_code_list = list(code_dict.keys())
                 min_pct_chg_notifier = self.persister.get_min_pct_chg_notifier()
                 sleep_time = self.persister.get_sleep_time_notifier()
-                stock_list_kline_list = c_fetcher.get_stock_list_kline_list(
-                    monitor_code_list, end_date_str, end_date_str)
+                stock_list_kline_list = c_fetcher.get_stock_list_kline_list(all_code_list, end_date_str, end_date_str)
                 for stock_kline_list in stock_list_kline_list:
                     code = stock_kline_list[-1]['code']
                     pct_chg = stock_kline_list[-1]['pct_chg']
-                    print('code: {}, pct_chg: {}'.format(code, pct_chg))
-                    if pct_chg < min_pct_chg_notifier:
+                    buy_txt = code_dict[code]
+                    print('code: {}, pct_chg: {}, {}'.format(code, pct_chg, buy_txt))
+                    if pct_chg < min_pct_chg_notifier or code in buy_code_list:
                         continue
                     self.notify(code)
                     self.persister.save_code_to_notifier(end_date_str, code)

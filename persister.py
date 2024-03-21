@@ -22,6 +22,18 @@ class Persister(object):
         diff = self.redis.sdiff(monitor_key, notifier_key)
         return list(diff)
 
+    def get_buy_code_list(self):
+        key = '{}:buy_stock_list'.format(self.key_prefix)
+        code_set = self.redis.smembers(key)
+        if not code_set:
+            self.redis.sadd(key, '')
+            return []
+        code_list = []
+        for code in code_set:
+            if code:
+                code_list.append(code)
+        return code_list
+
     def get_min_pct_chg_notifier(self):
         key = '{}:min_pct_chg_notifier'.format(self.key_prefix)
         pct_chg = self.redis.get(key)
