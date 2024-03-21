@@ -4,7 +4,7 @@ from stockstats import StockDataFrame
 
 COND_INTERVAL = 'cond_interval'
 COND_MACD_DIFF = 'cond_macd_diff'
-COND_MACD_GOLD = 'cond_macd_GOLD'
+COND_MACD_GOLD = 'cond_macd_gold'
 COND_MA_20 = 'cond_ma_20'
 COND_MA_15 = 'cond_ma_15'
 COND_CLOSE_PRICE = 'cond_close_price'
@@ -13,7 +13,7 @@ COND_PCT_CHG_INTERVAL = 'cond_pct_chg_interval'
 COND_PCT_CHG_NUM_EXCEED = 'cond_pct_chg_num_exceed'
 COND_PCT_CHG_NUM_LESS = 'cond_pct_chg_num_less'
 CONDE_KEY_PCT_CHG_MAX = 'cond_key_pct_chg_max'
-OK = 'ok'
+OK = 'cond_ok'
 
 
 class Strategist(object):

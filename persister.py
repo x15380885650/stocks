@@ -69,3 +69,11 @@ class Persister(object):
             macd_value = 0
             self.redis.set(key, macd_value)
         return float(macd_value)
+
+    def get_show_code_status(self):
+        key = '{}:show_code'.format(self.key_prefix)
+        is_show_code = self.redis.get(key)
+        if is_show_code is None:
+            is_show_code = 1
+            self.redis.set(key, is_show_code)
+        return int(is_show_code)
