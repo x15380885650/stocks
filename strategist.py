@@ -448,7 +448,9 @@ class Strategist(object):
             return False, COND_CLOSE_PRICE
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = round(100 * up_num / (up_num + down_num), 0)
-        pct_chg_interval_day = round(self.get_pct_chg_sum(k_line_list_interval), 0)
+        key_k_line = k_line_list[-interval - 2]
+        key_k_line_close_price = key_k_line['close']
+        pct_chg_interval_day = round(100 * (prev_close_price-key_k_line_close_price)/key_k_line_close_price, 0)
         if not 50 < up_ratio_interval_day <= 90:
             return False, COND_UP_RATIO_INTERVAL
         if not 2 < pct_chg_interval_day <= 15:
@@ -461,7 +463,6 @@ class Strategist(object):
         pct_chg_2_num_less = self.get_pct_chg_2_num_less(-5, k_line_list_interval)
         if pct_chg_num_less > 0 or pct_chg_2_num_less > 0:
             return False, COND_PCT_CHG_NUM_LESS
-        key_k_line = k_line_list[-interval-2]
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
         key_pct_chg_max = 5
@@ -502,10 +503,11 @@ class Strategist(object):
             return False, COND_CLOSE_PRICE
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = round(100 * up_num / (up_num+down_num), 0)
-        pct_chg_interval_day = round(self.get_pct_chg_sum(k_line_list_interval), 0)
+        key_k_line_close_price = key_k_line['close']
+        pct_chg_interval_day = round(100 * (prev_close_price - key_k_line_close_price) / key_k_line_close_price, 0)
         if not 40 <= up_ratio_interval_day <= 90:
             return False, COND_UP_RATIO_INTERVAL
-        if not 5 <= pct_chg_interval_day <= 20:
+        if not 3 <= pct_chg_interval_day <= 20:
             return False, COND_PCT_CHG_INTERVAL
         pct_chg_num_exceed = self.get_pct_chg_num_exceed(5, k_line_list_interval)
         pct_chg_2_num_exceed = self.get_pct_chg_2_num_exceed(5, k_line_list_interval)
