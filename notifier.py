@@ -36,9 +36,9 @@ class Notifier(Ancestor):
                     continue
                 code_dict = {}
                 for monitor_code in monitor_code_list:
-                    code_dict[monitor_code] = 'to buy'
+                    code_dict[monitor_code] = '0'
                 for buy_code in buy_code_list:
-                    code_dict[buy_code] = 'already buy'
+                    code_dict[buy_code] = '1'
                 all_code_list = list(code_dict.keys())
                 min_pct_chg_notifier = self.persister.get_min_pct_chg_notifier()
                 sleep_time = self.persister.get_sleep_time_notifier()
