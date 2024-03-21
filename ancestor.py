@@ -17,10 +17,10 @@ class Ancestor(object):
         # print(day_of_week, now)
         if not 0 <= day_of_week <= 4:
             return False
-        start_time_1 = datetime(now.year, now.month, now.day, 9, 30)
+        start_time_1 = datetime(now.year, now.month, now.day, 9, 25)
         end_time_1 = datetime(now.year, now.month, now.day, 11, 30)
 
-        start_time_2 = datetime(now.year, now.month, now.day, 13, 00)
+        start_time_2 = datetime(now.year, now.month, now.day, 12, 55)
         end_time_2 = datetime(now.year, now.month, now.day, 15, 00)
 
         if start_time_1 <= now <= end_time_1 or start_time_2 <= now <= end_time_2:
