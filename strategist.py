@@ -341,11 +341,15 @@ class Strategist(object):
                 _num += 1
         return _num
 
-    def get_interval_to_latest(self, price, data_list, key):
+    def get_interval_to_latest(self, price, data_list, key, cond='=='):
         for idx, data in enumerate(data_list[-1::-1]):
-            if data[key] == price:
-                return idx - 1
-        return -100
+            if cond == '==':
+                if data[key] == price:
+                    return idx - 1
+            else:
+                if data[key] >= price:
+                    return idx - 1
+        return 1000
 
     def get_pct_chg_2(self, d):
         close_price = float(d['close'])
@@ -469,9 +473,8 @@ class Strategist(object):
         key_pct_chg_max = 5
         if key_k_line_pct_chg >= key_pct_chg_max or key_k_line_pct_chg_2 >= key_pct_chg_max:
             return False, CONDE_KEY_PCT_CHG_MAX
-        max_pct_chg_interval = self.get_max_pct_chg(k_line_list_interval)
-        interval_2 = self.get_interval_to_latest(max_pct_chg_interval, k_line_list_interval, 'pct_chg')
-        if max_pct_chg_interval > 5 and interval_2 < 5:
+        interval_2 = self.get_interval_to_latest(5, k_line_list_interval, 'pct_chg', cond='>=')
+        if interval_2 < 5:
             return False, COND_MAX_PCT_CHG_INTERVAL
         print('interval: {}, up_ratio: {}, pct_chg: {}, open_price: {}, close_price: {},code: {}'
               .format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
@@ -522,9 +525,8 @@ class Strategist(object):
         pct_chg_2_num_less = self.get_pct_chg_2_num_less(-5, k_line_list_interval)
         if pct_chg_num_less > 0 or pct_chg_2_num_less > 0:
             return False, COND_PCT_CHG_NUM_LESS
-        max_pct_chg_interval = self.get_max_pct_chg(k_line_list_interval)
-        interval_2 = self.get_interval_to_latest(max_pct_chg_interval, k_line_list_interval, 'pct_chg')
-        if max_pct_chg_interval > 7 and interval_2 < 15:
+        interval_2 = self.get_interval_to_latest(7, k_line_list_interval, 'pct_chg', cond='>=')
+        if interval_2 < 15:
             return False, COND_MAX_PCT_CHG_INTERVAL
         print('interval: {}, up_ratio: {}, pct_chg: {}, close_price: {}, open_price: {}, code: {}'
               .format(interval, up_ratio_interval_day, pct_chg_interval_day, close_price, open_price, code))
