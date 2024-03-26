@@ -21,7 +21,7 @@ class Ancestor(object):
         end_time_1 = datetime(now.year, now.month, now.day, 11, 30)
 
         start_time_2 = datetime(now.year, now.month, now.day, 12, 55)
-        end_time_2 = datetime(now.year, now.month, now.day, 15, 1)
+        end_time_2 = datetime(now.year, now.month, now.day, 15, 0, 5)
 
         if start_time_1 <= now <= end_time_1 or start_time_2 <= now <= end_time_2:
             return True
