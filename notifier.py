@@ -45,9 +45,10 @@ class Notifier(Ancestor):
                 stock_list_kline_list = c_fetcher.get_stock_list_kline_list(all_code_list, end_date_str, end_date_str)
                 for stock_kline_list in stock_list_kline_list:
                     code = stock_kline_list[-1]['code']
+                    name = stock_kline_list[-1]['name']
                     pct_chg = stock_kline_list[-1]['pct_chg']
                     buy_txt = code_dict[code]
-                    print('code: {}, pct_chg: {}, {}'.format(code, pct_chg, buy_txt))
+                    print('code: {}, name: {}, pct_chg: {}, {}'.format(code, name, pct_chg, buy_txt))
                     if pct_chg < min_pct_chg_notifier or code in buy_code_list:
                         continue
                     self.notify(code)
