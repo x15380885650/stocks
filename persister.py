@@ -22,6 +22,10 @@ class Persister(object):
         diff = self.redis.sdiff(monitor_key, notifier_key)
         return list(diff)
 
+    def clear_monitor_code_list(self, date):
+        monitor_key = '{}:{}:monitor'.format(self.key_prefix, date)
+        self.redis.delete(monitor_key)
+
     def get_buy_code_list(self):
         key = '{}:buy_stock_list'.format(self.key_prefix)
         code_set = self.redis.smembers(key)
@@ -65,6 +69,14 @@ class Persister(object):
             is_stop = 0
             self.redis.set(key, is_stop)
         return int(is_stop)
+
+    def get_clear_monitor_status(self):
+        key = '{}:clear_monitor'.format(self.key_prefix)
+        is_clear_monitor = self.redis.get(key)
+        if is_clear_monitor is None:
+            is_clear_monitor = 0
+            self.redis.set(key, is_clear_monitor)
+        return int(is_clear_monitor)
 
     def get_sleep_time_monitor(self):
         key = '{}:sleep_time_monitor'.format(self.key_prefix)

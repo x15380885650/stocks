@@ -57,10 +57,16 @@ class Monitor(Ancestor):
                         time.sleep(1)
                         continue
 
+                    clear_monitor_status = self.persister.get_clear_monitor_status()
                     start_date_str, end_date_str = d_chooser.get_start_and_end_date()
                     min_pct_chg_monitor = self.persister.get_min_pct_chg_monitor()
                     sleep_time = self.persister.get_sleep_time_monitor()
                     show_code = self.persister.get_show_code_status()
+                    if clear_monitor_status:
+                        exclude_stock_set.clear()
+                        monitor_stock_count = 0
+                        cond_dict.clear()
+                        self.persister.clear_monitor_code_list(end_date_str)
                     code_list = c_fetcher.fetch_real_time_filtered_code_list(pct_chg_min=min_pct_chg_monitor)
                     new_code_list = []
                     for c in code_list:
