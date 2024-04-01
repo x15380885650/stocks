@@ -422,7 +422,7 @@ class Strategist(object):
             if dea > diff:
                 continue
             r = (diff_prev-dea_prev) * (diff-dea)
-            if r <= 0.00001:
+            if r <= 0.00005:
                 is_gold = True
                 break
         return is_gold
