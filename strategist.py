@@ -5,6 +5,7 @@ from stockstats import StockDataFrame
 COND_INTERVAL = 'cond_interval'
 COND_MACD_DIFF = 'cond_macd_diff'
 COND_MACD_GOLD = 'cond_macd_gold'
+COND_MA_UP = 'cond_ma_up'
 COND_MA_20 = 'cond_ma_20'
 COND_MA_15 = 'cond_ma_15'
 COND_CLOSE_PRICE = 'cond_close_price'
@@ -409,6 +410,39 @@ class Strategist(object):
             return True
         return False
 
+    def is_ma_up_1(self, k_line_list):
+        prev_close_price = k_line_list[-2]['close']
+        now_ideal_close_price = prev_close_price * 1.1
+        k_line_list_opt = copy.deepcopy(k_line_list)
+        k_line_list_opt[-1]['close'] = now_ideal_close_price
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list)
+        ma_5_price = stock_tech['boll_{}'.format(5)].iloc[-1]
+        ma_10_price = stock_tech['boll_{}'.format(10)].iloc[-1]
+        ma_20_price = stock_tech['boll_{}'.format(20)].iloc[-1]
+        print(ma_5_price, ma_10_price, ma_20_price)
+        if ma_5_price < ma_10_price or ma_5_price < ma_20_price:
+            return False
+        if ma_10_price < ma_20_price:
+            return False
+        return True
+
+    def is_ma_up_2(self, k_line_list):
+        prev_close_price = k_line_list[-2]['close']
+        now_ideal_close_price = prev_close_price * 1.1
+        k_line_list_opt = copy.deepcopy(k_line_list)
+        k_line_list_opt[-1]['close'] = now_ideal_close_price
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list)
+        ma_5_price = stock_tech['boll_{}'.format(5)].iloc[-1]
+        ma_10_price = stock_tech['boll_{}'.format(10)].iloc[-1]
+        ma_20_price = stock_tech['boll_{}'.format(20)].iloc[-1]
+        ma_30_price = stock_tech['boll_{}'.format(30)].iloc[-1]
+        print(ma_5_price, ma_10_price, ma_20_price, ma_30_price)
+        if ma_5_price < ma_10_price or ma_5_price < ma_20_price or ma_5_price < ma_30_price:
+            return False
+        if ma_10_price < ma_30_price or ma_20_price < ma_30_price:
+            return False
+        return True
+
     def is_macd_latest_gold(self, k_line_list):
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
@@ -448,6 +482,9 @@ class Strategist(object):
         price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=3)
         if not price_exceed_ma_15:
             return False, COND_MA_15
+        ma_up = self.is_ma_up_1(k_line_list)
+        if not ma_up:
+            return False, COND_MA_UP
         k_line_list_interval = k_line_list[-interval - 1:-1]
         max_close_price_interval = self.get_max_close_price(k_line_list_interval)
         if max_close_price_interval > now_ideal_close_price:
@@ -499,7 +536,9 @@ class Strategist(object):
         is_gold = self.is_macd_latest_gold(k_line_list)
         if not is_gold:
             return False, COND_MACD_GOLD
-
+        ma_up = self.is_ma_up_2(k_line_list)
+        if not ma_up:
+            return False, COND_MA_UP
         key_k_line = k_line_list[-interval - 2]
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
