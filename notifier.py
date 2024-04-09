@@ -24,9 +24,15 @@ class Notifier(Ancestor):
                     return
 
                 trade_ok = self.is_trade()
+                trade_ok = True
                 if not trade_ok:
                     time.sleep(1)
                     continue
+                email_dict = self.persister.get_email_dict()
+                for email, enabled in email_dict.items():
+                    print(email, enabled)
+                    if int(enabled):
+                        self.notify(email=email, code='600000')
 
                 start_date_str, end_date_str = d_chooser.get_start_and_end_date()
                 monitor_code_list = self.persister.get_monitor_code_list(end_date_str)
@@ -42,6 +48,7 @@ class Notifier(Ancestor):
                 all_code_list = list(code_dict.keys())
                 min_pct_chg_notifier = self.persister.get_min_pct_chg_notifier()
                 sleep_time = self.persister.get_sleep_time_notifier()
+                another_email = self.persister.get_another_email()
                 stock_list_kline_list = c_fetcher.get_stock_list_kline_list(all_code_list, end_date_str, end_date_str)
                 for stock_kline_list in stock_list_kline_list:
                     code = stock_kline_list[-1]['code']
@@ -51,7 +58,9 @@ class Notifier(Ancestor):
                     print('code: {}, name: {}, pct_chg: {}, {}'.format(code, name, pct_chg, buy_txt))
                     if pct_chg < min_pct_chg_notifier or code in buy_code_list:
                         continue
-                    self.notify(code)
+                    self.notify(email="xucg025@qq.com", code=code)
+                    if another_email:
+                        self.notify(email=another_email, code=code)
                     self.persister.save_code_to_notifier(end_date_str, code)
             except Exception as e:
                 print(e)

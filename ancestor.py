@@ -27,9 +27,10 @@ class Ancestor(object):
             return True
         return False
 
-    def notify(self, code):
-        email = EmailSender("xcg19865@126.com", "HIPJLVTIFUZQKEYB", server='smtp.126.com', port=465)
-        email.set_header(code)
-        email.add_text(code)
-        email.add_receiver("xucg025@qq.com")
-        email.send()
+    def notify(self, email, code):
+        sender = EmailSender("xcg19865@126.com", "HIPJLVTIFUZQKEYB", server='smtp.126.com', port=465)
+        sender.set_header(code)
+        sender.add_text(code)
+        # sender.add_receiver("xucg025@qq.com")
+        sender.add_receiver(email)
+        sender.send()

@@ -22,6 +22,13 @@ class Persister(object):
         diff = self.redis.sdiff(monitor_key, notifier_key)
         return list(diff)
 
+    def get_email_dict(self):
+        key = '{}:email'.format(self.key_prefix)
+        val = self.redis.hgetall(key)
+        if not val:
+            self.redis.hset(key, 'xucg025@qq.com', 1)
+        return self.redis.hgetall(key)
+
     def clear_monitor_code_list(self, date):
         monitor_key = '{}:{}:monitor'.format(self.key_prefix, date)
         self.redis.delete(monitor_key)
