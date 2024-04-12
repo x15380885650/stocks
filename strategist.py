@@ -419,8 +419,9 @@ class Strategist(object):
         ma_5_price = stock_tech['boll_{}'.format(5)].iloc[-1]
         ma_10_price = stock_tech['boll_{}'.format(10)].iloc[-1]
         ma_20_price = stock_tech['boll_{}'.format(20)].iloc[-1]
-        print(ma_5_price, ma_10_price, ma_20_price)
-        if ma_5_price < ma_10_price or ma_5_price < ma_20_price:
+        ma_30_price = stock_tech['boll_{}'.format(30)].iloc[-1]
+        print(ma_5_price, ma_10_price, ma_20_price, ma_30_price)
+        if ma_5_price < ma_10_price or ma_5_price < ma_20_price or ma_5_price < ma_30_price:
             return False
         if ma_10_price < ma_20_price:
             return False
