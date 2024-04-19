@@ -1,6 +1,7 @@
 import copy
 import pandas as pd
 from stockstats import StockDataFrame
+from constants import *
 
 COND_INTERVAL = 'cond_interval'
 COND_MACD_DIFF = 'cond_macd_diff'
@@ -572,6 +573,43 @@ class Strategist(object):
         print('interval: {}, up_ratio: {}, pct_chg: {}, close_price: {}, open_price: {}, code: {}'
               .format(interval, up_ratio_interval_day, pct_chg_interval_day, close_price, open_price, code))
         return True, OK
+
+    def get_third_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        latest_8_days_k_line_list = k_line_list[-9:-1]
+        pct_chg_list = []
+        for k_line in latest_8_days_k_line_list:
+            pct_chg = k_line['pct_chg']
+            if isinstance(pct_chg, str) and not pct_chg:
+                continue
+            pct_chg_max = pct_change_max_i
+            if float(pct_chg) >= pct_chg_max:
+                pct_chg_list.append(1)
+            else:
+                pct_chg_list.append(0)
+        index_list = []
+        for i, v in enumerate(pct_chg_list):
+            if v == 1:
+                index_list.append(i)
+        if len(index_list) != 1:
+            return False, 'aaa'
+        if index_list[0] > 4:
+            return False, 'bbb'
+        latest_days_k_line_list = latest_8_days_k_line_list[index_list[0]+1:]
+        prev_t_low_p = -1
+        for t_k_line in latest_days_k_line_list:
+            close_p = t_k_line['close']
+            open_p = t_k_line['open']
+            t_low_p = open_p if close_p > open_p else close_p
+            if prev_t_low_p != -1 and prev_t_low_p < t_low_p:
+                return False, 'ccc'
+            prev_t_low_p = t_low_p
+        t_t_close_p = latest_8_days_k_line_list[index_list[0]]['close']
+        t_t_open_p = latest_8_days_k_line_list[index_list[0]]['open']
+        t_t_t_close_p = latest_days_k_line_list[-1]['close']
+        t_t_t_open_p = latest_days_k_line_list[-1]['open']
+        if t_t_t_open_p < t_t_open_p or t_t_t_close_p < t_t_open_p:
+            return False, 'ccc'
+        return True, 'ddd'
 
 
 
