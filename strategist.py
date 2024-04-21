@@ -16,6 +16,7 @@ COND_PCT_CHG_NUM_EXCEED = 'cond_pct_chg_num_exceed'
 COND_PCT_CHG_NUM_LESS = 'cond_pct_chg_num_less'
 CONDE_KEY_PCT_CHG_MAX = 'cond_key_pct_chg_max'
 COND_MAX_PCT_CHG_INTERVAL = 'cond_max_pct_chg_interval'
+COND_MAX_PCT_CHG_INDEX = 'cond_max_pct_chg_index'
 OK = 'cond_ok'
 
 
@@ -464,6 +465,19 @@ class Strategist(object):
                 break
         return is_gold
 
+    def get_max_pct_chg_binary_list(self, k_line_list):
+        max_pct_chg_list = []
+        for k_line in k_line_list:
+            pct_chg = k_line['pct_chg']
+            if isinstance(pct_chg, str) and not pct_chg:
+                continue
+            pct_chg_max = pct_change_max_i
+            if float(pct_chg) >= pct_chg_max:
+                max_pct_chg_list.append(1)
+            else:
+                max_pct_chg_list.append(0)
+        return max_pct_chg_list
+
     def get_first_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
@@ -575,41 +589,53 @@ class Strategist(object):
         return True, OK
 
     def get_third_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
-        latest_8_days_k_line_list = k_line_list[-9:-1]
-        pct_chg_list = []
-        for k_line in latest_8_days_k_line_list:
-            pct_chg = k_line['pct_chg']
-            if isinstance(pct_chg, str) and not pct_chg:
-                continue
-            pct_chg_max = pct_change_max_i
-            if float(pct_chg) >= pct_chg_max:
-                pct_chg_list.append(1)
-            else:
-                pct_chg_list.append(0)
-        index_list = []
-        for i, v in enumerate(pct_chg_list):
+        range_days = 9
+        latest_range_days_k_line_list = k_line_list[-range_days:-1]
+        temp_k_line_list = k_line_list[-range_days-1:-1]
+        max_pct_chg_binary_list = self.get_max_pct_chg_binary_list(latest_range_days_k_line_list)
+        max_pct_chg_index_list = []
+        for i, v in enumerate(max_pct_chg_binary_list):
             if v == 1:
-                index_list.append(i)
-        if len(index_list) != 1:
-            return False, 'aaa'
-        if index_list[0] > 4:
-            return False, 'bbb'
-        latest_days_k_line_list = latest_8_days_k_line_list[index_list[0]+1:]
+                max_pct_chg_index_list.append(i)
+        if len(max_pct_chg_index_list) != 1:
+            return False, COND_MAX_PCT_CHG_INDEX
+        if max_pct_chg_index_list[0] > 1:
+            return False, COND_MAX_PCT_CHG_INDEX
+        target_index = max_pct_chg_index_list[0]
+        latest_target_days_k_line_list = latest_range_days_k_line_list[target_index+1:]
         prev_t_low_p = -1
-        for t_k_line in latest_days_k_line_list:
+        no_sat_count = 0
+        for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
             open_p = t_k_line['open']
             t_low_p = open_p if close_p > open_p else close_p
             if prev_t_low_p != -1 and prev_t_low_p < t_low_p:
-                return False, 'ccc'
+                no_sat_count += 1
             prev_t_low_p = t_low_p
-        t_t_close_p = latest_8_days_k_line_list[index_list[0]]['close']
-        t_t_open_p = latest_8_days_k_line_list[index_list[0]]['open']
-        t_t_t_close_p = latest_days_k_line_list[-1]['close']
-        t_t_t_open_p = latest_days_k_line_list[-1]['open']
-        if t_t_t_open_p < t_t_open_p or t_t_t_close_p < t_t_open_p:
+        if no_sat_count > 3:
+            return False, 'bbb'
+
+        target_close_p = latest_range_days_k_line_list[target_index]['close']
+        target_open_p = latest_range_days_k_line_list[target_index]['open']
+        temp_prev_close_p = temp_k_line_list[target_index]['close']
+        temp_prev_open_p = temp_k_line_list[target_index]['open']
+        temp_target_open_p = temp_prev_close_p if temp_prev_close_p < temp_prev_open_p else temp_prev_open_p
+        if temp_target_open_p < target_open_p:
+            target_open_p = temp_target_open_p
+
+        latest_close_p = latest_target_days_k_line_list[-1]['close']
+        latest_open_p = latest_target_days_k_line_list[-1]['open']
+        if latest_open_p < target_open_p or latest_open_p > target_close_p:
             return False, 'ccc'
-        return True, 'ddd'
+        if latest_close_p < target_open_p or latest_close_p > target_close_p:
+            return False, 'ccc'
+
+        for t_k_line in latest_target_days_k_line_list:
+            close_p = t_k_line['close']
+            open_p = t_k_line['open']
+            if close_p < target_open_p or open_p < target_open_p:
+                return False, 'dddd'
+        return True, OK
 
 
 
