@@ -9,8 +9,11 @@ class ScriptManager(object):
         self.scrip_list = [
             {'name': 'monitor_1', 'redis_prefix': 'monitor_1'},
             {'name': 'monitor_2', 'redis_prefix': 'monitor_2'},
+            {'name': 'monitor_3', 'redis_prefix': 'monitor_3'},
+
             {'name': 'notifier_1', 'redis_prefix': 'monitor_1'},
             {'name': 'notifier_2', 'redis_prefix': 'monitor_2'},
+            {'name': 'notifier_3', 'redis_prefix': 'monitor_3'},
         ]
         self.redis_conf = {'host': '127.0.0.1', 'port': 6408, 'password': 'iscas139', 'db': 0}
         self.redis = StrictRedis(**self.redis_conf, decode_responses=True)
