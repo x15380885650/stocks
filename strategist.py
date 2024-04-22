@@ -635,6 +635,11 @@ class Strategist(object):
             open_p = t_k_line['open']
             if close_p < target_open_p or open_p < target_open_p:
                 return False, 'dddd'
+
+        up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
+        if down_num not in [3, 4]:
+            return False, 'eee'
+
         return True, OK
 
 
