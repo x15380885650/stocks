@@ -598,9 +598,9 @@ class Strategist(object):
             if v == 1:
                 max_pct_chg_index_list.append(i)
         if len(max_pct_chg_index_list) != 1:
-            return False, COND_MAX_PCT_CHG_INDEX
+            return False, "aaa"
         if max_pct_chg_index_list[0] > 1:
-            return False, COND_MAX_PCT_CHG_INDEX
+            return False, "aaa"
         target_index = max_pct_chg_index_list[0]
         latest_target_days_k_line_list = latest_range_days_k_line_list[target_index+1:]
         prev_t_low_p = -1
@@ -618,10 +618,8 @@ class Strategist(object):
         target_close_p = latest_range_days_k_line_list[target_index]['close']
         target_open_p = latest_range_days_k_line_list[target_index]['open']
         temp_prev_close_p = temp_k_line_list[target_index]['close']
-        temp_prev_open_p = temp_k_line_list[target_index]['open']
-        temp_target_open_p = temp_prev_close_p if temp_prev_close_p < temp_prev_open_p else temp_prev_open_p
-        if temp_target_open_p < target_open_p:
-            target_open_p = temp_target_open_p
+        if temp_prev_close_p < target_open_p:
+            target_open_p = temp_prev_close_p
 
         latest_close_p = latest_target_days_k_line_list[-1]['close']
         latest_open_p = latest_target_days_k_line_list[-1]['open']
