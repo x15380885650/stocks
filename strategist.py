@@ -599,9 +599,10 @@ class Strategist(object):
                 max_pct_chg_index_list.append(i)
         if len(max_pct_chg_index_list) != 1:
             return False, "aaa"
-        if max_pct_chg_index_list[0] > 1:
+        if max_pct_chg_index_list[0] > 2:
             return False, "aaa"
         target_index = max_pct_chg_index_list[0]
+        t_s_count = range_days - target_index - 2
         latest_target_days_k_line_list = latest_range_days_k_line_list[target_index+1:]
         prev_t_low_p = -1
         no_sat_count = 0
@@ -612,9 +613,12 @@ class Strategist(object):
             if prev_t_low_p != -1 and prev_t_low_p < t_low_p:
                 no_sat_count += 1
             prev_t_low_p = t_low_p
-        if no_sat_count > 3:
+        # if no_sat_count > 3:
+        #     return False, 'bbb'
+        no_sat_ratio = 100 * no_sat_count / t_s_count
+        if no_sat_ratio > 45:
             return False, 'bbb'
-
+        # print(no_sat_ratio)
         target_close_p = latest_range_days_k_line_list[target_index]['close']
         target_open_p = latest_range_days_k_line_list[target_index]['open']
         temp_prev_close_p = temp_k_line_list[target_index]['close']
@@ -632,7 +636,7 @@ class Strategist(object):
             close_p = t_k_line['close']
             open_p = t_k_line['open']
             if close_p < target_open_p or open_p < target_open_p:
-                return False, 'dddd'
+                return False, 'ddd'
 
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
         if down_num not in [3, 4]:
