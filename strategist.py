@@ -599,7 +599,7 @@ class Strategist(object):
                 max_pct_chg_index_list.append(i)
         if len(max_pct_chg_index_list) != 1:
             return False, "aaa"
-        if max_pct_chg_index_list[0] > 2:
+        if max_pct_chg_index_list[0] > 1:
             return False, "aaa"
         target_index = max_pct_chg_index_list[0]
         t_s_count = range_days - target_index - 2
