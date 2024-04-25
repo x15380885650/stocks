@@ -27,6 +27,9 @@ class Strategist(object):
     def is_red(self, data):
         return float(data['close']) > float(data['open'])
 
+    def is_green(self, data):
+        return float(data['close']) < float(data['open'])
+
     def is_data_list_all_green(self, data_list):
         green_tag_list = []
         for data in data_list:
@@ -599,7 +602,7 @@ class Strategist(object):
                 max_pct_chg_index_list.append(i)
         if len(max_pct_chg_index_list) != 1:
             return False, "aaa"
-        if max_pct_chg_index_list[0] > 1:
+        if max_pct_chg_index_list[0] > 2:
             return False, "aaa"
         target_index = max_pct_chg_index_list[0]
         t_s_count = range_days - target_index - 2
@@ -641,6 +644,21 @@ class Strategist(object):
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
         if down_num not in [3, 4]:
             return False, 'eee'
+
+        t_2_k_line = latest_target_days_k_line_list[-2]
+        green_ok = self.is_green(t_2_k_line)
+        if not green_ok:
+            return False, 'fff'
+
+        price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=20, days_count=3)
+        if not price_exceed_ma_20:
+            return False, 'ggg'
+        price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=3)
+        if not price_exceed_ma_15:
+            return False, 'ggg'
+        ma_up = self.is_ma_up_1(k_line_list)
+        if not ma_up:
+            return False, 'ggg'
 
         return True, OK
 
