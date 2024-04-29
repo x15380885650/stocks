@@ -17,7 +17,7 @@ COND_PCT_CHG_NUM_LESS = 'cond_pct_chg_num_less'
 CONDE_KEY_PCT_CHG_MAX = 'cond_key_pct_chg_max'
 COND_MAX_PCT_CHG_INTERVAL = 'cond_max_pct_chg_interval'
 COND_MAX_PCT_CHG_INDEX = 'cond_max_pct_chg_index'
-OK = 'cond_ok'
+OK = 'ok'
 
 
 class Strategist(object):
@@ -491,48 +491,48 @@ class Strategist(object):
         min_low_price = self.get_min_low_price(k_line_list_range_day)
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
         if not 7 <= interval < 20:
-            return False, COND_INTERVAL
+            return False, 'aaa'
         opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
         if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
-            return False, COND_MACD_DIFF
+            return False, 'bbb'
         price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=20, days_count=3)
         if not price_exceed_ma_20:
-            return False, COND_MA_20
+            return False, 'bbb'
         price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=3)
         if not price_exceed_ma_15:
-            return False, COND_MA_15
+            return False, 'bbb'
         ma_up = self.is_ma_up_1(k_line_list)
         if not ma_up:
-            return False, COND_MA_UP
+            return False, 'bbb'
         k_line_list_interval = k_line_list[-interval - 1:-1]
         max_close_price_interval = self.get_max_close_price(k_line_list_interval)
         if max_close_price_interval > now_ideal_close_price:
-            return False, COND_CLOSE_PRICE
+            return False, 'ccc'
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = round(100 * up_num / (up_num + down_num), 0)
         key_k_line = k_line_list[-interval - 2]
         key_k_line_close_price = key_k_line['close']
         pct_chg_interval_day = round(100 * (prev_close_price-key_k_line_close_price)/key_k_line_close_price, 0)
         if not 50 < up_ratio_interval_day <= 90:
-            return False, COND_UP_RATIO_INTERVAL
+            return False, 'ddd'
         if not 2 < pct_chg_interval_day <= 15:
-            return False, COND_PCT_CHG_INTERVAL
+            return False, 'ddd'
         pct_chg_num_exceed = self.get_pct_chg_num_exceed(5, k_line_list_interval)
         pct_chg_2_num_exceed = self.get_pct_chg_2_num_exceed(5, k_line_list_interval)
         if pct_chg_num_exceed > 1 or pct_chg_2_num_exceed > 1:
-            return False, COND_PCT_CHG_NUM_EXCEED
+            return False, 'ddd'
         pct_chg_num_less = self.get_pct_chg_num_less(-5, k_line_list_interval)
         pct_chg_2_num_less = self.get_pct_chg_2_num_less(-5, k_line_list_interval)
         if pct_chg_num_less > 0 or pct_chg_2_num_less > 0:
-            return False, COND_PCT_CHG_NUM_LESS
+            return False, 'ddd'
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
         key_pct_chg_max = 5
         if key_k_line_pct_chg >= key_pct_chg_max or key_k_line_pct_chg_2 >= key_pct_chg_max:
-            return False, CONDE_KEY_PCT_CHG_MAX
+            return False, 'eee'
         interval_2 = self.get_interval_to_latest(5, k_line_list_interval, 'pct_chg', cond='>=')
         if interval_2 < 5:
-            return False, COND_MAX_PCT_CHG_INTERVAL
+            return False, 'eee'
         print('interval: {}, up_ratio: {}, pct_chg: {}, open_price: {}, close_price: {},code: {}'
               .format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
         return True, OK
@@ -545,48 +545,48 @@ class Strategist(object):
         min_low_price = self.get_min_low_price(k_line_list_range_day)
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
         if not 20 <= interval <= 35:
-            return False, COND_INTERVAL
+            return False, 'aaa'
 
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
         opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
         if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
-            return False, COND_MACD_DIFF
+            return False, 'bbb'
         is_gold = self.is_macd_latest_gold(k_line_list)
         if not is_gold:
-            return False, COND_MACD_GOLD
+            return False, 'bbb'
         ma_up = self.is_ma_up_2(k_line_list)
         if not ma_up:
-            return False, COND_MA_UP
+            return False, 'bbb'
         key_k_line = k_line_list[-interval - 2]
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
         key_ptc_chg_max = 5
         if key_k_line_pct_chg >= key_ptc_chg_max or key_k_line_pct_chg_2 >= key_ptc_chg_max:
-            return False, CONDE_KEY_PCT_CHG_MAX
+            return False, 'ccc'
         k_line_list_interval = k_line_list[-interval-1:-1]
         max_close_price_interval = self.get_max_close_price(k_line_list_interval)
         if max_close_price_interval > now_ideal_close_price:
-            return False, COND_CLOSE_PRICE
+            return False, 'ddd'
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_ratio_interval_day = round(100 * up_num / (up_num+down_num), 0)
         key_k_line_close_price = key_k_line['close']
         pct_chg_interval_day = round(100 * (prev_close_price - key_k_line_close_price) / key_k_line_close_price, 0)
         if not 40 <= up_ratio_interval_day <= 90:
-            return False, COND_UP_RATIO_INTERVAL
+            return False, 'eee'
         if not 3 <= pct_chg_interval_day <= 20:
-            return False, COND_PCT_CHG_INTERVAL
+            return False, 'eee'
         pct_chg_num_exceed = self.get_pct_chg_num_exceed(5, k_line_list_interval)
         pct_chg_2_num_exceed = self.get_pct_chg_2_num_exceed(5, k_line_list_interval)
         if pct_chg_num_exceed > 2 or pct_chg_2_num_exceed > 2:
-            return False, COND_PCT_CHG_NUM_EXCEED
+            return False, 'fff'
         pct_chg_num_less = self.get_pct_chg_num_less(-5, k_line_list_interval)
         pct_chg_2_num_less = self.get_pct_chg_2_num_less(-5, k_line_list_interval)
         if pct_chg_num_less > 0 or pct_chg_2_num_less > 0:
-            return False, COND_PCT_CHG_NUM_LESS
+            return False, 'fff'
         interval_2 = self.get_interval_to_latest(7, k_line_list_interval, 'pct_chg', cond='>=')
         if interval_2 < 15:
-            return False, COND_MAX_PCT_CHG_INTERVAL
+            return False, 'fff'
         print('interval: {}, up_ratio: {}, pct_chg: {}, close_price: {}, open_price: {}, code: {}'
               .format(interval, up_ratio_interval_day, pct_chg_interval_day, close_price, open_price, code))
         return True, OK
