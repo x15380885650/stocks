@@ -79,6 +79,16 @@ class Strategist(object):
                 down_num += 1
         return up_num, down_num
 
+    def get_up_and_down_num_2(self, data_list):
+        up_num = down_num = 0
+        for data in data_list:
+            pct_chg = data['pct_chg']
+            if pct_chg > 0:
+                up_num += 1
+            else:
+                down_num += 1
+        return up_num, down_num
+
     def get_max_high_close_ratio(self, data_list):
         max_ratio = 0
         for data in data_list:
@@ -425,7 +435,7 @@ class Strategist(object):
         ma_10_price = stock_tech['boll_{}'.format(10)].iloc[-1]
         ma_20_price = stock_tech['boll_{}'.format(20)].iloc[-1]
         ma_30_price = stock_tech['boll_{}'.format(30)].iloc[-1]
-        print(ma_5_price, ma_10_price, ma_20_price, ma_30_price)
+        # print(ma_5_price, ma_10_price, ma_20_price, ma_30_price)
         if ma_5_price < ma_10_price or ma_5_price < ma_20_price or ma_5_price < ma_30_price:
             return False
         if ma_10_price < ma_20_price:
@@ -642,7 +652,8 @@ class Strategist(object):
                 return False, 'ddd'
 
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
-        if down_num not in [3, 4]:
+        up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
+        if down_num not in [3, 4] and down_num_2 not in [3, 4]:
             return False, 'eee'
 
         t_2_k_line = latest_target_days_k_line_list[-2]
