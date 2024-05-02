@@ -661,11 +661,14 @@ class Strategist(object):
         if not green_ok:
             return False, 'fff'
 
-        price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=20, days_count=3)
+        price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=20, days_count=t_s_count)
         if not price_exceed_ma_20:
             return False, 'ggg'
-        price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=3)
+        price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=4)
         if not price_exceed_ma_15:
+            return False, 'ggg'
+        price_exceed_ma_10 = self.is_close_price_exceed_ma(k_line_list, boll_days=10, days_count=1)
+        if not price_exceed_ma_10:
             return False, 'ggg'
         ma_up = self.is_ma_up_1(k_line_list)
         if not ma_up:
