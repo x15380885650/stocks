@@ -30,6 +30,14 @@ class Strategist(object):
     def is_green(self, data):
         return float(data['close']) < float(data['open'])
 
+    def get_min_pct_chg_2(self, data_list):
+        min_pct_chg_2 = 0
+        for data in data_list:
+            pct_chg_2 = self.get_pct_chg_2(data)
+            if pct_chg_2 < min_pct_chg_2:
+                min_pct_chg_2 = pct_chg_2
+        return min_pct_chg_2
+
     def is_data_list_all_green(self, data_list):
         green_tag_list = []
         for data in data_list:
@@ -459,6 +467,9 @@ class Strategist(object):
             return False
         return True
 
+    def retain_decimals_no_rounding(self, number, decimals=2):
+        return int(number*10**decimals) / 10**decimals
+
     def is_macd_latest_gold(self, k_line_list):
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
@@ -643,6 +654,10 @@ class Strategist(object):
         if latest_open_p < target_open_p or latest_open_p > target_close_p:
             return False, 'ccc'
         if latest_close_p < target_open_p or latest_close_p > target_close_p:
+            return False, 'ccc'
+        min_pct_chg_2 = self.get_min_pct_chg_2(latest_target_days_k_line_list)
+        t_min_pct_chg_2 = self.retain_decimals_no_rounding(min_pct_chg_2, 1)
+        if t_min_pct_chg_2 < -5.5:
             return False, 'ccc'
 
         for t_k_line in latest_target_days_k_line_list:
