@@ -130,17 +130,7 @@ class CodeFetcher(object):
             pct_change_max = self.get_pct_change_max(code)
             if pct_chg >= pct_change_max:
                 return False
-            # stock_total_count += 1
-            # if pct_chg > 0:
-            #     stock_up_count += 1
-            # elif pct_chg < 0:
-            #     stock_down_count += 1
-            # if pct_chg < pct_chg_min:
-            #     continue
-            # stock_pct_chg_count += 1
-            #
         except Exception as e:
-            # print(e)
             return False
         return True
 
