@@ -111,6 +111,17 @@ class CodeFetcher(object):
             new_stock_list_kline.append(stock_k_line)
         return new_stock_list_kline
 
+    def get_stock_list_kline_list_by_latest_pct_chg_sort(self, code_list, start_date_str, end_date_str):
+        stock_list_kline = self.ds.get_stock_list_kline_history(code_list, start_date_str, end_date_str)
+        new_stock_list_kline = []
+        for stock_k_line in stock_list_kline:
+            last_date = stock_k_line[-1]['date']
+            if last_date != end_date_str:
+                continue
+            new_stock_list_kline.append(stock_k_line)
+        sorted_new_stock_list_kline = sorted(new_stock_list_kline, key=lambda k_line: k_line[-1]['pct_chg'], reverse=True)
+        return sorted_new_stock_list_kline
+
     def fetch_real_time_filtered_code_list(self, pct_chg_min=4):
         stock_list = self.ds.get_stocks_realtime_quotes()
         filtered_list = []
