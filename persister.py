@@ -62,6 +62,10 @@ class Persister(object):
             self.redis.set(key, pct_chg)
         return float(pct_chg)
 
+    def save_min_pct_chg_monitor(self, pct_chg_monitor):
+        key = '{}:min_pct_chg_monitor'.format(self.key_prefix)
+        self.redis.set(key, pct_chg_monitor)
+
     def get_sleep_time_notifier(self):
         key = '{}:sleep_time_notifier'.format(self.key_prefix)
         sleep_time = self.redis.get(key)

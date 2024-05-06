@@ -111,44 +111,54 @@ class CodeFetcher(object):
             new_stock_list_kline.append(stock_k_line)
         return new_stock_list_kline
 
+    def is_stock_basic_satisfied(self, stock):
+        try:
+            code = stock[1][0]
+            name = stock[1][1]
+            pct_chg = float(stock[1][2])
+            latest_close_price = float(stock[1][3])
+            stock_value = stock[1].iloc[15] / 10000 / 10000
+            if 'ST' in name:
+                return False
+            filtered = self.ds.is_code_filtered(code)
+            if filtered:
+                return False
+            if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
+                return False
+            if stock_value > stock_value_max or stock_value < stock_value_min:
+                return False
+            pct_change_max = self.get_pct_change_max(code)
+            if pct_chg >= pct_change_max:
+                return False
+            # stock_total_count += 1
+            # if pct_chg > 0:
+            #     stock_up_count += 1
+            # elif pct_chg < 0:
+            #     stock_down_count += 1
+            # if pct_chg < pct_chg_min:
+            #     continue
+            # stock_pct_chg_count += 1
+            #
+        except Exception as e:
+            # print(e)
+            return False
+        return True
+
     def fetch_real_time_filtered_code_list(self, pct_chg_min=4):
         stock_list = self.ds.get_stocks_realtime_quotes()
         filtered_list = []
-        stock_up_count = 0
-        stock_down_count = 0
         stock_total_count = 0
-        stock_pct_chg_count = 0
         for stock in stock_list.iterrows():
-            try:
-                code = stock[1][0]
-                name = stock[1][1]
-                pct_chg = float(stock[1][2])
-                latest_close_price = float(stock[1][3])
-                stock_value = stock[1].iloc[15] / 10000 / 10000
-                if 'ST' in name:
-                    continue
-                filtered = self.ds.is_code_filtered(code)
-                if filtered:
-                    continue
-                if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
-                    continue
-                if stock_value > stock_value_max or stock_value < stock_value_min:
-                    continue
-                stock_total_count += 1
-                if pct_chg > 0:
-                    stock_up_count += 1
-                elif pct_chg < 0:
-                    stock_down_count += 1
-                if pct_chg < pct_chg_min:
-                    continue
-                stock_pct_chg_count += 1
-                pct_change_max = self.get_pct_change_max(code)
-                if pct_chg >= pct_change_max:
-                    continue
-            except Exception as e:
-                # print(e)
+            basic_satisfied = self.is_stock_basic_satisfied(stock)
+            if not basic_satisfied:
                 continue
+            stock_total_count += 1
+            pct_chg = float(stock[1][2])
+            if pct_chg < pct_chg_min:
+                continue
+            code = stock[1][0]
             filtered_list.append(code)
-        print('stock_total_count: {}, stock_up_count: {}, stock_down_count: {}, pct_chg>={} count:{}'.format(
-            stock_total_count, stock_up_count, stock_down_count, pct_chg_min, stock_pct_chg_count))
-        return filtered_list
+        pct_chg_count_ratio = 100 * len(filtered_list) / stock_total_count
+        print('stock_total_count: {}, pct_chg>={} count:{}, pct_chg_count_ratio: {}'
+              .format(stock_total_count, pct_chg_min, len(filtered_list), pct_chg_count_ratio))
+        return filtered_list, pct_chg_count_ratio

@@ -67,7 +67,26 @@ class Monitor(Ancestor):
                         monitor_stock_count = 0
                         cond_dict.clear()
                         self.persister.clear_monitor_code_list(end_date_str)
-                    code_list = c_fetcher.fetch_real_time_filtered_code_list(pct_chg_min=min_pct_chg_monitor)
+                    is_pct_chg_monitor_adjusted = False
+                    while True:
+                        code_list, pct_chg_count_ratio = c_fetcher.fetch_real_time_filtered_code_list(
+                            pct_chg_min=min_pct_chg_monitor)
+                        if 20 <= pct_chg_count_ratio <= 30:
+                            self.persister.save_min_pct_chg_monitor(min_pct_chg_monitor)
+                            break
+                        if pct_chg_count_ratio > 30:
+                            min_pct_chg_monitor += 0.5
+                            is_pct_chg_monitor_adjusted = True
+                        elif pct_chg_count_ratio < 20:
+                            min_pct_chg_monitor -= 0.5
+                            is_pct_chg_monitor_adjusted = True
+                    if is_pct_chg_monitor_adjusted:
+                        print('is_pct_chg_monitor_adjusted: {}, clear all data'.format(is_pct_chg_monitor_adjusted))
+                        exclude_stock_set.clear()
+                        monitor_stock_count = 0
+                        cond_dict.clear()
+                        self.persister.clear_monitor_code_list(end_date_str)
+
                     new_code_list = []
                     for c in code_list:
                         if c not in exclude_stock_set:
