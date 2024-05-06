@@ -43,10 +43,10 @@ class Notifier(Ancestor):
                 all_code_list = list(code_dict.keys())
                 min_pct_chg_notifier = self.persister.get_min_pct_chg_notifier()
                 sleep_time = self.persister.get_sleep_time_notifier()
-                # stock_list_kline_list = c_fetcher.get_stock_list_kline_list(all_code_list, end_date_str, end_date_str)
-                stock_list_kline_list = c_fetcher.get_stock_list_kline_list_by_latest_pct_chg_sort(
-                    all_code_list, end_date_str, end_date_str)
-                for stock_kline_list in stock_list_kline_list:
+                stock_list_kline_list = c_fetcher.get_stock_list_kline_list(all_code_list, end_date_str, end_date_str)
+                sorted_stock_list_kline_list = sorted(
+                    stock_list_kline_list, key=lambda k_line: k_line[-1]['pct_chg'],reverse=True)
+                for stock_kline_list in sorted_stock_list_kline_list:
                     code = stock_kline_list[-1]['code']
                     name = stock_kline_list[-1]['name']
                     pct_chg = stock_kline_list[-1]['pct_chg']
