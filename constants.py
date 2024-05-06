@@ -14,6 +14,6 @@ turn_max_j_instant = 40
 
 turn_min_i = 3.5
 
-stock_value_max = 80
-stock_value_min = 10
+stock_value_max = 79
+stock_value_min = 9
 
