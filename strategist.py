@@ -438,7 +438,7 @@ class Strategist(object):
         now_ideal_close_price = prev_close_price * 1.1
         k_line_list_opt = copy.deepcopy(k_line_list)
         k_line_list_opt[-1]['close'] = now_ideal_close_price
-        stock_tech = self.get_stock_tech(k_line_list=k_line_list)
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
         ma_5_price = stock_tech['boll_{}'.format(5)].iloc[-1]
         ma_10_price = stock_tech['boll_{}'.format(10)].iloc[-1]
         ma_20_price = stock_tech['boll_{}'.format(20)].iloc[-1]
@@ -455,7 +455,7 @@ class Strategist(object):
         now_ideal_close_price = prev_close_price * 1.1
         k_line_list_opt = copy.deepcopy(k_line_list)
         k_line_list_opt[-1]['close'] = now_ideal_close_price
-        stock_tech = self.get_stock_tech(k_line_list=k_line_list)
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
         ma_5_price = stock_tech['boll_{}'.format(5)].iloc[-1]
         ma_10_price = stock_tech['boll_{}'.format(10)].iloc[-1]
         ma_20_price = stock_tech['boll_{}'.format(20)].iloc[-1]
