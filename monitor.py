@@ -68,6 +68,7 @@ class Monitor(Ancestor):
                         cond_dict.clear()
                         self.persister.clear_monitor_code_list(end_date_str)
                     is_pct_chg_monitor_adjusted = False
+                    pct_chg_r = 0.1
                     while True:
                         code_list, pct_chg_count_ratio = c_fetcher.fetch_real_time_filtered_code_list(
                             pct_chg_min=min_pct_chg_monitor)
@@ -75,10 +76,10 @@ class Monitor(Ancestor):
                             self.persister.save_min_pct_chg_monitor(min_pct_chg_monitor)
                             break
                         if pct_chg_count_ratio > 30:
-                            min_pct_chg_monitor += 0.5
+                            min_pct_chg_monitor += pct_chg_r
                             is_pct_chg_monitor_adjusted = True
                         elif pct_chg_count_ratio < 20:
-                            min_pct_chg_monitor -= 0.5
+                            min_pct_chg_monitor -= pct_chg_r
                             is_pct_chg_monitor_adjusted = True
                     if is_pct_chg_monitor_adjusted:
                         print('is_pct_chg_monitor_adjusted: {}, clear all data'.format(is_pct_chg_monitor_adjusted))
