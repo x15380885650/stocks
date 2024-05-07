@@ -621,11 +621,12 @@ class Strategist(object):
         for i, v in enumerate(max_pct_chg_binary_list):
             if v == 1:
                 max_pct_chg_index_list.append(i)
-        if len(max_pct_chg_index_list) != 1:
+        if len(max_pct_chg_index_list) not in [1, 2]:
             return False, "aaa"
-        if max_pct_chg_index_list[0] > 2:
+        if max_pct_chg_index_list[-1] > 2:
             return False, "aaa"
-        target_index = max_pct_chg_index_list[0]
+        target_index = max_pct_chg_index_list[-1]
+        t_1_k_line = latest_range_days_k_line_list[target_index]
         t_s_count = range_days - target_index - 2
         latest_target_days_k_line_list = latest_range_days_k_line_list[target_index+1:]
         prev_t_low_p = -1
@@ -637,8 +638,6 @@ class Strategist(object):
             if prev_t_low_p != -1 and prev_t_low_p < t_low_p:
                 no_sat_count += 1
             prev_t_low_p = t_low_p
-        # if no_sat_count > 3:
-        #     return False, 'bbb'
         no_sat_ratio = 100 * no_sat_count / t_s_count
         if no_sat_ratio > 45:
             return False, 'bbb'
@@ -672,9 +671,21 @@ class Strategist(object):
             return False, 'eee'
 
         t_2_k_line = latest_target_days_k_line_list[-2]
-        green_ok = self.is_green(t_2_k_line)
-        if not green_ok:
+        t_2_k_line_green_ok = self.is_green(t_2_k_line)
+        if not t_2_k_line_green_ok:
             return False, 'fff'
+        t_3_k_line = latest_target_days_k_line_list[0]
+        t_3_k_line_green_ok = self.is_green(t_3_k_line)
+        if t_3_k_line_green_ok:
+            t_1_k_line_close = t_1_k_line['close']
+            t_3_k_line_high = t_3_k_line['high']
+            t_t_ratio = 100 * (t_3_k_line_high - t_1_k_line_close) / t_1_k_line_close
+            # t_3_k_line_open = t_3_k_line['open']
+            t_3_k_line_close = t_3_k_line['close']
+            if t_3_k_line_close > t_1_k_line_close or t_t_ratio > 5:
+                return False, 'fff'
+            # if t_t_ratio > 5:
+            #     return False, 'fff'
 
         price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=20, days_count=t_s_count)
         if not price_exceed_ma_20:
