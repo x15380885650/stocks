@@ -681,11 +681,11 @@ class Strategist(object):
             t_3_k_line_high = t_3_k_line['high']
             t_t_ratio = 100 * (t_3_k_line_high - t_1_k_line_close) / t_1_k_line_close
             # t_3_k_line_open = t_3_k_line['open']
-            t_3_k_line_close = t_3_k_line['close']
-            if t_3_k_line_close > t_1_k_line_close or t_t_ratio > 5:
-                return False, 'fff'
-            # if t_t_ratio > 5:
+            # t_3_k_line_close = t_3_k_line['close']
+            # if t_3_k_line_close > t_1_k_line_close or t_t_ratio > 5:
             #     return False, 'fff'
+            if t_t_ratio > 5:
+                return False, 'fff'
 
         price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=20, days_count=t_s_count)
         if not price_exceed_ma_20:
