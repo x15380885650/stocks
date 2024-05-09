@@ -524,10 +524,10 @@ class Strategist(object):
         opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
         if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
             return False, 'bbb'
-        price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=20, days_count=3)
+        price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=20, days_count=4)
         if not price_exceed_ma_20:
             return False, 'bbb'
-        price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=3)
+        price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=4)
         if not price_exceed_ma_15:
             return False, 'bbb'
         ma_up = self.is_ma_up_1(k_line_list)
@@ -547,12 +547,10 @@ class Strategist(object):
         if not 2 < pct_chg_interval_day <= 15:
             return False, 'ddd'
         pct_chg_num_exceed = self.get_pct_chg_num_exceed(5, k_line_list_interval)
-        pct_chg_2_num_exceed = self.get_pct_chg_2_num_exceed(5, k_line_list_interval)
-        if pct_chg_num_exceed > 1 or pct_chg_2_num_exceed > 1:
+        if pct_chg_num_exceed > 0:
             return False, 'ddd'
         pct_chg_num_less = self.get_pct_chg_num_less(-5, k_line_list_interval)
-        pct_chg_2_num_less = self.get_pct_chg_2_num_less(-5, k_line_list_interval)
-        if pct_chg_num_less > 0 or pct_chg_2_num_less > 0:
+        if pct_chg_num_less > 0:
             return False, 'ddd'
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
