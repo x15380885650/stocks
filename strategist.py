@@ -554,7 +554,8 @@ class Strategist(object):
             return False, 'ddd'
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
-        key_pct_chg_max = 5
+        # print(key_k_line_pct_chg, key_k_line_pct_chg_2)
+        key_pct_chg_max = 3
         if key_k_line_pct_chg >= key_pct_chg_max or key_k_line_pct_chg_2 >= key_pct_chg_max:
             return False, 'eee'
         interval_2 = self.get_interval_to_latest(5, k_line_list_interval, 'pct_chg', cond='>=')
