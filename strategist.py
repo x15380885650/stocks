@@ -448,6 +448,14 @@ class Strategist(object):
             return False
         if ma_10_price < ma_20_price:
             return False
+        ma_5_price_prev = round(stock_tech['boll_{}'.format(5)].iloc[-2], 2)
+        ma_10_price_prev = round(stock_tech['boll_{}'.format(10)].iloc[-2], 2)
+        ma_20_price_prev = round(stock_tech['boll_{}'.format(20)].iloc[-2], 2)
+        ma_30_price_prev = round(stock_tech['boll_{}'.format(30)].iloc[-2], 2)
+        cond_1 = ma_5_price_prev >= ma_10_price_prev and ma_5_price_prev >= ma_20_price_prev and ma_5_price_prev >= ma_30_price_prev
+        cond_2 = ma_10_price_prev >= ma_20_price_prev
+        if not cond_1 and not cond_2:
+            return False
         return True
 
     def is_ma_up_2(self, k_line_list):
