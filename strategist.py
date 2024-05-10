@@ -735,8 +735,8 @@ class Strategist(object):
         pct_chg_num_exceed = self.get_pct_chg_num_exceed(3.2, k_line_list_latest)
         if pct_chg_num_exceed > 1:
             return False, 'ddd'
-        pct_chg_num_less = self.get_pct_chg_num_less(-1, k_line_list_latest)
-        if pct_chg_num_less > 1:
+        pct_chg_num_less = self.get_pct_chg_num_less(-1.5, k_line_list_latest)
+        if pct_chg_num_less > 0:
             return False, 'ddd'
         k_line_list_interval = k_line_list[-interval - 1: -1]
         max_close_price_interval = self.get_max_close_price(k_line_list_interval)
