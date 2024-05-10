@@ -709,6 +709,41 @@ class Strategist(object):
 
         return True, OK
 
+    def get_fourth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        prev_close_price = k_line_list[-2]['close']
+        range_days = 45
+        k_line_list_range_day = k_line_list[-range_days:]
+        min_low_price = self.get_min_low_price(k_line_list_range_day)
+        interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
+        if not 7 <= interval < 14:
+            return False, 'aaa'
+        t_range_days = 7
+        k_line_list_latest = k_line_list[-t_range_days-1: -1]
+        up_num, down_num = self.get_up_and_down_num(k_line_list_latest)
+        up_num_2, down_num_2 = self.get_up_and_down_num_2(k_line_list_latest)
+        if up_num < t_range_days-1:
+            return False, 'bbb'
+        if up_num_2 < t_range_days-1:
+            return False, 'bbb'
+
+        max_pct_chg_latest = self.get_max_pct_chg(k_line_list_latest)
+        if max_pct_chg_latest > 7.5:
+            return False, 'ccc'
+        sum_pch_chg_latest = self.get_pct_chg_sum(k_line_list_latest)
+        if not 5 <= sum_pch_chg_latest <= 15:
+            return False, 'ccc'
+        pct_chg_num_exceed = self.get_pct_chg_num_exceed(3.2, k_line_list_latest)
+        if pct_chg_num_exceed > 1:
+            return False, 'ddd'
+        pct_chg_num_less = self.get_pct_chg_num_less(-1, k_line_list_latest)
+        if pct_chg_num_less > 1:
+            return False, 'ddd'
+        k_line_list_interval = k_line_list[-interval - 1: -1]
+        max_close_price_interval = self.get_max_close_price(k_line_list_interval)
+        if prev_close_price < max_close_price_interval:
+            return False, 'eee'
+        return True, OK
+
 
 
 
