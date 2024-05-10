@@ -719,6 +719,7 @@ class Strategist(object):
             return False, 'aaa'
         t_range_days = 7
         k_line_list_latest = k_line_list[-t_range_days-1: -1]
+        k_line_list_interval = k_line_list[-interval - 1: -1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_latest)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(k_line_list_latest)
         if up_num < t_range_days-1:
@@ -732,13 +733,15 @@ class Strategist(object):
         sum_pch_chg_latest = self.get_pct_chg_sum(k_line_list_latest)
         if not 5 <= sum_pch_chg_latest <= 15:
             return False, 'ccc'
+        sum_pch_chg_interval = self.get_pct_chg_sum(k_line_list_interval)
+        if not 5 <= sum_pch_chg_interval <= 20:
+            return False, 'ccc'
         pct_chg_num_exceed = self.get_pct_chg_num_exceed(3.2, k_line_list_latest)
         if pct_chg_num_exceed > 1:
             return False, 'ddd'
         pct_chg_num_less = self.get_pct_chg_num_less(-1.5, k_line_list_latest)
         if pct_chg_num_less > 0:
             return False, 'ddd'
-        k_line_list_interval = k_line_list[-interval - 1: -1]
         max_close_price_interval = self.get_max_close_price(k_line_list_interval)
         if prev_close_price < max_close_price_interval:
             return False, 'eee'
