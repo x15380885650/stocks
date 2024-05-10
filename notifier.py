@@ -9,6 +9,7 @@ from ancestor import Ancestor
 
 class Notifier(Ancestor):
     def __init__(self, key_prefix):
+        self.key_prefix = key_prefix
         super(Notifier, self).__init__(key_prefix=key_prefix)
 
     def run(self):
@@ -57,8 +58,9 @@ class Notifier(Ancestor):
                     email_dict = self.persister.get_email_dict()
                     for email, enabled in email_dict.items():
                         print(email, enabled)
+                        code_from = '{}({})'.format(code, self.key_prefix)
                         if int(enabled):
-                            self.notify(email=email, code=code)
+                            self.notify(email=email, code=code_from)
                     self.persister.save_code_to_notifier(end_date_str, code)
             except Exception as e:
                 print(e)
