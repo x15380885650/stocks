@@ -20,7 +20,7 @@ class Ancestor(object):
         start_time_1 = datetime(now.year, now.month, now.day, 9, 25)
         end_time_1 = datetime(now.year, now.month, now.day, 10, 25)
 
-        start_time_2 = datetime(now.year, now.month, now.day, 12, 57)
+        start_time_2 = datetime(now.year, now.month, now.day, 11, 28)
         end_time_2 = datetime(now.year, now.month, now.day, 13, 3)
 
         start_time_3 = datetime(now.year, now.month, now.day, 14, 5)
