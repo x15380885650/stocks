@@ -20,13 +20,14 @@ class Ancestor(object):
         start_time_1 = datetime(now.year, now.month, now.day, 9, 25)
         end_time_1 = datetime(now.year, now.month, now.day, 10, 25)
 
-        start_time_2 = datetime(now.year, now.month, now.day, 12, 58)
-        end_time_2 = datetime(now.year, now.month, now.day, 13, 5)
+        # start_time_2 = datetime(now.year, now.month, now.day, 12, 58)
+        # end_time_2 = datetime(now.year, now.month, now.day, 13, 5)
 
         start_time_3 = datetime(now.year, now.month, now.day, 14, 5)
         end_time_3 = datetime(now.year, now.month, now.day, 15, 1)
 
-        if start_time_1 <= now <= end_time_1 or start_time_2 <= now <= end_time_2 or start_time_3 <= now <= end_time_3:
+        # if start_time_1 <= now <= end_time_1 or start_time_2 <= now <= end_time_2 or start_time_3 <= now <= end_time_3:
+        if start_time_1 <= now <= end_time_1 or start_time_3 <= now <= end_time_3:
             return True
         return False
 
