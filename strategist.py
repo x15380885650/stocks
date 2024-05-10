@@ -711,11 +711,11 @@ class Strategist(object):
 
     def get_fourth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         prev_close_price = k_line_list[-2]['close']
-        range_days = 45
+        range_days = 30
         k_line_list_range_day = k_line_list[-range_days:]
         min_low_price = self.get_min_low_price(k_line_list_range_day)
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
-        if not 7 <= interval < 14:
+        if not 7 <= interval < 15:
             return False, 'aaa'
         t_range_days = 7
         k_line_list_latest = k_line_list[-t_range_days-1: -1]
