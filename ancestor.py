@@ -18,14 +18,15 @@ class Ancestor(object):
         if not 0 <= day_of_week <= 4:
             return False
         start_time_1 = datetime(now.year, now.month, now.day, 9, 25)
-        # end_time_1 = datetime(now.year, now.month, now.day, 11, 30)
         end_time_1 = datetime(now.year, now.month, now.day, 10, 25)
 
-        # start_time_2 = datetime(now.year, now.month, now.day, 12, 55)
-        start_time_2 = datetime(now.year, now.month, now.day, 14, 5)
-        end_time_2 = datetime(now.year, now.month, now.day, 15, 0, 10)
+        start_time_2 = datetime(now.year, now.month, now.day, 12, 58)
+        end_time_2 = datetime(now.year, now.month, now.day, 13, 5)
 
-        if start_time_1 <= now <= end_time_1 or start_time_2 <= now <= end_time_2:
+        start_time_3 = datetime(now.year, now.month, now.day, 14, 5)
+        end_time_3 = datetime(now.year, now.month, now.day, 15, 1)
+
+        if start_time_1 <= now <= end_time_1 or start_time_2 <= now <= end_time_2 or start_time_3 <= now <= end_time_3:
             return True
         return False
 
