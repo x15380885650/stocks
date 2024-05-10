@@ -19,10 +19,10 @@ class Ancestor(object):
             return False
         start_time_1 = datetime(now.year, now.month, now.day, 9, 25)
         # end_time_1 = datetime(now.year, now.month, now.day, 11, 30)
-        end_time_1 = datetime(now.year, now.month, now.day, 10, 20)
+        end_time_1 = datetime(now.year, now.month, now.day, 10, 25)
 
         # start_time_2 = datetime(now.year, now.month, now.day, 12, 55)
-        start_time_2 = datetime(now.year, now.month, now.day, 14, 10)
+        start_time_2 = datetime(now.year, now.month, now.day, 14, 5)
         end_time_2 = datetime(now.year, now.month, now.day, 15, 0, 10)
 
         if start_time_1 <= now <= end_time_1 or start_time_2 <= now <= end_time_2:
