@@ -604,7 +604,7 @@ class Strategist(object):
         key_k_line = k_line_list[-interval - 2]
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
-        key_ptc_chg_max = 5
+        key_ptc_chg_max = 3
         if key_k_line_pct_chg >= key_ptc_chg_max or key_k_line_pct_chg_2 >= key_ptc_chg_max:
             return False, 'ccc'
         k_line_list_interval = k_line_list[-interval-1:-1]
@@ -615,19 +615,19 @@ class Strategist(object):
         up_ratio_interval_day = round(100 * up_num / (up_num+down_num), 0)
         key_k_line_close_price = key_k_line['close']
         pct_chg_interval_day = round(100 * (prev_close_price - key_k_line_close_price) / key_k_line_close_price, 0)
-        if not 40 <= up_ratio_interval_day <= 90:
+        if not 40 <= up_ratio_interval_day <= 70:
             return False, 'eee'
         if not 3 <= pct_chg_interval_day <= 20:
             return False, 'eee'
         pct_chg_num_exceed = self.get_pct_chg_num_exceed(5, k_line_list_interval)
         pct_chg_2_num_exceed = self.get_pct_chg_2_num_exceed(5, k_line_list_interval)
-        if pct_chg_num_exceed > 2 or pct_chg_2_num_exceed > 2:
+        if pct_chg_num_exceed > 0 and pct_chg_2_num_exceed > 0:
             return False, 'fff'
         pct_chg_num_less = self.get_pct_chg_num_less(-5, k_line_list_interval)
         pct_chg_2_num_less = self.get_pct_chg_2_num_less(-5, k_line_list_interval)
         if pct_chg_num_less > 0 or pct_chg_2_num_less > 0:
             return False, 'fff'
-        interval_2 = self.get_interval_to_latest(7, k_line_list_interval, 'pct_chg', cond='>=')
+        interval_2 = self.get_interval_to_latest(5, k_line_list_interval, 'pct_chg', cond='>=')
         if interval_2 < 15:
             return False, 'fff'
         print('interval: {}, up_ratio: {}, pct_chg: {}, close_price: {}, open_price: {}, code: {}'
@@ -638,7 +638,6 @@ class Strategist(object):
         open_high = self.is_open_price_high(k_line_list)
         if open_high:
             return False, 'a'
-
         range_days = 9
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
         temp_k_line_list = k_line_list[-range_days-1:-1]
@@ -725,7 +724,6 @@ class Strategist(object):
         ma_up = self.is_ma_up_1(k_line_list)
         if not ma_up:
             return False, 'ggg'
-
         return True, OK
 
     def get_fourth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
@@ -745,9 +743,7 @@ class Strategist(object):
         k_line_list_interval = k_line_list[-interval - 1: -1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_latest)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(k_line_list_latest)
-        if up_num < t_range_days-1:
-            return False, 'bbb'
-        if up_num_2 < t_range_days-1:
+        if up_num < t_range_days-1 or up_num_2 < t_range_days - 1:
             return False, 'bbb'
 
         max_pct_chg_latest = self.get_max_pct_chg(k_line_list_latest)
@@ -759,7 +755,7 @@ class Strategist(object):
         sum_pch_chg_interval = self.get_pct_chg_sum(k_line_list_interval)
         if not 5 <= sum_pch_chg_interval <= 20:
             return False, 'ccc'
-        pct_chg_num_exceed = self.get_pct_chg_num_exceed(3.2, k_line_list_latest)
+        pct_chg_num_exceed = self.get_pct_chg_num_exceed(3.5, k_line_list_latest)
         if pct_chg_num_exceed > 1:
             return False, 'ddd'
         pct_chg_num_less = self.get_pct_chg_num_less(-1.5, k_line_list_latest)
