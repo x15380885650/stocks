@@ -515,6 +515,7 @@ class Strategist(object):
         now_open_price = k_line_list[-1]['open']
         open_close_ratio = 100 * (now_open_price - prev_close_price) / prev_close_price
         # print(open_close_ratio)
+        open_close_ratio = self.retain_decimals_no_rounding(open_close_ratio, decimals=1)
         if open_close_ratio > 2 or open_close_ratio < -1.5:
             return True
         return False
@@ -566,13 +567,12 @@ class Strategist(object):
             return False, 'ddd'
         key_k_line_pct_chg = key_k_line['pct_chg']
         key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
-        # print(key_k_line_pct_chg, key_k_line_pct_chg_2)
         key_pct_chg_max = 3
         if key_k_line_pct_chg >= key_pct_chg_max or key_k_line_pct_chg_2 >= key_pct_chg_max:
             return False, 'eee'
-        interval_2 = self.get_interval_to_latest(5, k_line_list_interval, 'pct_chg', cond='>=')
-        if interval_2 < 5:
-            return False, 'eee'
+        # interval_2 = self.get_interval_to_latest(4, k_line_list_interval, 'pct_chg', cond='>=')
+        # if interval_2 < 5:
+        #     return False, 'eee'
         print('interval: {}, up_ratio: {}, pct_chg: {}, open_price: {}, close_price: {},code: {}'
               .format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
         return True, OK
