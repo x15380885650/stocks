@@ -62,23 +62,7 @@ class Monitor(Ancestor):
                     min_pct_chg_monitor = self.persister.get_min_pct_chg_monitor()
                     sleep_time = self.persister.get_sleep_time_monitor()
                     show_code = self.persister.get_show_code_status()
-                    monitor_code_list = self.persister.get_monitor_code_list(end_date_str)
                     if clear_monitor_status:
-                        exclude_stock_set.clear()
-                        monitor_stock_count = 0
-                        cond_dict.clear()
-                        self.persister.clear_monitor_code_list(end_date_str)
-                    is_pct_chg_monitor_adjusted = False
-                    pct_chg_r = 0.5
-                    if len(monitor_code_list) > 5 and min_pct_chg_monitor < 5:
-                        min_pct_chg_monitor += pct_chg_r
-                        is_pct_chg_monitor_adjusted = True
-                    if len(monitor_code_list) == 0 and min_pct_chg_monitor > 0:
-                        min_pct_chg_monitor -= pct_chg_r
-                        is_pct_chg_monitor_adjusted = True
-                    if is_pct_chg_monitor_adjusted:
-                        self.persister.save_min_pct_chg_monitor(min_pct_chg_monitor)
-                        print('adjust pch_chg_monitor, clear all data')
                         exclude_stock_set.clear()
                         monitor_stock_count = 0
                         cond_dict.clear()

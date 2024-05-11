@@ -38,21 +38,30 @@ class Notifier(Ancestor):
                     continue
                 code_dict = {}
                 for monitor_code in monitor_code_list:
-                    code_dict[monitor_code] = '0'
+                    code_dict[monitor_code] = 0
                 for buy_code in buy_code_list:
-                    code_dict[buy_code] = '1'
+                    code_dict[buy_code] = 1
                 all_code_list = list(code_dict.keys())
                 min_pct_chg_notifier = self.persister.get_min_pct_chg_notifier()
                 sleep_time = self.persister.get_sleep_time_notifier()
                 stock_list_kline_list = c_fetcher.get_stock_list_kline_list(all_code_list, end_date_str, end_date_str)
                 sorted_stock_list_kline_list = sorted(
-                    stock_list_kline_list, key=lambda k_line: k_line[-1]['pct_chg'],reverse=True)
+                    stock_list_kline_list, key=lambda k_line: k_line[-1]['pct_chg'], reverse=True)
+                monitor_code_show_count = 0
+                monitor_code_show_count_max = self.persister.get_max_monitor_show_count()
+                print('monitor_code_list_count: {}, monitor_code_show_count_max: {}'
+                      .format(len(monitor_code_list), monitor_code_show_count_max))
                 for stock_kline_list in sorted_stock_list_kline_list:
                     code = stock_kline_list[-1]['code']
                     name = stock_kline_list[-1]['name']
                     pct_chg = stock_kline_list[-1]['pct_chg']
-                    buy_txt = code_dict[code]
-                    print('code: {}, name: {}, pct_chg: {}, {}'.format(code, name, pct_chg, buy_txt))
+                    buy_flag = code_dict[code]
+                    if buy_flag == 1:
+                        print('code: {}, name: {}, pct_chg: {}, {}'.format(code, name, pct_chg, buy_flag))
+                    elif monitor_code_show_count < monitor_code_show_count_max:
+                        if pct_chg > 0:
+                            print('code: {}, name: {}, pct_chg: {}, {}'.format(code, name, pct_chg, buy_flag))
+                            monitor_code_show_count += 1
                     if pct_chg < min_pct_chg_notifier or code in buy_code_list:
                         continue
                     email_dict = self.persister.get_email_dict()

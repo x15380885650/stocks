@@ -23,6 +23,14 @@ class Persister(object):
         diff = self.redis.sdiff(monitor_key, notifier_key)
         return list(diff)
 
+    def get_max_monitor_show_count(self):
+        key = '{}:max_show_count_monitor'.format(self.key_prefix)
+        val = self.redis.get(key)
+        if val is None:
+            val = 5
+            self.redis.set(key, val)
+        return int(val)
+
     def get_email_dict(self):
         key = '{}:email'.format(self.key_prefix)
         val = self.redis.hgetall(key)
