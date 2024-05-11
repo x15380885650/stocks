@@ -510,7 +510,19 @@ class Strategist(object):
                 max_pct_chg_list.append(0)
         return max_pct_chg_list
 
+    def is_open_price_high(self, k_line_list):
+        prev_close_price = k_line_list[-2]['close']
+        now_open_price = k_line_list[-1]['open']
+        open_close_ratio = 100 * (now_open_price - prev_close_price) / prev_close_price
+        # print(open_close_ratio)
+        if open_close_ratio > 2 or open_close_ratio < -1.5:
+            return True
+        return False
+
     def get_first_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        open_high = self.is_open_price_high(k_line_list)
+        if open_high:
+            return False, 'a'
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
         range_days = 50
@@ -566,6 +578,9 @@ class Strategist(object):
         return True, OK
 
     def get_second_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        open_high = self.is_open_price_high(k_line_list)
+        if open_high:
+            return False, 'a'
         range_days = 70
         close_price = k_line_list[-1]['close']
         open_price = k_line_list[-1]['open']
@@ -620,6 +635,10 @@ class Strategist(object):
         return True, OK
 
     def get_third_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        open_high = self.is_open_price_high(k_line_list)
+        if open_high:
+            return False, 'a'
+
         range_days = 9
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
         temp_k_line_list = k_line_list[-range_days-1:-1]
@@ -710,6 +729,10 @@ class Strategist(object):
         return True, OK
 
     def get_fourth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        open_high = self.is_open_price_high(k_line_list)
+        if open_high:
+            return False, 'a'
+
         prev_close_price = k_line_list[-2]['close']
         range_days = 30
         k_line_list_range_day = k_line_list[-range_days:]
