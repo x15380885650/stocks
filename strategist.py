@@ -38,6 +38,14 @@ class Strategist(object):
                 min_pct_chg_2 = pct_chg_2
         return min_pct_chg_2
 
+    def get_max_pct_chg_2(self, data_list):
+        max_pct_chg_2 = 0
+        for data in data_list:
+            pct_chg_2 = self.get_pct_chg_2(data)
+            if pct_chg_2 > max_pct_chg_2:
+                max_pct_chg_2 = pct_chg_2
+        return max_pct_chg_2
+
     def is_data_list_all_green(self, data_list):
         green_tag_list = []
         for data in data_list:
@@ -684,6 +692,11 @@ class Strategist(object):
         if t_min_pct_chg_2 < -5.5:
             return False, 'ccc'
 
+        max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
+        max_pct_chg_2 = self.get_max_pct_chg_2(latest_target_days_k_line_list)
+        if max_pct_chg > 7:
+            return False, 'ccc'
+
         for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
             open_p = t_k_line['open']
@@ -700,6 +713,11 @@ class Strategist(object):
         if not t_2_k_line_green_ok:
             return False, 'fff'
         t_3_k_line = latest_target_days_k_line_list[0]
+        t_4_k_line = latest_target_days_k_line_list[1]
+        t_4_k_line_d = t_4_k_line['open'] if t_4_k_line['open'] > t_4_k_line['close'] else t_4_k_line['close']
+        t_3_k_line_d = t_3_k_line['open'] if t_3_k_line['open'] > t_3_k_line['close'] else t_3_k_line['close']
+        if t_4_k_line_d >= t_3_k_line_d:
+            return False, 'fff'
         t_3_k_line_green_ok = self.is_green(t_3_k_line)
         if t_3_k_line_green_ok:
             t_1_k_line_close = t_1_k_line['close']
@@ -707,7 +725,7 @@ class Strategist(object):
             t_t_ratio = 100 * (t_3_k_line_high - t_1_k_line_close) / t_1_k_line_close
             t_3_k_line_open = t_3_k_line['open']
             t_3_k_line_close = t_3_k_line['close']
-            if t_3_k_line_close > t_1_k_line_close or t_t_ratio > 5:
+            if t_3_k_line_close >= t_1_k_line_close or t_t_ratio > 5:
                 return False, 'fff'
             # if t_t_ratio > 5:
             #     return False, 'fff'
