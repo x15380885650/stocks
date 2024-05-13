@@ -790,9 +790,9 @@ class Strategist(object):
         max_close_price_interval = self.get_max_close_price(k_line_list_interval)
         if prev_close_price < max_close_price_interval:
             return False, 'eee'
-        ma_up = self.is_ma_up_1(k_line_list_interval)
-        if not ma_up:
-            return False, 'fff'
+        # ma_up = self.is_ma_up_1(k_line_list)
+        # if not ma_up:
+        #     return False, 'fff'
         return True, OK
 
 
