@@ -529,7 +529,7 @@ class Strategist(object):
         open_close_ratio = 100 * (now_open_price - prev_close_price) / prev_close_price
         # print(open_close_ratio)
         open_close_ratio = self.retain_decimals_no_rounding(open_close_ratio, decimals=1)
-        if open_close_ratio > 2 or open_close_ratio < -1.5:
+        if open_close_ratio > 2.5 or open_close_ratio < -1.5:
             return True
         return False
 
@@ -747,7 +747,40 @@ class Strategist(object):
         ma_up = self.is_ma_up_1(k_line_list)
         if not ma_up:
             return False, 'ggg'
+        diff_ok = self.is_diff_all_ok(k_line_list, t_s_count+1)
+        if not diff_ok:
+            return False, 'ggg'
         return True, OK
+
+    def is_diff_all_ok(self, k_line_list, days):
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list)
+        for i in range(1, days):
+            diff, dea = stock_tech['macd'].iloc[-i-1], stock_tech['macds'].iloc[-i-1]
+            diff = round(diff, 2)
+            dea = round(dea, 2)
+            # print(diff, dea)
+            if diff < 0 or diff < dea:
+                return False
+        return True
+
+    def is_prev_macd_gold(self, k_line_list):
+        prev_close_price = k_line_list[-2]['close']
+        now_ideal_close_price = prev_close_price * 1.1
+        k_line_list_opt = copy.deepcopy(k_line_list)
+        k_line_list_opt[-1]['close'] = now_ideal_close_price
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
+        is_gold = False
+        for i in range(1, 2):
+            diff_prev, dea_prev = stock_tech['macd'].iloc[-i - 2], stock_tech['macds'].iloc[-i - 2],
+            diff, dea = stock_tech['macd'].iloc[-i], stock_tech['macds'].iloc[-i]
+            if dea > diff:
+                continue
+            r = (diff_prev-dea_prev) * (diff-dea)
+            # print(r)
+            if r <= 0:
+                is_gold = True
+                break
+        return is_gold
 
     def get_fourth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         open_high = self.is_open_price_high(k_line_list)
@@ -764,35 +797,39 @@ class Strategist(object):
         k_line_list_interval = k_line_list[-interval - 1: -1]
         up_num, down_num = self.get_up_and_down_num(k_line_list_latest)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(k_line_list_latest)
-        if up_num < t_range_days-1 or up_num_2 < t_range_days - 1:
+        # if up_num < t_range_days-1 or up_num_2 < t_range_days - 1:
+        #     return False, 'bbb'
+        if down_num > 1 or down_num_2 > 1:
             return False, 'bbb'
-        t_k_line_1 = k_line_list[-t_range_days-2]
-        t_k_line_2 = k_line_list[-t_range_days-3]
-        t_k_line_1_red = self.is_red(t_k_line_1)
-        t_k_line_2_red = self.is_red(t_k_line_2)
-        if t_k_line_1_red and t_k_line_2_red:
-            return False, 'bbb'
-        max_pct_chg_latest = self.get_max_pct_chg(k_line_list_latest)
-        if max_pct_chg_latest > 7.5:
-            return False, 'ccc'
+        # if up_num_2 < t_range_days:
+        #     return False, 'bbb'
+        # t_k_line_1 = k_line_list[-t_range_days-2]
+        # t_k_line_2 = k_line_list[-t_range_days-3]
+        # t_k_line_1_red = self.is_red(t_k_line_1)
+        # t_k_line_2_red = self.is_red(t_k_line_2)
+        # if t_k_line_1_red and t_k_line_2_red:
+        #     return False, 'bbb'
+        # max_pct_chg_latest = self.get_max_pct_chg(k_line_list_latest)
+        # if max_pct_chg_latest > 7.5:
+        #     return False, 'ccc'
         sum_pch_chg_latest = self.get_pct_chg_sum(k_line_list_latest)
         if not 5 <= sum_pch_chg_latest <= 15:
             return False, 'ccc'
         sum_pch_chg_interval = self.get_pct_chg_sum(k_line_list_interval)
-        if not 5 <= sum_pch_chg_interval <= 30:
+        if not 5 <= sum_pch_chg_interval <= 20:
             return False, 'ccc'
         pct_chg_num_exceed = self.get_pct_chg_num_exceed(3.5, k_line_list_latest)
         if pct_chg_num_exceed > 1:
             return False, 'ddd'
-        pct_chg_num_less = self.get_pct_chg_num_less(-1.5, k_line_list_latest)
+        pct_chg_num_less = self.get_pct_chg_num_less(-2, k_line_list_latest)
         if pct_chg_num_less > 0:
             return False, 'ddd'
         max_close_price_interval = self.get_max_close_price(k_line_list_interval)
         if prev_close_price < max_close_price_interval:
             return False, 'eee'
-        # ma_up = self.is_ma_up_1(k_line_list)
-        # if not ma_up:
-        #     return False, 'fff'
+        prev_macd_gold = self.is_prev_macd_gold(k_line_list)
+        if not prev_macd_gold:
+            return False, 'fff'
         return True, OK
 
 
