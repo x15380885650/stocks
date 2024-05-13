@@ -452,18 +452,20 @@ class Strategist(object):
         ma_20_price = stock_tech['boll_{}'.format(20)].iloc[-1]
         ma_30_price = stock_tech['boll_{}'.format(30)].iloc[-1]
         # print(ma_5_price, ma_10_price, ma_20_price, ma_30_price)
-        if ma_5_price < ma_10_price or ma_5_price < ma_20_price or ma_5_price < ma_30_price:
+        if ma_5_price < ma_10_price:
             return False
         if ma_10_price < ma_20_price:
             return False
-        ma_5_price_prev = round(stock_tech['boll_{}'.format(5)].iloc[-2], 2)
-        ma_10_price_prev = round(stock_tech['boll_{}'.format(10)].iloc[-2], 2)
-        ma_20_price_prev = round(stock_tech['boll_{}'.format(20)].iloc[-2], 2)
-        ma_30_price_prev = round(stock_tech['boll_{}'.format(30)].iloc[-2], 2)
-        cond_1 = ma_5_price_prev >= ma_10_price_prev and ma_5_price_prev >= ma_20_price_prev and ma_5_price_prev >= ma_30_price_prev
-        cond_2 = ma_10_price_prev >= ma_20_price_prev
-        if not cond_1 and not cond_2:
+        if ma_20_price < ma_30_price:
             return False
+        # ma_5_price_prev = round(stock_tech['boll_{}'.format(5)].iloc[-2], 2)
+        # ma_10_price_prev = round(stock_tech['boll_{}'.format(10)].iloc[-2], 2)
+        # ma_20_price_prev = round(stock_tech['boll_{}'.format(20)].iloc[-2], 2)
+        # ma_30_price_prev = round(stock_tech['boll_{}'.format(30)].iloc[-2], 2)
+        # cond_1 = ma_5_price_prev >= ma_10_price_prev and ma_5_price_prev >= ma_20_price_prev and ma_5_price_prev >= ma_30_price_prev
+        # cond_2 = ma_10_price_prev >= ma_20_price_prev
+        # if not cond_1 and not cond_2:
+        #     return False
         return True
 
     def is_ma_up_2(self, k_line_list):
