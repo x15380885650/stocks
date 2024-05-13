@@ -771,7 +771,7 @@ class Strategist(object):
         if not 5 <= sum_pch_chg_latest <= 15:
             return False, 'ccc'
         sum_pch_chg_interval = self.get_pct_chg_sum(k_line_list_interval)
-        if not 5 <= sum_pch_chg_interval <= 20:
+        if not 5 <= sum_pch_chg_interval <= 30:
             return False, 'ccc'
         pct_chg_num_exceed = self.get_pct_chg_num_exceed(3.5, k_line_list_latest)
         if pct_chg_num_exceed > 1:
