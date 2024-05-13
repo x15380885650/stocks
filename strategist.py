@@ -759,8 +759,6 @@ class Strategist(object):
         k_line_list_range_day = k_line_list[-range_days:]
         min_low_price = self.get_min_low_price(k_line_list_range_day)
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
-        # if not 7 <= interval < 15:
-        #     return False, 'aaa'
         t_range_days = 7
         k_line_list_latest = k_line_list[-t_range_days-1: -1]
         k_line_list_interval = k_line_list[-interval - 1: -1]
