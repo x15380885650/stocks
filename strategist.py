@@ -677,7 +677,7 @@ class Strategist(object):
                 no_sat_count += 1
             prev_t_low_p = t_low_p
         no_sat_ratio = 100 * no_sat_count / t_s_count
-        if no_sat_ratio > 45:
+        if no_sat_ratio > 35:
             return False, 'bbb'
         # print(no_sat_ratio)
         target_close_p = latest_range_days_k_line_list[target_index]['close']
@@ -699,7 +699,7 @@ class Strategist(object):
 
         max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
         max_pct_chg_2 = self.get_max_pct_chg_2(latest_target_days_k_line_list)
-        if max_pct_chg > 7:
+        if max_pct_chg > 6.5:
             return False, 'ccc'
 
         for t_k_line in latest_target_days_k_line_list:
@@ -738,7 +738,7 @@ class Strategist(object):
         price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=20, days_count=t_s_count)
         if not price_exceed_ma_20:
             return False, 'ggg'
-        price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=4)
+        price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=t_s_count)
         if not price_exceed_ma_15:
             return False, 'ggg'
         price_exceed_ma_10 = self.is_close_price_exceed_ma(k_line_list, boll_days=10, days_count=1)
