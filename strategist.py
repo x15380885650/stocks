@@ -766,7 +766,12 @@ class Strategist(object):
         up_num_2, down_num_2 = self.get_up_and_down_num_2(k_line_list_latest)
         if up_num < t_range_days-1 or up_num_2 < t_range_days - 1:
             return False, 'bbb'
-
+        t_k_line_1 = k_line_list[-t_range_days-2]
+        t_k_line_2 = k_line_list[-t_range_days-3]
+        t_k_line_1_red = self.is_red(t_k_line_1)
+        t_k_line_2_red = self.is_red(t_k_line_2)
+        if t_k_line_1_red and t_k_line_2_red:
+            return False, 'bbb'
         max_pct_chg_latest = self.get_max_pct_chg(k_line_list_latest)
         if max_pct_chg_latest > 7.5:
             return False, 'ccc'
