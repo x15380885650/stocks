@@ -771,7 +771,7 @@ class Strategist(object):
         stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
         is_gold = False
         for i in range(1, 2):
-            diff_prev, dea_prev = stock_tech['macd'].iloc[-i - 2], stock_tech['macds'].iloc[-i - 2],
+            diff_prev, dea_prev = stock_tech['macd'].iloc[-i-2], stock_tech['macds'].iloc[-i-2],
             diff, dea = stock_tech['macd'].iloc[-i], stock_tech['macds'].iloc[-i]
             if dea > diff:
                 continue
