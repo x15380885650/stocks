@@ -539,50 +539,52 @@ class Strategist(object):
             return False, 'a'
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
-        range_days = 50
+        range_days = 35
         close_price = k_line_list[-1]['close']
         open_price = k_line_list[-1]['open']
         k_line_list_range_day = k_line_list[-range_days:]
         min_low_price = self.get_min_low_price(k_line_list_range_day)
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
-        if not 7 <= interval < 20:
+        if not 7 <= interval <= 10:
             return False, 'aaa'
-        opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
-        if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
-            return False, 'bbb'
-        price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=20, days_count=4)
-        if not price_exceed_ma_20:
-            return False, 'bbb'
-        price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=4)
-        if not price_exceed_ma_15:
-            return False, 'bbb'
-        ma_up = self.is_ma_up_1(k_line_list)
-        if not ma_up:
-            return False, 'bbb'
+        # opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
+        # if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
+        #     return False, 'bbb'
+        # price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=5, days_count=1)
+        # if not price_exceed_ma_20:
+        #     return False, 'bbb'
+        # price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=1)
+        # if not price_exceed_ma_15:
+        #     return False, 'bbb'
+        # ma_up = self.is_ma_up_1(k_line_list)
+        # if not ma_up:
+        #     return False, 'bbb'
         k_line_list_interval = k_line_list[-interval - 1:-1]
         max_close_price_interval = self.get_max_close_price(k_line_list_interval)
         if max_close_price_interval > now_ideal_close_price:
             return False, 'ccc'
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
+        up_num_2, down_num_2 = self.get_up_and_down_num_2(k_line_list_interval)
+        up_num = up_num if up_num > up_num_2 else up_num_2
         up_ratio_interval_day = round(100 * up_num / (up_num + down_num), 0)
         key_k_line = k_line_list[-interval - 2]
         key_k_line_close_price = key_k_line['close']
         pct_chg_interval_day = round(100 * (prev_close_price-key_k_line_close_price)/key_k_line_close_price, 0)
-        if not 50 < up_ratio_interval_day <= 90:
+        if not 70 <= up_ratio_interval_day <= 90:
             return False, 'ddd'
-        if not 2 < pct_chg_interval_day <= 15:
+        if not 5 < pct_chg_interval_day <= 15:
             return False, 'ddd'
-        pct_chg_num_exceed = self.get_pct_chg_num_exceed(5, k_line_list_interval)
+        pct_chg_num_exceed = self.get_pct_chg_num_exceed(7.5, k_line_list_interval)
         if pct_chg_num_exceed > 0:
             return False, 'ddd'
-        pct_chg_num_less = self.get_pct_chg_num_less(-5, k_line_list_interval)
+        pct_chg_num_less = self.get_pct_chg_num_less(-2.5, k_line_list_interval)
         if pct_chg_num_less > 0:
             return False, 'ddd'
-        key_k_line_pct_chg = key_k_line['pct_chg']
-        key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
-        key_pct_chg_max = 3
-        if key_k_line_pct_chg >= key_pct_chg_max or key_k_line_pct_chg_2 >= key_pct_chg_max:
-            return False, 'eee'
+        # key_k_line_pct_chg = key_k_line['pct_chg']
+        # key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
+        # key_pct_chg_max = 3
+        # if key_k_line_pct_chg >= key_pct_chg_max or key_k_line_pct_chg_2 >= key_pct_chg_max:
+        #     return False, 'eee'
         # interval_2 = self.get_interval_to_latest(4, k_line_list_interval, 'pct_chg', cond='>=')
         # if interval_2 < 5:
         #     return False, 'eee'
