@@ -24,8 +24,11 @@ class Strategist(object):
     def __init__(self):
         pass
 
-    def is_red(self, data):
-        return float(data['close']) > float(data['open'])
+    def is_red(self, data, equal_ok=False):
+        if not equal_ok:
+            return float(data['close']) > float(data['open'])
+        else:
+            return float(data['close']) >= float(data['open'])
 
     def is_green(self, data):
         return float(data['close']) < float(data['open'])
@@ -441,6 +444,18 @@ class Strategist(object):
             return True
         return False
 
+    def get_close_price_exceed_ma_days(self, k_line_list, boll_days, days_interval):
+        count = 0
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list)
+        boll = stock_tech['boll_{}'.format(boll_days)]
+        boll_price_series = boll.iloc[-days_interval-1:-1]
+        for k_line in k_line_list[-days_interval-1: -1]:
+            close_price = round(k_line['close'], 2)
+            ma_price = round(boll_price_series[k_line['date']], 2)
+            if close_price >= ma_price:
+                count += 1
+        return count
+
     def is_ma_up_1(self, k_line_list):
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
@@ -547,19 +562,15 @@ class Strategist(object):
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
         if not 7 <= interval <= 10:
             return False, 'aaa'
-        # opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
-        # if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
-        #     return False, 'bbb'
-        # price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=5, days_count=1)
-        # if not price_exceed_ma_20:
-        #     return False, 'bbb'
-        # price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=1)
-        # if not price_exceed_ma_15:
-        #     return False, 'bbb'
-        # ma_up = self.is_ma_up_1(k_line_list)
-        # if not ma_up:
-        #     return False, 'bbb'
+        boll_days_5_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=5, days_interval=interval)
+        if 100 * boll_days_5_count/interval < 50:
+            return False, 'bbb'
         k_line_list_interval = k_line_list[-interval - 1:-1]
+        tag_k_line = k_line_list_interval[-1]
+        tag_k_line_red = self.is_red(tag_k_line, equal_ok=True)
+        tag_k_line_red_2 = tag_k_line['pct_chg'] > 0
+        if not tag_k_line_red or not tag_k_line_red_2:
+            return False, 'ccc'
         max_close_price_interval = self.get_max_close_price(k_line_list_interval)
         if max_close_price_interval > now_ideal_close_price:
             return False, 'ccc'
@@ -567,9 +578,7 @@ class Strategist(object):
         up_num_2, down_num_2 = self.get_up_and_down_num_2(k_line_list_interval)
         up_num = up_num if up_num > up_num_2 else up_num_2
         up_ratio_interval_day = round(100 * up_num / (up_num + down_num), 0)
-        key_k_line = k_line_list[-interval - 2]
-        key_k_line_close_price = key_k_line['close']
-        pct_chg_interval_day = round(100 * (prev_close_price-key_k_line_close_price)/key_k_line_close_price, 0)
+        pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
         if not 70 <= up_ratio_interval_day <= 90:
             return False, 'ddd'
         if not 5 < pct_chg_interval_day <= 15:
@@ -580,14 +589,6 @@ class Strategist(object):
         pct_chg_num_less = self.get_pct_chg_num_less(-2.5, k_line_list_interval)
         if pct_chg_num_less > 0:
             return False, 'ddd'
-        # key_k_line_pct_chg = key_k_line['pct_chg']
-        # key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
-        # key_pct_chg_max = 3
-        # if key_k_line_pct_chg >= key_pct_chg_max or key_k_line_pct_chg_2 >= key_pct_chg_max:
-        #     return False, 'eee'
-        # interval_2 = self.get_interval_to_latest(4, k_line_list_interval, 'pct_chg', cond='>=')
-        # if interval_2 < 5:
-        #     return False, 'eee'
         print('interval: {}, up_ratio: {}, pct_chg: {}, open_price: {}, close_price: {},code: {}'
               .format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
         return True, OK
