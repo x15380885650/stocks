@@ -1,5 +1,5 @@
-latest_close_price_min = 5
-latest_close_price_max = 20
+latest_close_price_min = 3
+latest_close_price_max = 19
 
 pct_change_max_i = 9.8
 pct_change_max_j = 19.0
