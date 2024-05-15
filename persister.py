@@ -34,7 +34,7 @@ class Persister(object):
     def get_email_dict(self):
         key = '{}:email'.format(self.key_prefix)
         val = self.redis.hgetall(key)
-        if not val:
+        if not val:   # 75082655@qq.com
             self.redis.hset(key, 'xucg025@qq.com', 1)
         return self.redis.hgetall(key)
 

@@ -529,7 +529,7 @@ class Strategist(object):
         open_close_ratio = 100 * (now_open_price - prev_close_price) / prev_close_price
         # print(open_close_ratio)
         open_close_ratio = self.retain_decimals_no_rounding(open_close_ratio, decimals=1)
-        if open_close_ratio > 2.5 or open_close_ratio < -1.5:
+        if open_close_ratio > 2.5 or open_close_ratio < -1:
             return True
         return False
 
