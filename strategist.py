@@ -415,6 +415,17 @@ class Strategist(object):
         diff, dea = stock_tech['macd'].iloc[-1], stock_tech['macds'].iloc[-1]
         return round(diff, 2), round(dea, 2)
 
+    def get_stock_opt_kdj(self, k_line_list):
+        prev_close_price = k_line_list[-2]['close']
+        now_ideal_close_price = prev_close_price * 1.1
+        k_line_list_opt = copy.deepcopy(k_line_list)
+        k_line_list_opt[-1]['close'] = now_ideal_close_price
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
+        k = stock_tech['kdjk']
+        d = stock_tech['kdjd']
+        j = stock_tech['kdjj']
+        return k, d, j
+
     def get_stock_prev_macd(self, k_line_list):
         # prev_close_price = k_line_list[-2]['close']
         # now_ideal_close_price = prev_close_price * 1.1
@@ -456,34 +467,24 @@ class Strategist(object):
                 count += 1
         return count
 
-    def is_ma_up_1(self, k_line_list):
+    def is_ma_up_1(self, k_line_list, days):
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
         k_line_list_opt = copy.deepcopy(k_line_list)
         k_line_list_opt[-1]['close'] = now_ideal_close_price
         stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
-        ma_5_price = round(stock_tech['boll_{}'.format(5)].iloc[-1], 2)
-        ma_10_price = round(stock_tech['boll_{}'.format(10)].iloc[-1], 2)
-        ma_20_price = round(stock_tech['boll_{}'.format(20)].iloc[-1], 2)
-        ma_30_price = round(stock_tech['boll_{}'.format(30)].iloc[-1], 2)
-        # print(ma_5_price, ma_10_price, ma_20_price, ma_30_price)
-        if ma_5_price < ma_10_price:
-            return False
-        if ma_10_price < ma_20_price:
-            return False
-        if ma_20_price < ma_30_price:
-            return False
-        ma_5_price_prev = round(stock_tech['boll_{}'.format(5)].iloc[-2], 2)
-        ma_10_price_prev = round(stock_tech['boll_{}'.format(10)].iloc[-2], 2)
-        ma_20_price_prev = round(stock_tech['boll_{}'.format(20)].iloc[-2], 2)
-        ma_30_price_prev = round(stock_tech['boll_{}'.format(30)].iloc[-2], 2)
-
-        if ma_5_price_prev < ma_10_price_prev:
-            return False
-        if ma_10_price_prev < ma_20_price_prev:
-            return False
-        if ma_20_price_prev < ma_30_price_prev:
-            return False
+        for i in range(1, days+1):
+            ma_5_price = round(stock_tech['boll_{}'.format(5)].iloc[-i], 2)
+            ma_10_price = round(stock_tech['boll_{}'.format(10)].iloc[-i], 2)
+            ma_20_price = round(stock_tech['boll_{}'.format(20)].iloc[-i], 2)
+            ma_30_price = round(stock_tech['boll_{}'.format(30)].iloc[-i], 2)
+            # print(ma_5_price, ma_10_price, ma_20_price, ma_30_price)
+            if ma_5_price < ma_10_price:
+                return False
+            if ma_10_price < ma_20_price:
+                return False
+            # if ma_20_price < ma_30_price:
+            #     return False
         return True
 
     def is_ma_up_2(self, k_line_list):
@@ -544,9 +545,54 @@ class Strategist(object):
         open_close_ratio = 100 * (now_open_price - prev_close_price) / prev_close_price
         # print(open_close_ratio)
         open_close_ratio = self.retain_decimals_no_rounding(open_close_ratio, decimals=1)
-        if open_close_ratio > 2.5 or open_close_ratio < -1:
+        if open_close_ratio > 2.5 or open_close_ratio < -2.5:
             return True
         return False
+
+    def get_diff_sat_count(self, k_line_list, days):
+        sat_count = 0
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list)
+        for i in range(1, days):
+            diff, dea = stock_tech['macd'].iloc[-i - 1], stock_tech['macds'].iloc[-i - 1]
+            diff = round(diff, 2)
+            dea = round(dea, 2)
+            if diff >= 0 and diff >= dea:
+                sat_count += 1
+        return sat_count
+
+    def is_prev_macd_gold(self, k_line_list):
+        prev_close_price = k_line_list[-2]['close']
+        now_ideal_close_price = prev_close_price * 1.1
+        k_line_list_opt = copy.deepcopy(k_line_list)
+        k_line_list_opt[-1]['close'] = now_ideal_close_price
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
+        is_gold = False
+        for i in range(1, 2):
+            diff_prev, dea_prev = stock_tech['macd'].iloc[-i - 2], stock_tech['macds'].iloc[-i - 2],
+            diff, dea = stock_tech['macd'].iloc[-i], stock_tech['macds'].iloc[-i]
+            if dea > diff:
+                continue
+            r = (diff_prev - dea_prev) * (diff - dea)
+            # print(r)
+            if r <= 0:
+                is_gold = True
+                break
+        return is_gold
+
+    def is_prev_kdj_gold(self, k_line_list):
+        k, d, j = self.get_stock_opt_kdj(k_line_list)
+        k_prev_v, d_prev_v, j_prev_v = k.iloc[-2], d.iloc[-2], j.iloc[-2]
+        k_v, d_v, j_v = k.iloc[-1], d.iloc[-1], j.iloc[-1]
+        print(k_prev_v, d_prev_v, j_prev_v)
+        print(k_v, d_v, j_v)
+        if not (j_prev_v < k_prev_v < d_prev_v):
+            return False
+        if not (d_v < k_v < j_v):
+            return False
+        if not (k_v > k_prev_v and d_v > d_prev_v and j_v > j_prev_v):
+            return False
+        return True
+
 
     def get_first_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         open_high = self.is_open_price_high(k_line_list)
@@ -594,61 +640,62 @@ class Strategist(object):
         return True, OK
 
     def get_second_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
-        open_high = self.is_open_price_high(k_line_list)
-        if open_high:
-            return False, 'a'
-        range_days = 70
-        close_price = k_line_list[-1]['close']
-        open_price = k_line_list[-1]['open']
-        k_line_list_range_day = k_line_list[-range_days:]
-        min_low_price = self.get_min_low_price(k_line_list_range_day)
-        interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
-        if not 20 <= interval <= 35:
-            return False, 'aaa'
-
-        prev_close_price = k_line_list[-2]['close']
-        now_ideal_close_price = prev_close_price * 1.1
-        opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
-        if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
-            return False, 'bbb'
-        is_gold = self.is_macd_latest_gold(k_line_list)
-        if not is_gold:
-            return False, 'bbb'
-        ma_up = self.is_ma_up_2(k_line_list)
-        if not ma_up:
-            return False, 'bbb'
-        key_k_line = k_line_list[-interval - 2]
-        key_k_line_pct_chg = key_k_line['pct_chg']
-        key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
-        key_ptc_chg_max = 3
-        if key_k_line_pct_chg >= key_ptc_chg_max or key_k_line_pct_chg_2 >= key_ptc_chg_max:
-            return False, 'ccc'
-        k_line_list_interval = k_line_list[-interval-1:-1]
-        max_close_price_interval = self.get_max_close_price(k_line_list_interval)
-        if max_close_price_interval > now_ideal_close_price:
-            return False, 'ddd'
-        up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
-        up_ratio_interval_day = round(100 * up_num / (up_num+down_num), 0)
-        key_k_line_close_price = key_k_line['close']
-        pct_chg_interval_day = round(100 * (prev_close_price - key_k_line_close_price) / key_k_line_close_price, 0)
-        if not 40 <= up_ratio_interval_day <= 70:
-            return False, 'eee'
-        if not 3 <= pct_chg_interval_day <= 20:
-            return False, 'eee'
-        pct_chg_num_exceed = self.get_pct_chg_num_exceed(5, k_line_list_interval)
-        pct_chg_2_num_exceed = self.get_pct_chg_2_num_exceed(5, k_line_list_interval)
-        if pct_chg_num_exceed > 0 and pct_chg_2_num_exceed > 0:
-            return False, 'fff'
-        pct_chg_num_less = self.get_pct_chg_num_less(-5, k_line_list_interval)
-        pct_chg_2_num_less = self.get_pct_chg_2_num_less(-5, k_line_list_interval)
-        if pct_chg_num_less > 0 or pct_chg_2_num_less > 0:
-            return False, 'fff'
-        interval_2 = self.get_interval_to_latest(5, k_line_list_interval, 'pct_chg', cond='>=')
-        if interval_2 < 15:
-            return False, 'fff'
-        print('interval: {}, up_ratio: {}, pct_chg: {}, close_price: {}, open_price: {}, code: {}'
-              .format(interval, up_ratio_interval_day, pct_chg_interval_day, close_price, open_price, code))
-        return True, OK
+        return
+        # open_high = self.is_open_price_high(k_line_list)
+        # if open_high:
+        #     return False, 'a'
+        # range_days = 70
+        # close_price = k_line_list[-1]['close']
+        # open_price = k_line_list[-1]['open']
+        # k_line_list_range_day = k_line_list[-range_days:]
+        # min_low_price = self.get_min_low_price(k_line_list_range_day)
+        # interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
+        # if not 20 <= interval <= 35:
+        #     return False, 'aaa'
+        #
+        # prev_close_price = k_line_list[-2]['close']
+        # now_ideal_close_price = prev_close_price * 1.1
+        # opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
+        # if opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea:
+        #     return False, 'bbb'
+        # is_gold = self.is_macd_latest_gold(k_line_list)
+        # if not is_gold:
+        #     return False, 'bbb'
+        # ma_up = self.is_ma_up_2(k_line_list)
+        # if not ma_up:
+        #     return False, 'bbb'
+        # key_k_line = k_line_list[-interval - 2]
+        # key_k_line_pct_chg = key_k_line['pct_chg']
+        # key_k_line_pct_chg_2 = self.get_pct_chg_2(d=key_k_line)
+        # key_ptc_chg_max = 3
+        # if key_k_line_pct_chg >= key_ptc_chg_max or key_k_line_pct_chg_2 >= key_ptc_chg_max:
+        #     return False, 'ccc'
+        # k_line_list_interval = k_line_list[-interval-1:-1]
+        # max_close_price_interval = self.get_max_close_price(k_line_list_interval)
+        # if max_close_price_interval > now_ideal_close_price:
+        #     return False, 'ddd'
+        # up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
+        # up_ratio_interval_day = round(100 * up_num / (up_num+down_num), 0)
+        # key_k_line_close_price = key_k_line['close']
+        # pct_chg_interval_day = round(100 * (prev_close_price - key_k_line_close_price) / key_k_line_close_price, 0)
+        # if not 40 <= up_ratio_interval_day <= 70:
+        #     return False, 'eee'
+        # if not 3 <= pct_chg_interval_day <= 20:
+        #     return False, 'eee'
+        # pct_chg_num_exceed = self.get_pct_chg_num_exceed(5, k_line_list_interval)
+        # pct_chg_2_num_exceed = self.get_pct_chg_2_num_exceed(5, k_line_list_interval)
+        # if pct_chg_num_exceed > 0 and pct_chg_2_num_exceed > 0:
+        #     return False, 'fff'
+        # pct_chg_num_less = self.get_pct_chg_num_less(-5, k_line_list_interval)
+        # pct_chg_2_num_less = self.get_pct_chg_2_num_less(-5, k_line_list_interval)
+        # if pct_chg_num_less > 0 or pct_chg_2_num_less > 0:
+        #     return False, 'fff'
+        # interval_2 = self.get_interval_to_latest(5, k_line_list_interval, 'pct_chg', cond='>=')
+        # if interval_2 < 15:
+        #     return False, 'fff'
+        # print('interval: {}, up_ratio: {}, pct_chg: {}, close_price: {}, open_price: {}, code: {}'
+        #       .format(interval, up_ratio_interval_day, pct_chg_interval_day, close_price, open_price, code))
+        # return True, OK
 
     def get_third_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         open_high = self.is_open_price_high(k_line_list)
@@ -716,10 +763,12 @@ class Strategist(object):
         if down_num not in [3, 4] and down_num_2 not in [3, 4]:
             return False, 'eee'
 
-        t_2_k_line = latest_target_days_k_line_list[-2]
-        t_2_k_line_green_ok = self.is_green(t_2_k_line)
-        if not t_2_k_line_green_ok:
-            return False, 'fff'
+        # 这个看后面要不要保留
+        # t_2_k_line = latest_target_days_k_line_list[-2]
+        # t_2_k_line_green_ok = self.is_green(t_2_k_line)
+        # if not t_2_k_line_green_ok:
+        #     return False, 'fff'
+
         t_3_k_line = latest_target_days_k_line_list[0]
         t_4_k_line = latest_target_days_k_line_list[1]
         t_4_k_line_d = t_4_k_line['open'] if t_4_k_line['open'] > t_4_k_line['close'] else t_4_k_line['close']
@@ -738,52 +787,31 @@ class Strategist(object):
             # if t_t_ratio > 5:
             #     return False, 'fff'
 
-        price_exceed_ma_20 = self.is_close_price_exceed_ma(k_line_list, boll_days=20, days_count=t_s_count)
-        if not price_exceed_ma_20:
+        boll_days_30_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count)
+        boll_days_30_count_ratio = 100 * boll_days_30_count / t_s_count
+        if boll_days_30_count_ratio < 100:
             return False, 'ggg'
-        price_exceed_ma_15 = self.is_close_price_exceed_ma(k_line_list, boll_days=15, days_count=t_s_count)
-        if not price_exceed_ma_15:
+        boll_days_20_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=20, days_interval=t_s_count)
+        boll_days_20_count_ratio = 100 * boll_days_20_count / t_s_count
+        if boll_days_20_count_ratio < 100:
             return False, 'ggg'
-        price_exceed_ma_10 = self.is_close_price_exceed_ma(k_line_list, boll_days=10, days_count=1)
-        if not price_exceed_ma_10:
+        boll_days_10_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=10, days_interval=t_s_count)
+        boll_days_10_count_ratio = 100 * boll_days_10_count / t_s_count
+        if boll_days_10_count_ratio < 80:
             return False, 'ggg'
-        ma_up = self.is_ma_up_1(k_line_list)
+        boll_days_5_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=5, days_interval=t_s_count)
+        boll_days_5_count_ratio = 100 * boll_days_5_count / t_s_count
+        if boll_days_5_count_ratio < 30:
+            return False, 'ggg'
+        ma_up = self.is_ma_up_1(k_line_list, t_s_count+1)
         if not ma_up:
             return False, 'ggg'
-        diff_ok = self.is_diff_all_ok(k_line_list, t_s_count+1)
-        if not diff_ok:
+        diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count+1)
+        diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
+        if diff_sat_count_ratio < 65:
             return False, 'ggg'
+        # self.is_prev_kdj_gold(k_line_list)
         return True, OK
-
-    def is_diff_all_ok(self, k_line_list, days):
-        stock_tech = self.get_stock_tech(k_line_list=k_line_list)
-        for i in range(1, days):
-            diff, dea = stock_tech['macd'].iloc[-i-1], stock_tech['macds'].iloc[-i-1]
-            diff = round(diff, 2)
-            dea = round(dea, 2)
-            # print(diff, dea)
-            if diff < 0 or diff < dea:
-                return False
-        return True
-
-    def is_prev_macd_gold(self, k_line_list):
-        prev_close_price = k_line_list[-2]['close']
-        now_ideal_close_price = prev_close_price * 1.1
-        k_line_list_opt = copy.deepcopy(k_line_list)
-        k_line_list_opt[-1]['close'] = now_ideal_close_price
-        stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
-        is_gold = False
-        for i in range(1, 2):
-            diff_prev, dea_prev = stock_tech['macd'].iloc[-i-2], stock_tech['macds'].iloc[-i-2],
-            diff, dea = stock_tech['macd'].iloc[-i], stock_tech['macds'].iloc[-i]
-            if dea > diff:
-                continue
-            r = (diff_prev-dea_prev) * (diff-dea)
-            # print(r)
-            if r <= 0:
-                is_gold = True
-                break
-        return is_gold
 
     def get_fourth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         open_high = self.is_open_price_high(k_line_list)
