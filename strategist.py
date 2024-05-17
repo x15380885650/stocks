@@ -508,6 +508,11 @@ class Strategist(object):
         interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
         if not 7 <= interval <= 10:
             return False, 'aaa'
+        opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
+        prev_macd_gold = self.is_prev_macd_gold(k_line_list)
+        # print(prev_macd_gold)
+        if (opt_macd_diff < min_opt_macd_diff or opt_macd_diff < opt_macd_dea) and not prev_macd_gold:
+            return False, 'bbb'
         boll_days_5_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=5, days_interval=interval)
         if 100 * boll_days_5_count/interval < 50:
             return False, 'bbb'
@@ -522,6 +527,8 @@ class Strategist(object):
             return False, 'ccc'
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(k_line_list_interval)
+        if up_num_2 < 6 or up_num < 6:
+            return False, 'ddd'
         up_num = up_num if up_num > up_num_2 else up_num_2
         up_ratio_interval_day = round(100 * up_num / (up_num + down_num), 0)
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
