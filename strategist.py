@@ -391,19 +391,24 @@ class Strategist(object):
         k_line_list_opt = copy.deepcopy(k_line_list)
         k_line_list_opt[-1]['close'] = now_ideal_close_price
         stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
+        sat_day = 0
         for i in range(1, days+1):
             ma_5_price = round(stock_tech['boll_{}'.format(5)].iloc[-i], 2)
             ma_10_price = round(stock_tech['boll_{}'.format(10)].iloc[-i], 2)
             ma_20_price = round(stock_tech['boll_{}'.format(20)].iloc[-i], 2)
             ma_30_price = round(stock_tech['boll_{}'.format(30)].iloc[-i], 2)
             # print(ma_5_price, ma_10_price, ma_20_price, ma_30_price)
-            if ma_5_price < ma_10_price:
-                return False
-            if ma_10_price < ma_20_price:
-                return False
-            # if ma_20_price < ma_30_price:
-            #     return False
+            # if ma_20_price <= ma_10_price <= ma_5_price:
+            if ma_30_price <= ma_20_price <= ma_10_price <= ma_5_price:
+                sat_day += 1
+            else:
+                break
+        if sat_day < 2:
+            return False
+        # if sat_day != days:
+        #     return False
         return True
+
 
     def retain_decimals_no_rounding(self, number, decimals=2):
         return int(number*10**decimals) / 10**decimals
