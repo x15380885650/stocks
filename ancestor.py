@@ -31,6 +31,21 @@ class Ancestor(object):
             return True
         return False
 
+    def is_trade_2(self):
+        from datetime import datetime
+        import calendar
+        now = datetime.now()
+        day_of_week = calendar.weekday(now.year, now.month, now.day)
+        # print(day_of_week, now)
+        if not 0 <= day_of_week <= 4:
+            return False
+        start_time = datetime(now.year, now.month, now.day, 9, 25)
+        end_time = datetime(now.year, now.month, now.day, 15, 1)
+
+        if start_time <= now <= end_time:
+            return True
+        return False
+
     def notify(self, email, code):
         sender = EmailSender("xcg19865@126.com", "HIPJLVTIFUZQKEYB", server='smtp.126.com', port=465)
         sender.set_header(code)

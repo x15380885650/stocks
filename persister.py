@@ -43,7 +43,7 @@ class Persister(object):
         self.redis.delete(monitor_key)
 
     def get_buy_code_list(self):
-        key = '{}:buy_stock_list'.format(self.key_prefix)
+        key = '{}:stock_list'.format(self.key_prefix)
         code_set = self.redis.smembers(key)
         if not code_set:
             self.redis.sadd(key, '')

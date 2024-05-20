@@ -12,6 +12,8 @@ class ScriptManager(object):
             {'name': 'monitor_3', 'redis_prefix': 'monitor_3'},
             {'name': 'monitor_4', 'redis_prefix': 'monitor_4'},
 
+            {'name': 'buy_code_monitor', 'redis_prefix': 'buy_code_monitor'},
+
             {'name': 'notifier_1', 'redis_prefix': 'monitor_1'},
             {'name': 'notifier_2', 'redis_prefix': 'monitor_2'},
             {'name': 'notifier_3', 'redis_prefix': 'monitor_3'},
