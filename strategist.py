@@ -670,7 +670,7 @@ class Strategist(object):
             return False, 'ggg'
         diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count+1)
         diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
-        if diff_sat_count_ratio < 65:
+        if diff_sat_count_ratio < 100:
             return False, 'ggg'
         # self.is_prev_kdj_gold(k_line_list)
         return True, OK
