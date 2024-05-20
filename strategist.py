@@ -609,6 +609,11 @@ class Strategist(object):
         if max_pct_chg > 6.5:
             return False, 'ccc'
 
+        max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
+        now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
+        if max_close_price_interval > now_ideal_close_price:
+            return False, 'ccc'
+
         for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
             open_p = t_k_line['open']
@@ -621,10 +626,10 @@ class Strategist(object):
             return False, 'eee'
 
         # 这个看后面要不要保留
-        # t_2_k_line = latest_target_days_k_line_list[-2]
-        # t_2_k_line_green_ok = self.is_green(t_2_k_line)
-        # if not t_2_k_line_green_ok:
-        #     return False, 'fff'
+        t_2_k_line = latest_target_days_k_line_list[-2]
+        t_2_k_line_green_ok = self.is_green(t_2_k_line)
+        if not t_2_k_line_green_ok:
+            return False, 'fff'
 
         t_3_k_line = latest_target_days_k_line_list[0]
         t_4_k_line = latest_target_days_k_line_list[1]
