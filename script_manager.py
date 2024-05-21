@@ -15,9 +15,9 @@ class ScriptManager(object):
             {'name': 'buy_code_monitor', 'redis_prefix': 'buy_code_monitor'},
 
             {'name': 'notifier_1', 'redis_prefix': 'monitor_1'},
-            {'name': 'notifier_2', 'redis_prefix': 'monitor_2'},
+            # {'name': 'notifier_2', 'redis_prefix': 'monitor_2'},
             {'name': 'notifier_3', 'redis_prefix': 'monitor_3'},
-            {'name': 'notifier_4', 'redis_prefix': 'monitor_4'},
+            # {'name': 'notifier_4', 'redis_prefix': 'monitor_4'},
         ]
         self.redis_conf = {'host': '127.0.0.1', 'port': 6408, 'password': 'iscas139', 'db': 0}
         self.redis = StrictRedis(**self.redis_conf, decode_responses=True)
