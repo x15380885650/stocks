@@ -34,7 +34,7 @@ class Persister(object):
     def get_email_dict(self):
         key = '{}:email'.format(self.key_prefix)
         val = self.redis.hgetall(key)
-        if not val:   # 75082655@qq.com
+        if not val:
             self.redis.hset(key, 'xucg025@qq.com', 1)
         return self.redis.hgetall(key)
 
@@ -43,7 +43,7 @@ class Persister(object):
         self.redis.delete(monitor_key)
 
     def get_buy_code_list(self):
-        key = '{}:stock_list'.format(self.key_prefix)
+        key = '{}:buy_stock_list'.format(self.key_prefix)
         code_set = self.redis.smembers(key)
         if not code_set:
             self.redis.sadd(key, '')

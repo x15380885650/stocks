@@ -32,12 +32,15 @@ class Notifier(Ancestor):
 
                 start_date_str, end_date_str = d_chooser.get_start_and_end_date()
                 monitor_code_list = self.persister.get_monitor_code_list(end_date_str)
-                if not monitor_code_list:
+                buy_code_list = self.persister.get_buy_code_list()
+                if not monitor_code_list and not buy_code_list:
                     time.sleep(1)
                     continue
                 code_dict = {}
                 for monitor_code in monitor_code_list:
                     code_dict[monitor_code] = 0
+                for buy_code in buy_code_list:
+                    code_dict[buy_code] = 1
                 all_code_list = list(code_dict.keys())
                 min_pct_chg_notifier = self.persister.get_min_pct_chg_notifier()
                 sleep_time = self.persister.get_sleep_time_notifier()
@@ -52,11 +55,17 @@ class Notifier(Ancestor):
                     code = stock_kline_list[-1]['code']
                     name = stock_kline_list[-1]['name']
                     pct_chg = stock_kline_list[-1]['pct_chg']
-                    if monitor_code_show_count < monitor_code_show_count_max:
+                    buy_flag = code_dict[code]
+                    if buy_flag == 1:
+                        print('code: {}, name: {}, pct_chg: {}, {}'.format(code, name, pct_chg, buy_flag))
+                    elif monitor_code_show_count < monitor_code_show_count_max:
                         if pct_chg > 0:
-                            print('code: {}, name: {}, pct_chg: {}'.format(code, name, pct_chg))
+                            print('code: {}, name: {}, pct_chg: {}, {}'.format(code, name, pct_chg, buy_flag))
                             monitor_code_show_count += 1
-                    if pct_chg < min_pct_chg_notifier:
+                    if pct_chg < min_pct_chg_notifier or code in buy_code_list:
+                        continue
+                    only_show = self.is_trade_only_show()
+                    if only_show:
                         continue
                     email_dict = self.persister.get_email_dict()
                     for email, enabled in email_dict.items():
