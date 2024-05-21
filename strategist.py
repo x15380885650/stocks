@@ -625,18 +625,8 @@ class Strategist(object):
         if down_num not in [3, 4] and down_num_2 not in [3, 4]:
             return False, 'eee'
 
-        # 这个看后面要不要保留
-        t_2_k_line = latest_target_days_k_line_list[-2]
-        t_2_k_line_green_ok = self.is_green(t_2_k_line)
-        if not t_2_k_line_green_ok:
-            return False, 'fff'
-
         t_3_k_line = latest_target_days_k_line_list[0]
         t_4_k_line = latest_target_days_k_line_list[1]
-        t_4_k_line_d = t_4_k_line['open'] if t_4_k_line['open'] > t_4_k_line['close'] else t_4_k_line['close']
-        t_3_k_line_d = t_3_k_line['open'] if t_3_k_line['open'] > t_3_k_line['close'] else t_3_k_line['close']
-        if t_4_k_line_d >= t_3_k_line_d:
-            return False, 'fff'
         t_3_k_line_green_ok = self.is_green(t_3_k_line)
         if t_3_k_line_green_ok:
             t_1_k_line_close = t_1_k_line['close']
@@ -673,6 +663,15 @@ class Strategist(object):
         if diff_sat_count_ratio < 100:
             return False, 'ggg'
         # self.is_prev_kdj_gold(k_line_list)
+        # # 这个看后面要不要保留
+        # t_2_k_line = latest_target_days_k_line_list[-2]
+        # t_2_k_line_green_ok = self.is_green(t_2_k_line)
+        # if not t_2_k_line_green_ok:
+        #     return False, 'hhh'
+        # t_4_k_line_d = t_4_k_line['open'] if t_4_k_line['open'] > t_4_k_line['close'] else t_4_k_line['close']
+        # t_3_k_line_d = t_3_k_line['open'] if t_3_k_line['open'] > t_3_k_line['close'] else t_3_k_line['close']
+        # if t_4_k_line_d >= t_3_k_line_d:
+        #     return False, 'hhh'
         return True, OK
 
     def get_fourth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
