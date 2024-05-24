@@ -574,22 +574,19 @@ class Strategist(object):
         t_1_k_line = latest_range_days_k_line_list[target_index]
         t_s_count = range_days - target_index - 2
         latest_target_days_k_line_list = latest_range_days_k_line_list[target_index+1:]
-
-        #   暂时去掉
-        # prev_t_low_p = -1
-        # no_sat_count = 0
-        # for t_k_line in latest_target_days_k_line_list:
-        #     close_p = t_k_line['close']
-        #     open_p = t_k_line['open']
-        #     t_low_p = open_p if close_p > open_p else close_p
-        #     if prev_t_low_p != -1 and prev_t_low_p < t_low_p:
-        #         no_sat_count += 1
-        #     prev_t_low_p = t_low_p
-        # no_sat_ratio = 100 * no_sat_count / t_s_count
-        # if no_sat_ratio > 35:
-        #     return False, 'bbb'
+        prev_t_low_p = -1
+        no_sat_count = 0
+        for t_k_line in latest_target_days_k_line_list:
+            close_p = t_k_line['close']
+            open_p = t_k_line['open']
+            t_low_p = open_p if close_p > open_p else close_p
+            if prev_t_low_p != -1 and prev_t_low_p < t_low_p:
+                no_sat_count += 1
+            prev_t_low_p = t_low_p
+        no_sat_ratio = 100 * no_sat_count / t_s_count
+        if no_sat_ratio > 35:
+            return False, 'bbb'
         # print(no_sat_ratio)
-
         target_close_p = latest_range_days_k_line_list[target_index]['close']
         target_open_p = latest_range_days_k_line_list[target_index]['open']
         temp_prev_close_p = temp_k_line_list[target_index]['close']
@@ -609,15 +606,13 @@ class Strategist(object):
 
         max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
         max_pct_chg_2 = self.get_max_pct_chg_2(latest_target_days_k_line_list)
-        # if max_pct_chg > 6.5:
-        if max_pct_chg > 8:
+        if max_pct_chg > 6.5:
             return False, 'ccc'
 
-        #  暂时去掉
-        # max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
-        # now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
-        # if max_close_price_interval > now_ideal_close_price:
-        #     return False, 'ccc'
+        max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
+        now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
+        if max_close_price_interval > now_ideal_close_price:
+            return False, 'ccc'
 
         for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
