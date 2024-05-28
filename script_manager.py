@@ -8,12 +8,12 @@ class ScriptManager(object):
     def __init__(self):
         self.scrip_list = [
             {'name': 'monitor_1', 'redis_prefix': 'monitor_1'},
-            # {'name': 'monitor_2', 'redis_prefix': 'monitor_2'},
+            {'name': 'monitor_2', 'redis_prefix': 'monitor_2'},
             {'name': 'monitor_3', 'redis_prefix': 'monitor_3'},
             # {'name': 'monitor_4', 'redis_prefix': 'monitor_4'},
 
             {'name': 'notifier_1', 'redis_prefix': 'monitor_1'},
-            # {'name': 'notifier_2', 'redis_prefix': 'monitor_2'},
+            {'name': 'notifier_2', 'redis_prefix': 'monitor_2'},
             {'name': 'notifier_3', 'redis_prefix': 'monitor_3'},
             # {'name': 'notifier_4', 'redis_prefix': 'monitor_4'},
         ]
