@@ -520,7 +520,7 @@ class Strategist(object):
             if prev_macd_diff > 0 or opt_macd_diff < 0:
                 return False, 'bbb'
         else:
-            if prev_macd_diff >= 0:
+            if prev_macd_diff >= 0 or opt_macd_diff < -0.1:
                 return False, 'bbb'
         boll_days_5_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=5, days_interval=interval)
         if 100 * boll_days_5_count/interval < 50:
