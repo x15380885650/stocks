@@ -602,6 +602,9 @@ class Strategist(object):
 
         latest_close_p = latest_target_days_k_line_list[-1]['close']
         latest_open_p = latest_target_days_k_line_list[-1]['open']
+        l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
+        if l_r_close_ratio > 1:
+            return False, 'ccc'
         # if latest_open_p < target_open_p or latest_open_p > target_close_p:
         #     return False, 'ccc'
         # if latest_close_p < target_open_p or latest_close_p > target_close_p:
