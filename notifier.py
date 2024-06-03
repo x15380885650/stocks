@@ -60,7 +60,11 @@ class Notifier(Ancestor):
                         print('code: {}, name: {}, pct_chg: {}, {}'.format(code, name, pct_chg, buy_flag))
                     elif monitor_code_show_count < monitor_code_show_count_max:
                         if pct_chg > 0:
-                            print('code: {}, name: {}, pct_chg: {}, {}'.format(code, name, pct_chg, buy_flag))
+                            now_price = stock_kline_list[-1]['close']
+                            prev_close = round(now_price / (1 + pct_chg/100), 2)
+                            buy_price = round(prev_close * (1 + min_pct_chg_notifier/100), 2)
+                            print('code: {}, name: {}, pct_chg: {}, now_price: {}, buy_price: {}, {}'
+                                  .format(code, name, pct_chg, now_price, buy_price, buy_flag))
                             monitor_code_show_count += 1
                     if pct_chg < min_pct_chg_notifier or code in buy_code_list:
                         continue
