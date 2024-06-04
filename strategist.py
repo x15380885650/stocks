@@ -797,50 +797,76 @@ class Strategist(object):
         open_high = self.is_open_price_high(k_line_list)
         if open_high:
             return False, 'a'
+        range_days = 27
+        latest_range_days_k_line_list = k_line_list[-range_days:-1]
+        temp_k_line_list = k_line_list[-range_days - 1:-1]
+        max_pct_chg_binary_list = self.get_max_pct_chg_binary_list(latest_range_days_k_line_list)
+        max_pct_chg_index_list = []
+        for i, v in enumerate(max_pct_chg_binary_list):
+            if v == 1:
+                max_pct_chg_index_list.append(i)
+        if len(max_pct_chg_index_list) not in [1, 2]:
+            return False, "aaa"
+        if max_pct_chg_index_list[-1] > 5:
+            return False, "aaa"
+        target_index = max_pct_chg_index_list[-1]
+        t_1_k_line = latest_range_days_k_line_list[target_index]
+        t_s_count = range_days - target_index - 2
+        latest_target_days_k_line_list = latest_range_days_k_line_list[target_index + 1:]
 
-        prev_close_price = k_line_list[-2]['close']
-        range_days = 30
-        k_line_list_range_day = k_line_list[-range_days:]
-        min_low_price = self.get_min_low_price(k_line_list_range_day)
-        interval = self.get_interval_to_latest(min_low_price, k_line_list_range_day, 'low')
-        t_range_days = 7
-        k_line_list_latest = k_line_list[-t_range_days-1: -1]
-        k_line_list_interval = k_line_list[-interval - 1: -1]
-        up_num, down_num = self.get_up_and_down_num(k_line_list_latest)
-        up_num_2, down_num_2 = self.get_up_and_down_num_2(k_line_list_latest)
-        # if up_num < t_range_days-1 or up_num_2 < t_range_days - 1:
-        #     return False, 'bbb'
-        if down_num > 1 or down_num_2 > 1:
-            return False, 'bbb'
-        # if up_num_2 < t_range_days:
-        #     return False, 'bbb'
-        # t_k_line_1 = k_line_list[-t_range_days-2]
-        # t_k_line_2 = k_line_list[-t_range_days-3]
-        # t_k_line_1_red = self.is_red(t_k_line_1)
-        # t_k_line_2_red = self.is_red(t_k_line_2)
-        # if t_k_line_1_red and t_k_line_2_red:
-        #     return False, 'bbb'
-        # max_pct_chg_latest = self.get_max_pct_chg(k_line_list_latest)
-        # if max_pct_chg_latest > 7.5:
-        #     return False, 'ccc'
-        sum_pch_chg_latest = self.get_pct_chg_sum(k_line_list_latest)
-        if not 5 <= sum_pch_chg_latest <= 15:
+        target_close_p = latest_range_days_k_line_list[target_index]['close']
+        target_open_p = latest_range_days_k_line_list[target_index]['open']
+        temp_prev_close_p = temp_k_line_list[target_index]['close']
+        if temp_prev_close_p < target_open_p:
+            target_open_p = temp_prev_close_p
+
+        latest_close_p = latest_target_days_k_line_list[-1]['close']
+        l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
+        if l_r_close_ratio > 0:
             return False, 'ccc'
-        sum_pch_chg_interval = self.get_pct_chg_sum(k_line_list_interval)
-        if not 5 <= sum_pch_chg_interval <= 20:
+
+        max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
+        now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
+        if max_close_price_interval > now_ideal_close_price:
             return False, 'ccc'
-        pct_chg_num_exceed = self.get_pct_chg_num_exceed(3.5, k_line_list_latest)
-        if pct_chg_num_exceed > 1:
+
+        for t_k_line in latest_target_days_k_line_list:
+            close_p = t_k_line['close']
+            open_p = t_k_line['open']
+            if close_p < target_open_p or open_p < target_open_p:
+                return False, 'ddd'
+
+        up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
+        up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
+        down_num_ratio = 100 * down_num / (down_num + up_num)
+        down_num_ratio_2 = 100 * down_num_2 / (down_num_2 + up_num_2)
+        if down_num_ratio < 50 and down_num_ratio_2 < 50:
             return False, 'ddd'
-        pct_chg_num_less = self.get_pct_chg_num_less(-2, k_line_list_latest)
-        if pct_chg_num_less > 0:
-            return False, 'ddd'
-        max_close_price_interval = self.get_max_close_price(k_line_list_interval)
-        if prev_close_price < max_close_price_interval:
-            return False, 'eee'
-        prev_macd_gold = self.is_prev_macd_gold(k_line_list)
-        if not prev_macd_gold:
-            return False, 'fff'
+
+        boll_days_30_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count)
+        boll_days_30_count_ratio = 100 * boll_days_30_count / t_s_count
+        if boll_days_30_count_ratio < 50:
+            return False, 'ggg'
+        boll_days_20_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=20, days_interval=t_s_count)
+        boll_days_20_count_ratio = 100 * boll_days_20_count / t_s_count
+        if boll_days_20_count_ratio < 60:
+            return False, 'ggg'
+        boll_days_10_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=10, days_interval=t_s_count)
+        boll_days_10_count_ratio = 100 * boll_days_10_count / t_s_count
+        if boll_days_10_count_ratio < 50:
+            return False, 'ggg'
+        boll_days_5_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=5, days_interval=t_s_count)
+        boll_days_5_count_ratio = 100 * boll_days_5_count / t_s_count
+        if boll_days_5_count_ratio < 30:
+            return False, 'ggg'
+        # print(boll_days_30_count_ratio, boll_days_20_count_ratio, boll_days_10_count_ratio, boll_days_5_count_ratio)
+        ma_up = self.is_ma_up_1(k_line_list, t_s_count + 1)
+        # if not ma_up:
+        #     return False, 'ggg'
+        diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1)
+        diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
+        if diff_sat_count_ratio < 45:
+            return False, 'ggg'
         return True, OK
 
 
