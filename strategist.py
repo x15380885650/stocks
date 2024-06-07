@@ -832,8 +832,8 @@ class Strategist(object):
             open_p = t_k_line['open']
             if close_p < target_open_p or open_p < target_open_p:
                 return False, 'ddd'
-            if close_p > target_close_p or open_p > target_close_p:
-                return False, 'ddd'
+            # if close_p > target_close_p or open_p > target_close_p:
+            #     return False, 'ddd'
 
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
         down_num_ratio = 100 * down_num / t_s_count
@@ -859,13 +859,13 @@ class Strategist(object):
 
 
         # print(boll_days_30_count_ratio, boll_days_20_count_ratio, boll_days_10_count_ratio, boll_days_5_count_ratio)
-        ma_up = self.is_ma_up_1(k_line_list, t_s_count + 1)
-        if not ma_up:
-            return False, 'ggg'
-        diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1)
-        diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
-        if diff_sat_count_ratio < 80:
-            return False, 'ggg'
+        # ma_up = self.is_ma_up_1(k_line_list, t_s_count + 1)
+        # if not ma_up:
+        #     return False, 'ggg'
+        # diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1)
+        # diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
+        # if diff_sat_count_ratio < 80:
+        #     return False, 'ggg'
         return True, OK
 
 

@@ -1,7 +1,7 @@
 from monitor import Monitor
 
 TEST_CODE_DICT = {
-# '000692': '2024-06-04',
+# '002356': '2024-06-06',
 }
 
 
