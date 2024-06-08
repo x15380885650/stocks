@@ -653,10 +653,11 @@ class Strategist(object):
             t_t_ratio = 100 * (t_3_k_line_high - t_1_k_line_close) / t_1_k_line_close
             t_3_k_line_open = t_3_k_line['open']
             t_3_k_line_close = t_3_k_line['close']
-            if t_3_k_line_close >= t_1_k_line_close or t_t_ratio > 5:
-                return False, 'fff'
-            # if t_t_ratio > 5:
+            # if t_3_k_line_close >= t_1_k_line_close or t_t_ratio > 8:
             #     return False, 'fff'
+            t_t_ratio = self.retain_decimals_no_rounding(t_t_ratio, 1)
+            if t_t_ratio > 7.5:
+                return False, 'fff'
 
         boll_days_30_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count)
         boll_days_30_count_ratio = 100 * boll_days_30_count / t_s_count
