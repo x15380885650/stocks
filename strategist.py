@@ -806,7 +806,7 @@ class Strategist(object):
         open_high = self.is_open_price_high(k_line_list)
         if open_high:
             return False, 'a'
-        range_days = 5
+        range_days = 6
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
         temp_k_line_list = k_line_list[-range_days - 1:-1]
         max_pct_chg_binary_list = self.get_max_pct_chg_binary_list(latest_range_days_k_line_list)
@@ -816,7 +816,7 @@ class Strategist(object):
                 max_pct_chg_index_list.append(i)
         if len(max_pct_chg_index_list) not in [1, 2]:
             return False, "aaa"
-        if max_pct_chg_index_list[-1] > 0:
+        if max_pct_chg_index_list[-1] > 2:
             return False, "aaa"
         target_index = max_pct_chg_index_list[-1]
         t_s_count = range_days - target_index - 2
@@ -836,10 +836,24 @@ class Strategist(object):
             # if close_p > target_close_p or open_p > target_close_p:
             #     return False, 'ddd'
 
-        up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
-        down_num_ratio = 100 * down_num / t_s_count
-        if down_num_ratio < 100:
+        t_k_line_2 = latest_target_days_k_line_list[-1]
+        t_k_line_3 = latest_target_days_k_line_list[-2]
+        t_k_line_2_green = self.is_green(t_k_line_2)
+        t_k_line_3_green = self.is_green(t_k_line_3)
+        if not (t_k_line_2_green and t_k_line_3_green):
             return False, 'ddd'
+        t_k_line_2_close = t_k_line_2['close']
+        # print(t_k_line_2_close, target_open_p)
+        t_t_ratio = 100 * (t_k_line_2_close-target_open_p) / target_open_p
+        # print(f"t_t_ratio: {t_t_ratio}")
+        if t_t_ratio >= 3:
+            return False, 'ddd'
+
+
+        # up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
+        # down_num_ratio = 100 * down_num / t_s_count
+        # if down_num_ratio < 100:
+        #     return False, 'ddd'
 
         # boll_days_30_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count)
         # boll_days_30_count_ratio = 100 * boll_days_30_count / t_s_count
