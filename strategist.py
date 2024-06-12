@@ -854,7 +854,7 @@ class Strategist(object):
         # print(t_k_line_2_close, target_open_p)
         t_t_ratio = 100 * (t_k_line_2_close-target_open_p) / target_open_p
         # print(f"t_t_ratio: {t_t_ratio}")
-        if t_t_ratio >= 3:
+        if t_t_ratio >= 4:
             return False, 'ddd'
         return True, OK
 
