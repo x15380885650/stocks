@@ -825,7 +825,7 @@ class Strategist(object):
         min_low_price_target_days = self.get_min_low_price(latest_range_days_k_line_list[target_index:])
         min_low_price_today = k_line_list[-1]['low']
         if min_low_price_today <= min_low_price_target_days:
-            return False, 'ddd'
+            return False, 'bbb'
 
         target_close_p = latest_range_days_k_line_list[target_index]['close']
         target_open_p = latest_range_days_k_line_list[target_index]['open']
@@ -839,10 +839,10 @@ class Strategist(object):
             if idx == len(latest_target_days_k_line_list)-1:
                 target_open_close_ratio = 100 * (target_open_p - close_p) / target_open_p
                 if target_open_close_ratio >= 1:
-                    return False, 'ddd'
+                    return False, 'ccc'
             else:
                 if close_p < target_open_p or open_p < target_open_p:
-                    return False, 'ddd'
+                    return False, 'ccc'
 
         t_k_line_2 = latest_target_days_k_line_list[-1]
         t_k_line_3 = latest_target_days_k_line_list[-2]
@@ -855,7 +855,7 @@ class Strategist(object):
         t_t_ratio = 100 * (t_k_line_2_close-target_open_p) / target_open_p
         # print(f"t_t_ratio: {t_t_ratio}")
         if t_t_ratio >= 4:
-            return False, 'ddd'
+            return False, 'eee'
         return True, OK
 
 
