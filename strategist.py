@@ -850,11 +850,17 @@ class Strategist(object):
         t_k_line_3_green = self.is_green(t_k_line_3)
         if not (t_k_line_2_green and t_k_line_3_green):
             return False, 'ddd'
+
+        up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
+        up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
+        if down_num not in [3, 4] and down_num_2 not in [3, 4]:
+            return False, 'ddd'
+
         t_k_line_2_close = t_k_line_2['close']
         # print(t_k_line_2_close, target_open_p)
         t_t_ratio = 100 * (t_k_line_2_close-target_open_p) / target_open_p
         # print(f"t_t_ratio: {t_t_ratio}")
-        if t_t_ratio >= 4:
+        if t_t_ratio >= 3.5:
             return False, 'eee'
         return True, OK
 
