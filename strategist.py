@@ -822,19 +822,27 @@ class Strategist(object):
         t_s_count = range_days - target_index - 2
         latest_target_days_k_line_list = latest_range_days_k_line_list[target_index + 1:]
 
-        min_low_price_target_days = self.get_min_low_price(latest_range_days_k_line_list[target_index:])
-        min_low_price_today = k_line_list[-1]['low']
-        min_low_price_ratio = 100 * (min_low_price_today - min_low_price_target_days) / min_low_price_target_days
-        if min_low_price_ratio <= -1:
+        prev_t_low_p = -1
+        no_sat_count = 0
+        for t_k_line in latest_target_days_k_line_list:
+            close_p = t_k_line['close']
+            open_p = t_k_line['open']
+            t_low_p = open_p if close_p > open_p else close_p
+            if prev_t_low_p != -1 and prev_t_low_p < t_low_p:
+                no_sat_count += 1
+            prev_t_low_p = t_low_p
+        no_sat_ratio = 100 * no_sat_count / t_s_count
+        if no_sat_ratio > 0:
             return False, 'bbb'
-        # if min_low_price_today <= min_low_price_target_days:
+
+        # min_low_price_target_days = self.get_min_low_price(latest_range_days_k_line_list[target_index:])
+        # min_low_price_today = k_line_list[-1]['low']
+        # min_low_price_ratio = 100 * (min_low_price_today - min_low_price_target_days) / min_low_price_target_days
+        # if min_low_price_ratio <= -1:
         #     return False, 'bbb'
 
-        target_close_p = latest_range_days_k_line_list[target_index]['close']
         target_open_p = latest_range_days_k_line_list[target_index]['open']
-        target_low_p = latest_range_days_k_line_list[target_index]['low']
         temp_prev_close_p = temp_k_line_list[target_index]['close']
-
         if temp_prev_close_p < target_open_p:
             target_open_p = temp_prev_close_p
 
@@ -850,26 +858,19 @@ class Strategist(object):
                     return False, 'ccc'
 
         t_k_line_2 = latest_target_days_k_line_list[-1]
-        t_k_line_3 = latest_target_days_k_line_list[-2]
         t_k_line_2_green = self.is_green(t_k_line_2)
-        t_k_line_2_pct_chg = t_k_line_2['pct_chg']
-        t_k_line_3_green = self.is_green(t_k_line_3)
         if not t_k_line_2_green:
             return False, 'ddd'
-        # if not (t_k_line_2_green and t_k_line_3_green):
-        #     return False, 'ddd'
-
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
-        # up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
         if down_num not in [3, 4]:
-        # if down_num not in [3, 4] and down_num_2 not in [3, 4]:
             return False, 'ddd'
 
         t_k_line_2_close = t_k_line_2['close']
-        # print(t_k_line_2_close, target_open_p)
         t_t_ratio = 100 * (t_k_line_2_close-target_open_p) / target_open_p
-        # print(f"t_t_ratio: {t_t_ratio}")
         if t_t_ratio >= 4 or t_t_ratio <= -4:
+            return False, 'eee'
+        max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
+        if max_pct_chg >= 2:
             return False, 'eee'
         return True, OK
 
