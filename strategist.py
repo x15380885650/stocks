@@ -835,11 +835,9 @@ class Strategist(object):
         if no_sat_ratio > 0:
             return False, 'bbb'
 
-        # min_low_price_target_days = self.get_min_low_price(latest_range_days_k_line_list[target_index:])
-        # min_low_price_today = k_line_list[-1]['low']
-        # min_low_price_ratio = 100 * (min_low_price_today - min_low_price_target_days) / min_low_price_target_days
-        # if min_low_price_ratio <= -1:
-        #     return False, 'bbb'
+        max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
+        if max_pct_chg >= 2:
+            return False, 'ccc'
 
         target_open_p = latest_range_days_k_line_list[target_index]['open']
         temp_prev_close_p = temp_k_line_list[target_index]['close']
@@ -868,9 +866,6 @@ class Strategist(object):
         t_k_line_2_close = t_k_line_2['close']
         t_t_ratio = 100 * (t_k_line_2_close-target_open_p) / target_open_p
         if t_t_ratio >= 4 or t_t_ratio <= -4:
-            return False, 'eee'
-        max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
-        if max_pct_chg >= 2:
             return False, 'eee'
         return True, OK
 
