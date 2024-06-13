@@ -836,7 +836,7 @@ class Strategist(object):
             return False, 'bbb'
 
         max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
-        if max_pct_chg >= 2:
+        if max_pct_chg > 3:
             return False, 'ccc'
 
         target_open_p = latest_range_days_k_line_list[target_index]['open']
