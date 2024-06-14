@@ -111,6 +111,14 @@ class Strategist(object):
                 max_pct_chg = float(pct_chg)
         return max_pct_chg
 
+    def get_min_pct_chg(self, data_list):
+        min_pct_chg = float(data_list[0]['pct_chg'])
+        for data in data_list:
+            pct_chg = data['pct_chg']
+            if min_pct_chg > float(pct_chg):
+                min_pct_chg = float(pct_chg)
+        return min_pct_chg
+
     def get_max_high_price(self, data_list):
         max_high = float(data_list[0]['high'])
         for data in data_list:
@@ -803,22 +811,24 @@ class Strategist(object):
         if no_sat_ratio > 0:
             return False, 'bbb'
 
-        max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
-        if max_pct_chg > 3:
-            return False, 'ccc'
+        # max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
+        # if max_pct_chg > 3:
+        #     return False, 'ccc'
+        # min_pct_chg = self.get_min_pct_chg(latest_target_days_k_line_list)
+        # # print(min_pct_chg)
+        # if min_pct_chg > -4:
+        #     return False, 'ccc'
 
         target_open_p = latest_range_days_k_line_list[target_index]['open']
-        temp_prev_close_p = temp_k_line_list[target_index]['close']
-        if temp_prev_close_p < target_open_p:
-            target_open_p = temp_prev_close_p
+        # temp_prev_close_p = temp_k_line_list[target_index]['close']
+        # if temp_prev_close_p < target_open_p:
+        #     target_open_p = temp_prev_close_p
 
         for idx, t_k_line in enumerate(latest_target_days_k_line_list):
             close_p = t_k_line['close']
             open_p = t_k_line['open']
             if idx == len(latest_target_days_k_line_list)-1:
-                target_open_close_ratio = 100 * (target_open_p - close_p) / target_open_p
-                if target_open_close_ratio >= 4:
-                    return False, 'ccc'
+                pass
             else:
                 if close_p < target_open_p or open_p < target_open_p:
                     return False, 'ccc'
@@ -828,12 +838,12 @@ class Strategist(object):
         if not t_k_line_2_green:
             return False, 'ddd'
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
-        if down_num not in [3, 4]:
+        if down_num not in [3]:
             return False, 'ddd'
 
         t_k_line_2_close = t_k_line_2['close']
         t_t_ratio = 100 * (t_k_line_2_close-target_open_p) / target_open_p
-        if t_t_ratio >= 4 or t_t_ratio <= -4:
+        if t_t_ratio > 0:
             return False, 'eee'
         return True, OK
 
