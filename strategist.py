@@ -844,7 +844,7 @@ class Strategist(object):
 
         t_k_line_2_close = t_k_line_2['close']
         t_t_ratio = 100 * (t_k_line_2_close-target_open_p) / target_open_p
-        if t_t_ratio > 0:
+        if t_t_ratio > 0 or t_t_ratio < -4:
             return False, 'eee'
         return True, OK
 

@@ -49,7 +49,7 @@ class Monitor(Ancestor):
                         return
 
                     trade_ok = self.is_trade()
-                    trade_ok = True
+                    # trade_ok = True
                     if not trade_ok:
                         exclude_stock_set.clear()
                         monitor_stock_count = 0
