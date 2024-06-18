@@ -84,13 +84,19 @@ class Strategist(object):
         return up_num, down_num
 
     def get_up_and_down_num_2(self, data_list):
+        pct_chg_zero_count = 0
         up_num = down_num = 0
         for data in data_list:
             pct_chg = data['pct_chg']
+            if pct_chg == 0:
+                pct_chg_zero_count += 1
+                continue
             if pct_chg > 0:
                 up_num += 1
             else:
                 down_num += 1
+        if pct_chg_zero_count == 1:
+            down_num += 1
         return up_num, down_num
 
     def get_max_high_close_ratio(self, data_list):
@@ -607,7 +613,7 @@ class Strategist(object):
 
         latest_close_p = latest_target_days_k_line_list[-1]['close']
         l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
-        if l_r_close_ratio > 3:
+        if l_r_close_ratio > 1:
             return False, 'ccc'
 
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
