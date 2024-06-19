@@ -538,16 +538,19 @@ class Strategist(object):
         opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
         prev_macd_diff, prev_macd_dea = self.get_stock_prev_macd(k_line_list)
         prev_macd_gold = self.is_prev_macd_gold(k_line_list)
-        if not prev_macd_gold:
-            if prev_macd_diff > 0 or opt_macd_diff < 0:
-                return False, 'bbb'
-        else:
-            if prev_macd_diff >= 0 or opt_macd_diff < -0.1:
-                return False, 'bbb'
+        if prev_macd_diff > 0 or opt_macd_diff < 0 or opt_macd_dea > 0:
+            return False, 'bbb'
+        # if not prev_macd_gold:
+        #     if prev_macd_diff > 0 or opt_macd_diff < 0:
+        #         return False, 'bbb'
+        # else:
+        #     if prev_macd_diff >= 0 or opt_macd_diff < -0.1:
+        #         return False, 'bbb'
         boll_days_5_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=5, days_interval=interval)
-        if 100 * boll_days_5_count/interval < 50:
+        if 100 * boll_days_5_count/interval < 85:
             return False, 'bbb'
         boll_days_10_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=10, days_interval=interval)
+        # print(100 * boll_days_10_count / interval)
         if 100 * boll_days_10_count/interval < 40:
             return False, 'bbb'
         k_line_list_interval = k_line_list[-interval - 1:-1]
@@ -567,7 +570,7 @@ class Strategist(object):
         up_num, down_num = self.get_up_and_down_num(k_line_list_interval)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(k_line_list_interval)
         up_num = up_num if up_num > up_num_2 else up_num_2
-        up_ratio_interval_day = round(100 * up_num / (up_num + down_num), 0)
+        up_ratio_interval_day = round(100 * up_num / len(k_line_list_interval), 0)
         pct_chg_interval_day = self.get_pct_chg_sum(k_line_list_interval)
         if not 70 <= up_ratio_interval_day <= 90:
             return False, 'ddd'
