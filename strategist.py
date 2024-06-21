@@ -621,9 +621,10 @@ class Strategist(object):
 
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
         now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
-        max_close_price_ratio = 100 * (max_close_price_interval-now_ideal_close_price) / now_ideal_close_price
-        if max_close_price_ratio > 0:
-        # if max_close_price_interval > now_ideal_close_price:
+
+        if max_close_price_interval > now_ideal_close_price:
+            return False, 'ccc'
+        if now_ideal_close_price < target_close_p:
             return False, 'ccc'
 
         for t_k_line in latest_target_days_k_line_list:
