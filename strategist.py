@@ -713,25 +713,29 @@ class Strategist(object):
             target_open_p = temp_prev_close_p
 
         latest_close_p = latest_target_days_k_line_list[-1]['close']
-        latest_open_p = latest_target_days_k_line_list[-1]['open']
-        if latest_open_p < target_open_p or latest_open_p > target_close_p:
+        l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
+        if l_r_close_ratio > 3:
             return False, 'ccc'
-        if latest_close_p < target_open_p or latest_close_p > target_close_p:
-            return False, 'ccc'
-        # min_pct_chg_2 = self.get_min_pct_chg_2(latest_target_days_k_line_list)
-        # t_min_pct_chg_2 = self.retain_decimals_no_rounding(min_pct_chg_2, 1)
-        # if t_min_pct_chg_2 < -5.5:
-        #     return False, 'ccc'
-        #
-        # max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
-        # max_pct_chg_2 = self.get_max_pct_chg_2(latest_target_days_k_line_list)
-        # if max_pct_chg > 6.5:
-        #     return False, 'ccc'
 
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
         now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
+
         if max_close_price_interval > now_ideal_close_price:
             return False, 'ccc'
+        if now_ideal_close_price < target_close_p:
+            return False, 'ccc'
+
+        # latest_close_p = latest_target_days_k_line_list[-1]['close']
+        # latest_open_p = latest_target_days_k_line_list[-1]['open']
+        # if latest_open_p < target_open_p or latest_open_p > target_close_p:
+        #     return False, 'ccc'
+        # if latest_close_p < target_open_p or latest_close_p > target_close_p:
+        #     return False, 'ccc'
+        #
+        # max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
+        # now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
+        # if max_close_price_interval > now_ideal_close_price:
+        #     return False, 'ccc'
 
         for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
