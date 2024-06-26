@@ -677,7 +677,7 @@ class Strategist(object):
         open_high = self.is_open_price_high(k_line_list)
         if open_high:
             return False, 'a'
-        range_days = 10
+        range_days = 12
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
         temp_k_line_list = k_line_list[-range_days-1:-1]
         max_pct_chg_binary_list = self.get_max_pct_chg_binary_list(latest_range_days_k_line_list)
@@ -685,9 +685,9 @@ class Strategist(object):
         for i, v in enumerate(max_pct_chg_binary_list):
             if v == 1:
                 max_pct_chg_index_list.append(i)
-        if len(max_pct_chg_index_list) not in [1]:
+        if len(max_pct_chg_index_list) not in [1, 2]:
             return False, "aaa"
-        if max_pct_chg_index_list[-1] > 0:
+        if max_pct_chg_index_list[-1] > 2:
             return False, "aaa"
         target_index = max_pct_chg_index_list[-1]
         t_1_k_line = latest_range_days_k_line_list[target_index]
@@ -770,7 +770,7 @@ class Strategist(object):
             return False, 'ggg'
         boll_days_5_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=5, days_interval=t_s_count)
         boll_days_5_count_ratio = 100 * boll_days_5_count / t_s_count
-        if boll_days_5_count_ratio < 30:
+        if boll_days_5_count_ratio < 60:
             return False, 'ggg'
         ma_up = self.is_ma_up_1(k_line_list, t_s_count+1)
         if not ma_up:
@@ -779,16 +779,6 @@ class Strategist(object):
         diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
         if diff_sat_count_ratio < 80:
             return False, 'ggg'
-        # self.is_prev_kdj_gold(k_line_list)
-        # # 这个看后面要不要保留
-        # t_2_k_line = latest_target_days_k_line_list[-2]
-        # t_2_k_line_green_ok = self.is_green(t_2_k_line)
-        # if not t_2_k_line_green_ok:
-        #     return False, 'hhh'
-        # t_4_k_line_d = t_4_k_line['open'] if t_4_k_line['open'] > t_4_k_line['close'] else t_4_k_line['close']
-        # t_3_k_line_d = t_3_k_line['open'] if t_3_k_line['open'] > t_3_k_line['close'] else t_3_k_line['close']
-        # if t_4_k_line_d >= t_3_k_line_d:
-        #     return False, 'hhh'
         return True, OK
 
     def get_fourth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
