@@ -861,7 +861,7 @@ class Strategist(object):
                 no_sat_count += 1
             prev_t_low_p = t_low_p
         no_sat_ratio = 100 * no_sat_count / t_s_count
-        if no_sat_ratio > 20:
+        if no_sat_ratio > 30:
             return False, 'bbb'
 
         target_close_p = latest_range_days_k_line_list[target_index]['close']
