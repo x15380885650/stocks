@@ -872,7 +872,7 @@ class Strategist(object):
 
         latest_close_p = latest_target_days_k_line_list[-1]['close']
         l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
-        if l_r_close_ratio > -5:
+        if l_r_close_ratio > -10:
             return False, 'ccc'
 
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
