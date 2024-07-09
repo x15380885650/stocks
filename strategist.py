@@ -803,9 +803,9 @@ class Strategist(object):
         #     return False, 'ccc'
 
         target_open_p = latest_range_days_k_line_list[target_index]['open']
-        # temp_prev_close_p = temp_k_line_list[target_index]['close']
-        # if temp_prev_close_p < target_open_p:
-        #     target_open_p = temp_prev_close_p
+        temp_prev_close_p = temp_k_line_list[target_index]['close']
+        if temp_prev_close_p < target_open_p:
+            target_open_p = temp_prev_close_p
 
         for idx, t_k_line in enumerate(latest_target_days_k_line_list):
             close_p = t_k_line['close']
