@@ -9,6 +9,14 @@ class Persister(object):
         self.redis = StrictRedis(**redis_conf, decode_responses=True)
         self.key_prefix = key_prefix
 
+    def scan_keys(self, pattern):
+        cursor = '0'
+        keys = []
+        while cursor != 0:
+            cursor, data = self.redis.scan(cursor=cursor, match=pattern)
+            keys.extend(data)
+        return keys
+
     def save_code_to_monitor(self, date, code):
         key = '{}:{}:monitor'.format(self.key_prefix, date)
         self.redis.sadd(key, code)
@@ -22,6 +30,27 @@ class Persister(object):
         notifier_key = '{}:{}:notifier'.format(self.key_prefix, date)
         diff = self.redis.sdiff(monitor_key, notifier_key)
         return list(diff)
+
+    def get_all_monitor_code_list(self, date):
+        pattern_monitor = '*:{}:monitor'.format(date)
+        monitor_keys = self.scan_keys(pattern_monitor)
+        code_list = []
+        for monitor_key in monitor_keys:
+            notifier_key = monitor_key.replace(':monitor', ':notifier')
+            diff = self.redis.sdiff(monitor_key, notifier_key)
+            code_list.extend(list(diff))
+        return list(set(code_list))
+
+    def get_all_buy_code_list(self):
+        pattern_buy_code_list = '*:buy_stock_list'
+        buy_stock_list_keys = self.scan_keys(pattern_buy_code_list)
+        code_list = []
+        for buy_stock_list_key in buy_stock_list_keys:
+            code_set = self.redis.smembers(buy_stock_list_key)
+            for code in code_set:
+                if code:
+                    code_list.append(code)
+        return list(set(code_list))
 
     def get_max_monitor_show_count(self):
         key = '{}:max_show_count_monitor'.format(self.key_prefix)
