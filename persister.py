@@ -87,7 +87,7 @@ class Persister(object):
         key = '{}:min_pct_chg_notifier'.format(self.key_prefix)
         pct_chg = self.redis.get(key)
         if pct_chg is None:
-            pct_chg = 8
+            pct_chg = 6.5
             self.redis.set(key, pct_chg)
         return float(pct_chg)
 
@@ -95,7 +95,7 @@ class Persister(object):
         key = '{}:min_pct_chg_monitor'.format(self.key_prefix)
         pct_chg = self.redis.get(key)
         if pct_chg is None:
-            pct_chg = 4
+            pct_chg = 0
             self.redis.set(key, pct_chg)
         return float(pct_chg)
 
@@ -107,7 +107,7 @@ class Persister(object):
         key = '{}:sleep_time_notifier'.format(self.key_prefix)
         sleep_time = self.redis.get(key)
         if sleep_time is None:
-            sleep_time = 0.5
+            sleep_time = 2
             self.redis.set(key, sleep_time)
         return float(sleep_time)
 
