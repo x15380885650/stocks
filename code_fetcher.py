@@ -118,6 +118,7 @@ class CodeFetcher(object):
             pct_chg = float(stock[1][2])
             latest_close_price = float(stock[1][3])
             stock_value = stock[1].iloc[15] / 10000 / 10000
+            total_stock_value = stock[1].iloc[14] / 10000 / 10000
             if 'ST' in name:
                 return False
             filtered = self.ds.is_code_filtered(code)
@@ -125,7 +126,9 @@ class CodeFetcher(object):
                 return False
             if not (latest_close_price_min <= latest_close_price <= latest_close_price_max):
                 return False
-            if stock_value > stock_value_max or stock_value < stock_value_min:
+            # if stock_value > stock_value_max or stock_value < stock_value_min:
+            #     return False
+            if total_stock_value > stock_value_max or total_stock_value < stock_value_min:
                 return False
             pct_change_max = self.get_pct_change_max(code)
             if pct_chg >= pct_change_max:
