@@ -976,35 +976,18 @@ class Strategist(object):
         open_high = self.is_open_price_high(k_line_list)
         if open_high:
             return False, 'a'
-        range_days = 7
+        range_days = 8
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
-        max_pct_chg_binary_list = self.get_max_pct_chg_binary_list(latest_range_days_k_line_list)
-        max_pct_chg_index_list = []
-        for i, v in enumerate(max_pct_chg_binary_list):
-            if v == 1:
-                max_pct_chg_index_list.append(i)
-        if len(max_pct_chg_index_list) != 0:
-            return False, "aaa"
-
-        pct_chg_red_c_days = 5
-        red_pct_chg_b_list = []
-        for k_line in latest_range_days_k_line_list[-1::-1]:
+        pct_chg_sum = 0
+        for k_line in latest_range_days_k_line_list:
             pct_chg = k_line['pct_chg']
-            is_red = self.is_red(k_line)
-            if pct_chg > 0 and is_red:
-                red_pct_chg_b_list.append(1)
-            else:
-                red_pct_chg_b_list.append(0)
-        t_v = sum(red_pct_chg_b_list[:pct_chg_red_c_days])
-        if t_v < pct_chg_red_c_days:
-            return False, 'bbb'
-        key_k_line_list = latest_range_days_k_line_list[-pct_chg_red_c_days::]
-        pct_chg_v = self.get_pct_chg_sum(key_k_line_list)
-        if pct_chg_v > 10:
-            return False, 'ccc'
-        prev_diff, prev_dea = self.get_stock_prev_macd(k_line_list)
-        if prev_diff < 0:
-            return False, 'ddd'
+            pct_chg_sum += pct_chg
+            if pct_chg > 1.8 or pct_chg < -2.2:
+                return False, 'b'
+        pct_chg_sum = self.retain_decimals_no_rounding(pct_chg_sum, decimals=1)
+        if pct_chg_sum < -1 or pct_chg_sum > 3:
+            return False, 'c'
+
         return True, OK
 
 
