@@ -988,6 +988,11 @@ class Strategist(object):
         if pct_chg_sum < -1 or pct_chg_sum > 3:
             return False, 'c'
 
+        latest_k_line = latest_range_days_k_line_list[-1]
+        red_ok = self.is_red(latest_k_line, equal_ok=True)
+        if not red_ok:
+            return False, 'd'
+
         return True, OK
 
 
