@@ -982,7 +982,7 @@ class Strategist(object):
         for k_line in latest_range_days_k_line_list:
             pct_chg = k_line['pct_chg']
             pct_chg_sum += pct_chg
-            if pct_chg > 1.8 or pct_chg < -2.2:
+            if pct_chg > 2 or pct_chg < -2.5:
                 return False, 'b'
         pct_chg_sum = self.retain_decimals_no_rounding(pct_chg_sum, decimals=1)
         if pct_chg_sum < -1 or pct_chg_sum > 3:
