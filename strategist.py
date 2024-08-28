@@ -732,9 +732,12 @@ class Strategist(object):
             t_t_ratio = 100 * (t_3_k_line_high - t_1_k_line_close) / t_1_k_line_close
             t_t_ratio_2 = 100 * (t_3_k_line_high - t_3_k_line_open) / t_3_k_line_open
             t_t_ratio = self.retain_decimals_no_rounding(t_t_ratio, 1)
-            print(f't_t_ratio:{t_t_ratio}, t_t_ratio_2:{t_t_ratio_2}')
-            if t_t_ratio > 7 and t_t_ratio_2 > 4:
+            # print(t_t_ratio, t_t_ratio_2)
+            # print(f't_t_ratio:{t_t_ratio}, t_t_ratio_2:{t_t_ratio_2}')
+            if t_t_ratio > 7.5 or t_t_ratio_2 > 7.5:
                 return False, 'fff'
+            # if t_t_ratio > 7 and t_t_ratio_2 > 8:
+            #     return False, 'fff'
 
         boll_days_30_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count)
         boll_days_30_count_ratio = 100 * boll_days_30_count / t_s_count
