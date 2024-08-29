@@ -723,6 +723,15 @@ class Strategist(object):
         if down_num not in [3, 4] and down_num_2 not in [3, 4]:
             return False, 'eee'
 
+        t_l_k_line_low = latest_target_days_k_line_list[-1]['low']
+        t_l_1_ratio = 100 * (t_l_k_line_low - latest_target_days_k_line_list[-2]['close']) / latest_target_days_k_line_list[-2]['close']
+        t_l_2_ratio = latest_target_days_k_line_list[-1]['pct_chg']
+        t_l_1_ratio = self.retain_decimals_no_rounding(t_l_1_ratio, decimals=1)
+        t_l_2_ratio = self.retain_decimals_no_rounding(t_l_2_ratio, decimals=1)
+        print(f't_l_1_ratio: {t_l_1_ratio}, t_l_2_ratio: {t_l_2_ratio}')
+        if t_l_1_ratio < -7 or t_l_2_ratio < -6:
+            return False, 'fff'
+
         t_3_k_line = latest_target_days_k_line_list[0]
         t_3_k_line_green_ok = self.is_green(t_3_k_line)
         if t_3_k_line_green_ok:
