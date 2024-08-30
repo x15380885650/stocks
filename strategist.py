@@ -435,14 +435,14 @@ class Strategist(object):
     def retain_decimals_no_rounding(self, number, decimals=2):
         return int(number*10**decimals) / 10**decimals
 
-    def is_macd_latest_gold(self, k_line_list):
+    def is_macd_latest_gold(self, k_line_list, days=7):
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
         k_line_list_opt = copy.deepcopy(k_line_list)
         k_line_list_opt[-1]['close'] = now_ideal_close_price
         stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
         is_gold = False
-        for i in range(1, 7):
+        for i in range(1, days):
             diff_prev, dea_prev = stock_tech['macd'].iloc[-i - 1], stock_tech['macds'].iloc[-i - 1],
             diff, dea = stock_tech['macd'].iloc[-i], stock_tech['macds'].iloc[-i]
             if dea > diff:
@@ -1007,6 +1007,17 @@ class Strategist(object):
         if not red_ok:
             return False, 'd'
 
+        latest_k_line_2 = latest_range_days_k_line_list[-2]
+        latest_k_line_3 = latest_range_days_k_line_list[-3]
+        latest_k_line_2_green = self.is_green(latest_k_line_2)
+        latest_k_line_3_green = self.is_green(latest_k_line_3)
+        # if not latest_k_line_2_green and not latest_k_line_3_green:
+        #     return False, 'e'
+
+        opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
+        prev_macd_diff, prev_macd_dea = self.get_stock_prev_macd(k_line_list)
+        if prev_macd_diff > 0 or opt_macd_diff < 0 or opt_macd_dea > 0:
+            return False, 'f'
         return True, OK
 
 
