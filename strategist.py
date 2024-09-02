@@ -370,6 +370,16 @@ class Strategist(object):
         diff, dea = stock_tech['macd'].iloc[-2], stock_tech['macds'].iloc[-2]
         return round(diff, 2), round(dea, 2)
 
+    def is_stock_range_macd_gt_0(self, k_line_list, range_days):
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list)
+        for i in range(2, range_days+2):
+            diff, dea = stock_tech['macd'].iloc[-i], stock_tech['macds'].iloc[-i]
+            diff, dea = round(diff, 2), round(dea, 2)
+            if diff < 0 or dea < 0:
+                return False
+        return True
+
+
     def is_close_price_exceed_ma(self, k_line_list, boll_days=20, days_count=4):
         count = 0
         stock_tech = self.get_stock_tech(k_line_list=k_line_list)
@@ -988,24 +998,24 @@ class Strategist(object):
         open_high = self.is_open_price_high(k_line_list)
         if open_high:
             return False, 'a'
-        range_days = 8
+        range_days = 6
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
         pct_chg_sum = 0
         for k_line in latest_range_days_k_line_list:
             pct_chg = k_line['pct_chg']
             pct_chg_sum += pct_chg
             pct_chg = self.retain_decimals_no_rounding(pct_chg, decimals=1)
-            if pct_chg > 1.6 or pct_chg < -1.6:
+            if pct_chg > 1.6 or pct_chg < -1.5:
                 return False, 'b'
         pct_chg_sum = self.retain_decimals_no_rounding(pct_chg_sum, decimals=1)
-        print(f'pct_chg_sum: {pct_chg_sum}')
-        if pct_chg_sum < -1 or pct_chg_sum > 3:
+        # print(f'pct_chg_sum: {pct_chg_sum}')
+        if pct_chg_sum < 1 or pct_chg_sum > 2.5:
             return False, 'c'
 
-        latest_k_line = latest_range_days_k_line_list[-1]
-        red_ok = self.is_red(latest_k_line, equal_ok=True)
-        if not red_ok:
-            return False, 'd'
+        # latest_k_line = latest_range_days_k_line_list[-1]
+        # red_ok = self.is_red(latest_k_line, equal_ok=True)
+        # if not red_ok:
+        #     return False, 'd'
 
         latest_k_line_2 = latest_range_days_k_line_list[-2]
         latest_k_line_3 = latest_range_days_k_line_list[-3]
@@ -1016,8 +1026,22 @@ class Strategist(object):
 
         opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
         prev_macd_diff, prev_macd_dea = self.get_stock_prev_macd(k_line_list)
-        if prev_macd_diff > 0 or opt_macd_diff < 0 or opt_macd_dea > 0:
+        if prev_macd_diff < 0:
+            if opt_macd_diff < 0 or opt_macd_dea > 0:
+                return False, 'f'
+        else:
             return False, 'f'
+            # range_macd_ok = self.is_stock_range_macd_gt_0(k_line_list, range_days=range_days-1)
+            # if not range_macd_ok:
+            #     return False, 'f'
+            # interval = range_days - 1
+            # boll_days_5_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=5, days_interval=interval)
+            # if 100 * boll_days_5_count/interval < 85:
+            #     return False, 'bbb'
+            # boll_days_10_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=10, days_interval=interval)
+            # # print(100 * boll_days_10_count / interval)
+            # if 100 * boll_days_10_count/interval < 40:
+            #     return False, 'bbb'
         return True, OK
 
 
