@@ -108,6 +108,8 @@ if __name__ == '__main__':
     email.set_header("你好")
     email.add_text("hello1")
     email.add_text("hello2")
+
+    # 75082655@qq.com
     # email.add_attach("images/guilunmei.jpeg")
     # email.add_attach("images/guilunmei.jpeg")
     # email.add_receiver("chenggang@njis.ac.cn")
