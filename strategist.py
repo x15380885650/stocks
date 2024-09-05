@@ -998,50 +998,49 @@ class Strategist(object):
         open_high = self.is_open_price_high(k_line_list)
         if open_high:
             return False, 'a'
-        range_days = 6
+        range_days = 8
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
         pct_chg_sum = 0
         for k_line in latest_range_days_k_line_list:
             pct_chg = k_line['pct_chg']
             pct_chg_sum += pct_chg
             pct_chg = self.retain_decimals_no_rounding(pct_chg, decimals=1)
-            if pct_chg > 1.6 or pct_chg < -1.5:
+            if pct_chg > 2.5 or pct_chg < -1:
                 return False, 'b'
         pct_chg_sum = self.retain_decimals_no_rounding(pct_chg_sum, decimals=1)
         # print(f'pct_chg_sum: {pct_chg_sum}')
-        if pct_chg_sum < 1 or pct_chg_sum > 2.5:
+        if pct_chg_sum < 0 or pct_chg_sum > 4:
             return False, 'c'
 
-        # latest_k_line = latest_range_days_k_line_list[-1]
-        # red_ok = self.is_red(latest_k_line, equal_ok=True)
-        # if not red_ok:
-        #     return False, 'd'
+        up_num, down_num = self.get_up_and_down_num(latest_range_days_k_line_list)
+        up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_range_days_k_line_list)
+        if down_num not in [3, 4] and down_num_2 not in [3, 4]:
+            return False, 'eee'
 
-        latest_k_line_2 = latest_range_days_k_line_list[-2]
-        latest_k_line_3 = latest_range_days_k_line_list[-3]
-        latest_k_line_2_green = self.is_green(latest_k_line_2)
-        latest_k_line_3_green = self.is_green(latest_k_line_3)
-        # if not latest_k_line_2_green and not latest_k_line_3_green:
-        #     return False, 'e'
-
-        opt_macd_diff, opt_macd_dea = self.get_stock_opt_macd(k_line_list)
-        prev_macd_diff, prev_macd_dea = self.get_stock_prev_macd(k_line_list)
-        if prev_macd_diff < 0:
-            if opt_macd_diff < 0 or opt_macd_dea > 0:
-                return False, 'f'
-        else:
-            return False, 'f'
-            # range_macd_ok = self.is_stock_range_macd_gt_0(k_line_list, range_days=range_days-1)
-            # if not range_macd_ok:
-            #     return False, 'f'
-            # interval = range_days - 1
-            # boll_days_5_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=5, days_interval=interval)
-            # if 100 * boll_days_5_count/interval < 85:
-            #     return False, 'bbb'
-            # boll_days_10_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=10, days_interval=interval)
-            # # print(100 * boll_days_10_count / interval)
-            # if 100 * boll_days_10_count/interval < 40:
-            #     return False, 'bbb'
+        t_s_count = range_days - 1
+        boll_days_30_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count)
+        boll_days_30_count_ratio = 100 * boll_days_30_count / t_s_count
+        if boll_days_30_count_ratio < 100:
+            return False, 'ggg'
+        boll_days_20_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=20, days_interval=t_s_count)
+        boll_days_20_count_ratio = 100 * boll_days_20_count / t_s_count
+        if boll_days_20_count_ratio < 100:
+            return False, 'ggg'
+        boll_days_10_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=10, days_interval=t_s_count)
+        boll_days_10_count_ratio = 100 * boll_days_10_count / t_s_count
+        if boll_days_10_count_ratio < 100:
+            return False, 'ggg'
+        boll_days_5_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=5, days_interval=t_s_count)
+        boll_days_5_count_ratio = 100 * boll_days_5_count / t_s_count
+        if boll_days_5_count_ratio < 50:
+            return False, 'ggg'
+        ma_up = self.is_ma_up_1(k_line_list, t_s_count + 1)
+        if not ma_up:
+            return False, 'ggg'
+        diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1)
+        diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
+        if diff_sat_count_ratio < 100:
+            return False, 'ggg'
         return True, OK
 
 
