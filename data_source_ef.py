@@ -66,6 +66,7 @@ class EfDataSource(DataSource):
         data = ef.stock.get_quote_history(code_list, beg=start_date, end=end_date, fqt=0)
         for code, df in data.items():
             k_line_list = []
+            prev_close = None
             for s in df.iterrows():
                 arr = s[1]
                 name = arr[0]
@@ -80,9 +81,12 @@ class EfDataSource(DataSource):
                 amp = arr[9]
                 pct_chg = arr[10]
                 turn = arr[12]
-                k_line_list.append(
-                    {'code': code, 'date': date, 'open': _open, 'close': close, 'high': high, 'low': low,
-                     'volume': volume, 'amount': amount, 'pct_chg': pct_chg, 'turn': turn, 'amp': amp, 'name': name})
+                n_item = {'code': code, 'date': date, 'open': _open, 'close': close, 'high': high, 'low': low,
+                          'volume': volume, 'amount': amount, 'pct_chg': pct_chg, 'turn': turn, 'amp': amp, 'name': name}
+                if prev_close:
+                    n_item['prev_close'] = prev_close
+                k_line_list.append(n_item)
+                prev_close = close
             stock_kline_history_list.append(k_line_list)
         return stock_kline_history_list
 

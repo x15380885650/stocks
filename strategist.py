@@ -109,6 +109,29 @@ class Strategist(object):
                 max_ratio = ratio
         return max_ratio
 
+    def get_max_high_prev_close_ratio(self, data_list):
+        max_ratio = 0
+        for data in data_list:
+            prev_close_price = data['prev_close']
+            high_price = data['high']
+            ratio = 100 * (high_price-prev_close_price) / prev_close_price
+            ratio = round(ratio, 2)
+            if ratio > max_ratio:
+                max_ratio = ratio
+        return max_ratio
+
+    def get_min_low_prev_close_ratio(self, data_list):
+        min_ratio = 0
+        for data in data_list:
+            prev_close_price = data['prev_close']
+            low_price = data['low']
+            ratio = 100 * (low_price-prev_close_price) / prev_close_price
+            ratio = round(ratio, 2)
+            if ratio < min_ratio:
+                min_ratio = ratio
+        return min_ratio
+
+
     def get_max_pct_chg(self, data_list):
         max_pct_chg = float(data_list[0]['pct_chg'])
         for data in data_list:
@@ -1011,6 +1034,11 @@ class Strategist(object):
         # print(f'pct_chg_sum: {pct_chg_sum}')
         if pct_chg_sum < 0 or pct_chg_sum > 4:
             return False, 'c'
+
+        max_high_prev_close_ratio = self.get_max_high_prev_close_ratio(latest_range_days_k_line_list)
+        min_low_prev_close_ratio = self.get_min_low_prev_close_ratio(latest_range_days_k_line_list)
+        if max_high_prev_close_ratio > 5 or min_low_prev_close_ratio < -1.5:
+            return False, 'dddd'
 
         up_num, down_num = self.get_up_and_down_num(latest_range_days_k_line_list)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_range_days_k_line_list)
