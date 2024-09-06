@@ -909,7 +909,7 @@ class Strategist(object):
                 return False, 'b'
         pct_chg_sum = self.retain_decimals_no_rounding(pct_chg_sum, decimals=1)
         # print(f'pct_chg_sum: {pct_chg_sum}')
-        if pct_chg_sum < 0 or pct_chg_sum > 4:
+        if pct_chg_sum < 0 or pct_chg_sum > 6:
             return False, 'c'
 
         max_high_prev_close_ratio = self.get_max_high_prev_close_ratio(latest_range_days_k_line_list)
