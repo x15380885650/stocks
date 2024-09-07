@@ -458,7 +458,7 @@ class Strategist(object):
                 sat_day += 1
             else:
                 break
-        if sat_day < 2:
+        if sat_day < 1:
             return False
         # if sat_day != days:
         #     return False
@@ -506,7 +506,7 @@ class Strategist(object):
         open_close_ratio = 100 * (now_open_price - prev_close_price) / prev_close_price
         # print(open_close_ratio)
         open_close_ratio = self.retain_decimals_no_rounding(open_close_ratio, decimals=1)
-        if open_close_ratio > 3 or open_close_ratio < -3:
+        if open_close_ratio > 4.5 or open_close_ratio < -3:
             return True
         return False
 
@@ -905,16 +905,17 @@ class Strategist(object):
             pct_chg = k_line['pct_chg']
             pct_chg_sum += pct_chg
             pct_chg = self.retain_decimals_no_rounding(pct_chg, decimals=1)
-            if pct_chg > 3 or pct_chg < -2:
+            if pct_chg > 3 or pct_chg < -1.5:
                 return False, 'b'
         pct_chg_sum = self.retain_decimals_no_rounding(pct_chg_sum, decimals=1)
         # print(f'pct_chg_sum: {pct_chg_sum}')
-        if pct_chg_sum < 0 or pct_chg_sum > 4:
+        if pct_chg_sum < 0 or pct_chg_sum > 3.5:
             return False, 'c'
 
         max_high_prev_close_ratio = self.get_max_high_prev_close_ratio(latest_range_days_k_line_list)
         min_low_prev_close_ratio = self.get_min_low_prev_close_ratio(latest_range_days_k_line_list)
-        if max_high_prev_close_ratio > 5 or min_low_prev_close_ratio < -3:
+        if max_high_prev_close_ratio > 3.5 or min_low_prev_close_ratio < -3:
+        # if min_low_prev_close_ratio < -4:
             return False, 'dddd'
 
         up_num, down_num = self.get_up_and_down_num(latest_range_days_k_line_list)
