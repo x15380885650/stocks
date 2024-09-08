@@ -440,7 +440,7 @@ class Strategist(object):
                 count += 1
         return count
 
-    def is_ma_up_1(self, k_line_list, days):
+    def is_ma_up_1(self, k_line_list, days, stat_day_min=2):
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
         k_line_list_opt = copy.deepcopy(k_line_list)
@@ -458,10 +458,8 @@ class Strategist(object):
                 sat_day += 1
             else:
                 break
-        if sat_day < 1:
+        if sat_day < stat_day_min:
             return False
-        # if sat_day != days:
-        #     return False
         return True
 
 
@@ -510,15 +508,19 @@ class Strategist(object):
             return True
         return False
 
-    def get_diff_sat_count(self, k_line_list, days):
+    def get_diff_sat_count(self, k_line_list, days, dea_min_check=False):
         sat_count = 0
         stock_tech = self.get_stock_tech(k_line_list=k_line_list)
         for i in range(1, days):
             diff, dea = stock_tech['macd'].iloc[-i - 1], stock_tech['macds'].iloc[-i - 1]
             diff = round(diff, 2)
             dea = round(dea, 2)
-            if diff >= 0 and diff >= dea:
-                sat_count += 1
+            if not dea_min_check:
+                if diff >= 0 and diff >= dea:
+                    sat_count += 1
+            else:
+                if diff >= 0 and diff >= dea >= 0:
+                    sat_count += 1
         return sat_count
 
     def is_prev_macd_gold(self, k_line_list):
@@ -912,10 +914,18 @@ class Strategist(object):
         if pct_chg_sum < 0 or pct_chg_sum > 3.5:
             return False, 'c'
 
+        latest_continue_green_days = 0
+        for k_l in latest_range_days_k_line_list[-1::-1]:
+            if self.is_green(k_l):
+                latest_continue_green_days += 1
+            else:
+                break
+        if latest_continue_green_days >= 3:
+            return False, 'c'
+
         max_high_prev_close_ratio = self.get_max_high_prev_close_ratio(latest_range_days_k_line_list)
         min_low_prev_close_ratio = self.get_min_low_prev_close_ratio(latest_range_days_k_line_list)
         if max_high_prev_close_ratio > 3.5 or min_low_prev_close_ratio < -3:
-        # if min_low_prev_close_ratio < -4:
             return False, 'dddd'
 
         up_num, down_num = self.get_up_and_down_num(latest_range_days_k_line_list)
@@ -940,12 +950,12 @@ class Strategist(object):
         boll_days_5_count_ratio = 100 * boll_days_5_count / t_s_count
         if boll_days_5_count_ratio < 50:
             return False, 'ggg'
-        ma_up = self.is_ma_up_1(k_line_list, t_s_count + 1)
+        ma_up = self.is_ma_up_1(k_line_list, t_s_count + 1, stat_day_min=1)
         if not ma_up:
             return False, 'ggg'
-        diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1)
+        diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1, dea_min_check=True)
         diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
-        if diff_sat_count_ratio < 50:
+        if diff_sat_count_ratio < 25:
             return False, 'ggg'
         return True, OK
 
