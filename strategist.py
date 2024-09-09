@@ -917,7 +917,7 @@ class Strategist(object):
         latest_continue_green_days = 0
         latest_continue_green_days_pct_chg_sum = 0
         for k_l in latest_range_days_k_line_list[-1::-1]:
-            if self.is_green(k_l) and k_l['pct_chg'] < 0:
+            if self.is_green(k_l) and k_l['pct_chg'] <= 0:
                 latest_continue_green_days += 1
                 latest_continue_green_days_pct_chg_sum += k_l['pct_chg']
             else:
