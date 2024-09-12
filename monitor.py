@@ -62,6 +62,8 @@ class Monitor(Ancestor):
                     min_pct_chg_monitor = self.persister.get_min_pct_chg_monitor()
                     sleep_time = self.persister.get_sleep_time_monitor()
                     show_code = self.persister.get_show_code_status()
+                    monitor_code_list = self.persister.get_monitor_code_list(end_date_str)
+                    buy_code_list = self.persister.get_buy_code_list()
                     if clear_monitor_status:
                         exclude_stock_set.clear()
                         monitor_stock_count = 0
@@ -94,6 +96,8 @@ class Monitor(Ancestor):
                     min_opt_macd_diff = self.persister.get_min_opt_macd_diff()
                     for stock_kline_list in stock_list_kline_list:
                         code = stock_kline_list[-1]['code']
+                        if code in monitor_code_list or code in buy_code_list:
+                            continue
                         if len(stock_kline_list) < int(self.stock_days/2):
                             exclude_stock_set.add(code)
                             continue
@@ -105,7 +109,6 @@ class Monitor(Ancestor):
                         else:
                             print('push to redis, code: {}'.format(code))
                             self.persister.save_code_to_monitor(end_date_str, code)
-                            # exclude_stock_set.add(code)
                 except Exception as e:
                     print(e)
                 print('now: {}, sleep: {}'.format(datetime.now(), sleep_time))
