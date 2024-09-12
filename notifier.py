@@ -43,6 +43,7 @@ class Notifier(Ancestor):
                     code_dict[buy_code] = 1
                 all_code_list = list(code_dict.keys())
                 min_pct_chg_notifier = self.persister.get_min_pct_chg_notifier()
+                min_pct_chg_monitor = self.persister.get_min_pct_chg_monitor()
                 sleep_time = self.persister.get_sleep_time_notifier()
                 stock_list_kline_list = c_fetcher.get_stock_list_kline_list(all_code_list, end_date_str, end_date_str)
                 sorted_stock_list_kline_list = sorted(
@@ -56,6 +57,10 @@ class Notifier(Ancestor):
                     name = stock_kline_list[-1]['name']
                     pct_chg = stock_kline_list[-1]['pct_chg']
                     buy_flag = code_dict[code]
+                    if code in monitor_code_list and pct_chg < min_pct_chg_monitor:
+                        self.persister.remove_monitor_code(end_date_str, code)
+                        print(f'code: {code} pct_chg:{pct_chg} < min_pct_chg_monitor: {min_pct_chg_monitor}, removed...')
+                        continue
                     if buy_flag == 1:
                         print('code: {}, name: {}, pct_chg: {}, {}'.format(code, name, pct_chg, buy_flag))
                     elif monitor_code_show_count < monitor_code_show_count_max:

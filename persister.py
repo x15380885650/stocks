@@ -71,6 +71,10 @@ class Persister(object):
         monitor_key = '{}:{}:monitor'.format(self.key_prefix, date)
         self.redis.delete(monitor_key)
 
+    def remove_monitor_code(self, date, code):
+        monitor_key = '{}:{}:monitor'.format(self.key_prefix, date)
+        self.redis.srem(monitor_key, code)
+
     def get_buy_code_list(self):
         key = '{}:buy_stock_list'.format(self.key_prefix)
         code_set = self.redis.smembers(key)
