@@ -105,7 +105,7 @@ class Monitor(Ancestor):
                         else:
                             print('push to redis, code: {}'.format(code))
                             self.persister.save_code_to_monitor(end_date_str, code)
-                            exclude_stock_set.add(code)
+                            # exclude_stock_set.add(code)
                 except Exception as e:
                     print(e)
                 print('now: {}, sleep: {}'.format(datetime.now(), sleep_time))
