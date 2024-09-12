@@ -907,7 +907,7 @@ class Strategist(object):
             pct_chg = k_line['pct_chg']
             pct_chg_sum += pct_chg
             pct_chg = self.retain_decimals_no_rounding(pct_chg, decimals=1)
-            if pct_chg > 3 or pct_chg < -1.8:
+            if pct_chg > 3 or pct_chg < -1.5:
                 return False, 'b'
         pct_chg_sum = self.retain_decimals_no_rounding(pct_chg_sum, decimals=1)
         # print(f'pct_chg_sum: {pct_chg_sum}')
@@ -923,13 +923,12 @@ class Strategist(object):
             else:
                 break
         if latest_continue_green_days >= 2:
+            # print(latest_continue_green_days_pct_chg_sum)
             return False, 'c'
 
         max_high_prev_close_ratio = self.get_max_high_prev_close_ratio(latest_range_days_k_line_list)
         min_low_prev_close_ratio = self.get_min_low_prev_close_ratio(latest_range_days_k_line_list)
-        max_high_prev_close_ratio = self.retain_decimals_no_rounding(max_high_prev_close_ratio, decimals=1)
-        min_low_prev_close_ratio = self.retain_decimals_no_rounding(min_low_prev_close_ratio, decimals=1)
-        if max_high_prev_close_ratio > 4 or min_low_prev_close_ratio < -3:
+        if max_high_prev_close_ratio > 3.5 or min_low_prev_close_ratio < -3:
             return False, 'dddd'
 
         up_num, down_num = self.get_up_and_down_num(latest_range_days_k_line_list)
