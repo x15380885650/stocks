@@ -32,7 +32,7 @@ class Persister(object):
         return list(diff)
 
     def get_all_monitor_code_list(self, date):
-        pattern_monitor = '*:{}:monitor'.format(date)
+        pattern_monitor = '{}:{}:monitor'.format(self.key_prefix)
         monitor_keys = self.scan_keys(pattern_monitor)
         code_list = []
         for monitor_key in monitor_keys:
@@ -40,6 +40,15 @@ class Persister(object):
             diff = self.redis.sdiff(monitor_key, notifier_key)
             code_list.extend(list(diff))
         return list(set(code_list))
+
+    def clear_monitor_code_list_except_date(self, date):
+        pattern_monitor = f'{self.key_prefix}:20*:monitor'
+        monitor_keys = self.scan_keys(pattern_monitor)
+        monitor_date_key = f'{self.key_prefix}:{date}:monitor'
+        for monitor_key in monitor_keys:
+            if monitor_key == monitor_date_key:
+                continue
+            self.redis.delete(monitor_key)
 
     def get_all_buy_code_list(self):
         pattern_buy_code_list = '*:buy_stock_list'

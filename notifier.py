@@ -31,6 +31,7 @@ class Notifier(Ancestor):
                     continue
 
                 start_date_str, end_date_str = d_chooser.get_start_and_end_date()
+                self.persister.clear_monitor_code_list_except_date(end_date_str)
                 monitor_code_list = self.persister.get_monitor_code_list(end_date_str)
                 buy_code_list = self.persister.get_buy_code_list()
                 if not monitor_code_list and not buy_code_list:
