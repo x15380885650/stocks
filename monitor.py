@@ -23,7 +23,7 @@ class Monitor(Ancestor):
         c_fetcher = CodeFetcher(ds=self.ds)
         d_chooser = DateChooser(ds=self.ds, delta_days=self.stock_days)
         exclude_stock_set = set()
-        cond_dict = defaultdict(list)
+        cond_dict = defaultdict(set)
         monitor_stock_count = 0
 
         if self.test_code_dict:
@@ -103,7 +103,7 @@ class Monitor(Ancestor):
                             continue
                         monitor_stock_count += 1
                         res_ok, cond = self.get_strategy_res(code, stock_kline_list, min_opt_macd_diff)
-                        cond_dict[cond].append(code)
+                        cond_dict[cond].add(code)
                         if not res_ok:
                             exclude_stock_set.add(code)
                         else:
