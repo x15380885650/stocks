@@ -939,11 +939,11 @@ class Strategist(object):
         t_s_count = range_days - 1
         boll_days_30_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count)
         boll_days_30_count_ratio = 100 * boll_days_30_count / t_s_count
-        if boll_days_30_count_ratio < 70:
+        if boll_days_30_count_ratio < 100:
             return False, 'ggg'
         boll_days_20_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=20, days_interval=t_s_count)
         boll_days_20_count_ratio = 100 * boll_days_20_count / t_s_count
-        if boll_days_20_count_ratio < 70:
+        if boll_days_20_count_ratio < 100:
             return False, 'ggg'
         boll_days_10_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=10, days_interval=t_s_count)
         boll_days_10_count_ratio = 100 * boll_days_10_count / t_s_count
@@ -958,7 +958,7 @@ class Strategist(object):
             return False, 'ggg'
         diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1, dea_min_check=True)
         diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
-        if diff_sat_count_ratio < 25:
+        if diff_sat_count_ratio < 50:
             return False, 'ggg'
         return True, OK
 
