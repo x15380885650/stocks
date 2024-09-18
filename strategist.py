@@ -904,6 +904,10 @@ class Strategist(object):
         open_high = self.is_open_price_high(k_line_list)
         if open_high:
             return False, 'a'
+        latest_close_price = k_line_list[-1]['close']
+        print(latest_close_price)
+        if latest_close_price > 15:
+            return False, 'a'
         range_days = 8
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
         pct_chg_sum = 0
