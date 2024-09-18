@@ -711,8 +711,8 @@ class Strategist(object):
         if open_high:
             return False, 'a'
         latest_close_price = k_line_list[-1]['close']
-        # print(latest_close_price)
-        if latest_close_price > 15:
+        print(latest_close_price)
+        if latest_close_price > 15 or latest_close_price < 3:
             return False, 'a'
         range_days = 9
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
@@ -906,7 +906,7 @@ class Strategist(object):
             return False, 'a'
         latest_close_price = k_line_list[-1]['close']
         print(latest_close_price)
-        if latest_close_price > 15:
+        if latest_close_price > 15 or latest_close_price < 3:
             return False, 'a'
         range_days = 8
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
