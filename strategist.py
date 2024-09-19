@@ -462,6 +462,25 @@ class Strategist(object):
             return False
         return True
 
+    def ma_20_30_golden_days(self, k_line_list, days, stat_day_min=2):
+        prev_close_price = k_line_list[-2]['close']
+        now_ideal_close_price = prev_close_price * 1.1
+        k_line_list_opt = copy.deepcopy(k_line_list)
+        k_line_list_opt[-1]['close'] = now_ideal_close_price
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
+        sat_day = 0
+
+        for i in range(2, days+1):
+            ma_20_price = round(stock_tech['boll_{}'.format(20)].iloc[-i], 3)
+            ma_30_price = round(stock_tech['boll_{}'.format(30)].iloc[-i], 3)
+            sat_day += 1
+            print(ma_20_price, ma_30_price)
+            if ma_20_price < ma_30_price:
+                break
+        return sat_day
+
+
+
 
     def retain_decimals_no_rounding(self, number, decimals=2):
         return int(number*10**decimals) / 10**decimals
@@ -1029,24 +1048,28 @@ class Strategist(object):
         open_high = self.is_open_price_high(k_line_list)
         if open_high:
             return False, 'a'
+        latest_close_price = k_line_list[-1]['close']
+        print(latest_close_price)
+        if latest_close_price > 15 or latest_close_price < 3:
+            return False, 'a'
         range_days = 8
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
         pct_chg_sum = 0
-        for k_line in latest_range_days_k_line_list:
-            pct_chg = k_line['pct_chg']
-            pct_chg_sum += pct_chg
-            pct_chg = self.retain_decimals_no_rounding(pct_chg, decimals=1)
-            if pct_chg > 2.5 or pct_chg < -1:
-                return False, 'b'
+        # for k_line in latest_range_days_k_line_list:
+        #     pct_chg = k_line['pct_chg']
+        #     pct_chg_sum += pct_chg
+        #     pct_chg = self.retain_decimals_no_rounding(pct_chg, decimals=1)
+        #     if pct_chg > 2.5 or pct_chg < -1:
+        #         return False, 'b'
         pct_chg_sum = self.retain_decimals_no_rounding(pct_chg_sum, decimals=1)
         # print(f'pct_chg_sum: {pct_chg_sum}')
         if pct_chg_sum < 0 or pct_chg_sum > 4:
             return False, 'c'
 
-        max_high_prev_close_ratio = self.get_max_high_prev_close_ratio(latest_range_days_k_line_list)
-        min_low_prev_close_ratio = self.get_min_low_prev_close_ratio(latest_range_days_k_line_list)
-        if max_high_prev_close_ratio > 5 or min_low_prev_close_ratio < -1.5:
-            return False, 'dddd'
+        # max_high_prev_close_ratio = self.get_max_high_prev_close_ratio(latest_range_days_k_line_list)
+        # min_low_prev_close_ratio = self.get_min_low_prev_close_ratio(latest_range_days_k_line_list)
+        # if max_high_prev_close_ratio > 5 or min_low_prev_close_ratio < -1.5:
+        #     return False, 'dddd'
 
         up_num, down_num = self.get_up_and_down_num(latest_range_days_k_line_list)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_range_days_k_line_list)
@@ -1076,6 +1099,9 @@ class Strategist(object):
         diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1)
         diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
         if diff_sat_count_ratio < 100:
+            return False, 'ggg'
+        golden_days = self.ma_20_30_golden_days(k_line_list, t_s_count + 1)
+        if golden_days != 5:
             return False, 'ggg'
         return True, OK
 
