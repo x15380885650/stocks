@@ -474,7 +474,7 @@ class Strategist(object):
             ma_20_price = round(stock_tech['boll_{}'.format(20)].iloc[-i], 3)
             ma_30_price = round(stock_tech['boll_{}'.format(30)].iloc[-i], 3)
             sat_day += 1
-            print(ma_20_price, ma_30_price)
+            # print(ma_20_price, ma_30_price)
             if ma_20_price < ma_30_price:
                 break
         return sat_day
@@ -1045,11 +1045,13 @@ class Strategist(object):
         return True, OK
 
     def get_sixth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+        return False, 'a'
+
         open_high = self.is_open_price_high(k_line_list)
         if open_high:
             return False, 'a'
         latest_close_price = k_line_list[-1]['close']
-        print(latest_close_price)
+        # print(latest_close_price)
         if latest_close_price > 15 or latest_close_price < 3:
             return False, 'a'
         range_days = 8
@@ -1101,7 +1103,7 @@ class Strategist(object):
         if diff_sat_count_ratio < 100:
             return False, 'ggg'
         golden_days = self.ma_20_30_golden_days(k_line_list, t_s_count + 1)
-        if golden_days != 5:
+        if golden_days not in [3, 4, 5, 6]:
             return False, 'ggg'
         return True, OK
 
