@@ -32,7 +32,7 @@ class Persister(object):
         return list(diff)
 
     def get_all_monitor_code_list(self, date):
-        pattern_monitor = '{}:{}:monitor'.format(self.key_prefix)
+        pattern_monitor = '{}:{}:monitor'.format(self.key_prefix, date)
         monitor_keys = self.scan_keys(pattern_monitor)
         code_list = []
         for monitor_key in monitor_keys:
