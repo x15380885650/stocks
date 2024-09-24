@@ -432,6 +432,20 @@ class Strategist(object):
                 count += 1
         return count
 
+    def get_latest_close_price_continue_less_ma_days(self, k_line_list, boll_days, days_interval):
+        count = 0
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list)
+        boll = stock_tech['boll_{}'.format(boll_days)]
+        boll_price_series = boll.iloc[-2::-1]
+        for k_line in k_line_list[-2::-1]:
+            close_price = round(k_line['close'], 2)
+            ma_price = round(boll_price_series[k_line['date']], 2)
+            if close_price >= ma_price:
+                break
+            else:
+                count += 1
+        return count
+
     def get_close_price_exceed_target_price_days(self, k_line_list, target_price):
         count = 0
         for k_line in k_line_list:
@@ -461,6 +475,25 @@ class Strategist(object):
         if sat_day < stat_day_min:
             return False
         return True
+
+    def get_latest_price_continue_exceed_ma_days(self, k_line_list, days):
+        prev_close_price = k_line_list[-2]['close']
+        now_ideal_close_price = prev_close_price * 1.1
+        k_line_list_opt = copy.deepcopy(k_line_list)
+        k_line_list_opt[-1]['close'] = now_ideal_close_price
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list_opt)
+        sat_day = 0
+        for i in range(2, days+1):
+            close_price = k_line_list[-i]['close']
+            ma_5_price = round(stock_tech['boll_{}'.format(5)].iloc[-i], 2)
+            ma_10_price = round(stock_tech['boll_{}'.format(10)].iloc[-i], 2)
+            ma_20_price = round(stock_tech['boll_{}'.format(20)].iloc[-i], 2)
+            ma_30_price = round(stock_tech['boll_{}'.format(30)].iloc[-i], 2)
+            if close_price >= ma_5_price or close_price >= ma_10_price:
+                sat_day += 1
+            else:
+                break
+        return sat_day
 
     def ma_20_30_golden_days(self, k_line_list, days, stat_day_min=2):
         prev_close_price = k_line_list[-2]['close']
@@ -730,7 +763,7 @@ class Strategist(object):
         if open_high:
             return False, 'a'
         latest_close_price = k_line_list[-1]['close']
-        print(latest_close_price)
+        # print(latest_close_price)
         if latest_close_price > 15 or latest_close_price < 3:
             return False, 'a'
         range_days = 9
@@ -759,6 +792,7 @@ class Strategist(object):
 
         latest_close_p = latest_target_days_k_line_list[-1]['close']
         l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
+        # print(l_r_close_ratio)
         if l_r_close_ratio > 1.5:
             return False, 'ccc'
 
@@ -824,6 +858,9 @@ class Strategist(object):
             return False, 'ggg'
         ma_up = self.is_ma_up_1(k_line_list, t_s_count + 1)
         if not ma_up:
+            return False, 'ggg'
+        continue_exceed_ma_days = self.get_latest_price_continue_exceed_ma_days(k_line_list, t_s_count + 1)
+        if continue_exceed_ma_days < 1:
             return False, 'ggg'
         diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1)
         diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
