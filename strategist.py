@@ -523,7 +523,8 @@ class Strategist(object):
         open_close_ratio = 100 * (now_open_price - prev_close_price) / prev_close_price
         # print(open_close_ratio)
         open_close_ratio = self.retain_decimals_no_rounding(open_close_ratio, decimals=1)
-        if open_close_ratio > 4.5 or open_close_ratio < -3:
+        print(open_close_ratio)
+        if open_close_ratio > 3 or open_close_ratio < -2:
             return True
         return False
 
@@ -730,7 +731,7 @@ class Strategist(object):
         if open_high:
             return False, 'a'
         latest_close_price = k_line_list[-1]['close']
-        print(latest_close_price)
+        # print(latest_close_price)
         if latest_close_price > 15 or latest_close_price < 3:
             return False, 'a'
         range_days = 9
