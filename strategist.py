@@ -164,6 +164,14 @@ class Strategist(object):
                 max_close = float(close)
         return max_close
 
+    def get_min_close_price(self, data_list):
+        min_close = float(data_list[0]['close'])
+        for data in data_list:
+            close = data['close']
+            if min_close > float(close):
+                min_close = float(close)
+        return min_close
+
     def get_min_low_price(self, data_list):
         min_low = float(data_list[0]['low'])
         for data in data_list:
@@ -798,8 +806,12 @@ class Strategist(object):
             return False, 'ccc'
 
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
-        now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
+        min_close_price_interval = self.get_min_close_price(latest_target_days_k_line_list)
+        rr_ratio = abs(100 * (max_close_price_interval-min_close_price_interval) / min_close_price_interval)
+        if max_close_price_interval < target_close_p and rr_ratio < 5:
+            return False, 'ccc'
 
+        now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
         if max_close_price_interval > now_ideal_close_price:
             return False, 'ccc'
         if now_ideal_close_price < target_close_p:
