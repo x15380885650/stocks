@@ -808,7 +808,7 @@ class Strategist(object):
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
         min_close_price_interval = self.get_min_close_price(latest_target_days_k_line_list)
         rr_ratio = abs(100 * (max_close_price_interval-min_close_price_interval) / min_close_price_interval)
-        if max_close_price_interval < target_close_p and rr_ratio < 5:
+        if max_close_price_interval < target_close_p and rr_ratio < 4:
             return False, 'ccc'
 
         now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
