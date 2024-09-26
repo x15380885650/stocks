@@ -10,9 +10,11 @@ from ancestor import Ancestor
 class Notifier(Ancestor):
     def __init__(self, key_prefix):
         self.key_prefix = key_prefix
+        self.is_trade_time_forbidden = True
         super(Notifier, self).__init__(key_prefix=key_prefix)
 
     def run(self):
+        print(f'is_trade_time_forbidden: {self.is_trade_time_forbidden}')
         sleep_time = 0
         c_fetcher = CodeFetcher(ds=self.ds)
         d_chooser = DateChooser(ds=self.ds, delta_days=self.stock_days)
@@ -74,8 +76,8 @@ class Notifier(Ancestor):
                             monitor_code_show_count += 1
                     if pct_chg < min_pct_chg_notifier or code in buy_code_list:
                         continue
-                    only_show = self.is_trade_only_show()
-                    if only_show:
+                    now_time_forbidden = self.is_now_time_forbidden()
+                    if self.is_trade_time_forbidden and now_time_forbidden:
                         continue
                     email_dict = self.persister.get_email_dict()
                     for email, enabled in email_dict.items():

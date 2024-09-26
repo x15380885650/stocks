@@ -68,16 +68,6 @@ class LargeScreenMonitor(Ancestor):
                             monitor_code_show_count += 1
                     if pct_chg < min_pct_chg_notifier or code in buy_code_list:
                         continue
-                    only_show = self.is_trade_only_show()
-                    if only_show:
-                        continue
-                    # email_dict = self.persister.get_email_dict()
-                    # for email, enabled in email_dict.items():
-                    #     print(email, enabled)
-                    #     code_from = '{}({})'.format(code, self.key_prefix)
-                    #     if int(enabled):
-                    #         self.notify(email=email, code=code_from)
-                    # self.persister.save_code_to_notifier(end_date_str, code)
             except Exception as e:
                 print(e)
             print('now: {}, sleep: {}'.format(datetime.now(), sleep_time))

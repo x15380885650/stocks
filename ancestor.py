@@ -24,17 +24,14 @@ class Ancestor(object):
             return True
         return False
 
-    def is_trade_only_show(self):
+    def is_now_time_forbidden(self):
         from datetime import datetime
         now = datetime.now()
 
-        start_time_1 = datetime(now.year, now.month, now.day, 10, 15)
-        end_time_1 = datetime(now.year, now.month, now.day, 11, 25)
+        start_time = datetime(now.year, now.month, now.day, 10, 15)
+        end_time = datetime(now.year, now.month, now.day, 13, 50)
 
-        start_time_2 = datetime(now.year, now.month, now.day, 13, 5)
-        end_time_2 = datetime(now.year, now.month, now.day, 13, 50)
-
-        if start_time_1 <= now <= end_time_1 or start_time_2 <= now <= end_time_2:
+        if start_time <= now <= end_time:
             return True
         return False
 
