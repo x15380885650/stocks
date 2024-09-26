@@ -29,9 +29,9 @@ class Ancestor(object):
         now = datetime.now()
 
         start_time = datetime(now.year, now.month, now.day, 10, 15)
-        end_time = datetime(now.year, now.month, now.day, 13, 50)
+        end_time = datetime(now.year, now.month, now.day, 14, 15)
 
-        if start_time <= now <= end_time:
+        if start_time < now < end_time:
             return True
         return False
 
