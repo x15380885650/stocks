@@ -41,6 +41,19 @@ class Persister(object):
             code_list.extend(list(diff))
         return list(set(code_list))
 
+    def get_all_monitor_code_info(self, date):
+        pattern_monitor = '*:{}:monitor'.format(date)
+        monitor_keys = self.scan_keys(pattern_monitor)
+        code_info = {}
+        for monitor_key in monitor_keys:
+            notifier_key = monitor_key.replace(':monitor', ':notifier')
+            code_list = self.redis.sdiff(monitor_key, notifier_key)
+            from_monitor = monitor_key.split(':')[0]
+            for code in code_list:
+                code_info.setdefault(code, [])
+                code_info[code].append(from_monitor)
+        return code_info
+
     def clear_monitor_code_list_except_date(self, date):
         pattern_monitor = f'{self.key_prefix}:20*:monitor'
         monitor_keys = self.scan_keys(pattern_monitor)
@@ -60,6 +73,19 @@ class Persister(object):
                 if code:
                     code_list.append(code)
         return list(set(code_list))
+
+    def get_all_buy_code_info(self):
+        pattern_buy_code_list = '*:buy_stock_list'
+        buy_stock_list_keys = self.scan_keys(pattern_buy_code_list)
+        code_info = {}
+        for buy_stock_list_key in buy_stock_list_keys:
+            from_monitor = buy_stock_list_key.split(':')[0]
+            code_set = self.redis.smembers(buy_stock_list_key)
+            for code in code_set:
+                if code:
+                    code_info.setdefault(code, [])
+                    code_info[code].append(from_monitor)
+        return code_info
 
     def get_max_monitor_show_count(self):
         key = '{}:max_show_count_monitor'.format(self.key_prefix)
