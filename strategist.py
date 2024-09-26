@@ -503,6 +503,17 @@ class Strategist(object):
                 break
         return sat_day
 
+    def get_latest_continue_red_days(self, k_line_list, days):
+        sat_day = 0
+        for i in range(2, days+1):
+            k_line = k_line_list[-i]
+            k_line_red = self.is_red(k_line, equal_ok=False)
+            if k_line_red:
+                sat_day += 1
+            else:
+                break
+        return sat_day
+
     def ma_20_30_golden_days(self, k_line_list, days, stat_day_min=2):
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
@@ -870,8 +881,12 @@ class Strategist(object):
         ma_up = self.is_ma_up_1(k_line_list, t_s_count + 1)
         if not ma_up:
             return False, 'ggg'
-        continue_exceed_ma_days = self.get_latest_price_continue_exceed_ma_days(k_line_list, t_s_count + 1)
+        continue_exceed_ma_days = self.get_latest_price_continue_exceed_ma_days(k_line_list, t_s_count+1)
         if continue_exceed_ma_days < 1:
+            return False, 'ggg'
+        continue_red_days = self.get_latest_continue_red_days(k_line_list, t_s_count+1)
+        if continue_red_days > 2:
+            print(continue_red_days)
             return False, 'ggg'
         diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1)
         diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
