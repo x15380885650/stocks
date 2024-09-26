@@ -562,9 +562,7 @@ class Strategist(object):
         prev_close_price = k_line_list[-2]['close']
         now_open_price = k_line_list[-1]['open']
         open_close_ratio = 100 * (now_open_price - prev_close_price) / prev_close_price
-        # print(open_close_ratio)
         open_close_ratio = self.retain_decimals_no_rounding(open_close_ratio, decimals=1)
-        # print(open_close_ratio)
         if open_close_ratio > 3 or open_close_ratio < -2:
             return True
         return False
@@ -808,7 +806,7 @@ class Strategist(object):
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
         min_close_price_interval = self.get_min_close_price(latest_target_days_k_line_list)
         rr_ratio = abs(100 * (max_close_price_interval-min_close_price_interval) / min_close_price_interval)
-        if max_close_price_interval < target_close_p and rr_ratio < 4:
+        if max_close_price_interval < target_close_p and rr_ratio < 5:
             return False, 'ccc'
 
         now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
