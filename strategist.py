@@ -1236,8 +1236,6 @@ class Strategist(object):
         ma_up = self.is_ma_up_1(k_line_list, t_s_count + 1, stat_day_min=1)
         if not ma_up:
             return False, 'ggg'
-        # continue_exceed_target_close_days = self.get_latest_continue_exceed_target_close_days(k_line_list, t_s_count + 1, target_close_p)
-        # print(continue_exceed_target_close_days)
         diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1)
         diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
         if diff_sat_count_ratio < 90:
