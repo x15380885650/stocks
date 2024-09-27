@@ -1157,7 +1157,7 @@ class Strategist(object):
         l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
         l_r_close_ratio = self.retain_decimals_no_rounding(l_r_close_ratio, decimals=1)
         # print(l_r_close_ratio)
-        if l_r_close_ratio > 2:
+        if l_r_close_ratio > 1:
             return False, 'ccc'
         #
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
@@ -1170,17 +1170,17 @@ class Strategist(object):
         if now_ideal_close_price < target_close_p:
             return False, 'ccc'
         #
-        # gt_target_close_days = 0
+        gt_target_close_days = 0
         for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
             open_p = t_k_line['open']
             if close_p < target_open_p or open_p < target_open_p:
                 return False, 'ddd'
-            # if close_p >= target_close_p:
-            #     gt_target_close_days += 1
-        # gt_target_close_days_ratio = 100 * (gt_target_close_days/t_s_count)
-        # if gt_target_close_days_ratio < 20:
-        #     return False, 'ddd'
+            if close_p >= target_close_p:
+                gt_target_close_days += 1
+        gt_target_close_days_ratio = 100 * (gt_target_close_days/t_s_count)
+        if gt_target_close_days_ratio < 20:
+            return False, 'ddd'
         #
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
