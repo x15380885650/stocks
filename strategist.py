@@ -514,6 +514,17 @@ class Strategist(object):
                 break
         return sat_day
 
+    def get_latest_continue_exceed_target_close_days(self, k_line_list, days, target_close):
+        sat_day = 0
+        for i in range(2, days+1):
+            k_line = k_line_list[-i]
+            close = k_line['close']
+            if close >= target_close:
+                sat_day += 1
+            else:
+                break
+        return sat_day
+
     def ma_20_30_golden_days(self, k_line_list, days, stat_day_min=2):
         prev_close_price = k_line_list[-2]['close']
         now_ideal_close_price = prev_close_price * 1.1
@@ -1146,7 +1157,7 @@ class Strategist(object):
         l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
         l_r_close_ratio = self.retain_decimals_no_rounding(l_r_close_ratio, decimals=1)
         # print(l_r_close_ratio)
-        if l_r_close_ratio > 7:
+        if l_r_close_ratio > 1:
             return False, 'ccc'
         #
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
@@ -1180,15 +1191,15 @@ class Strategist(object):
         if not (30 < down_num_ratio <= 80):
             return False, 'eee'
         #
-        # t_l_k_line_low = latest_target_days_k_line_list[-1]['low']
-        # t_l_1_ratio = 100 * (t_l_k_line_low - latest_target_days_k_line_list[-2]['close']) / \
-        #               latest_target_days_k_line_list[-2]['close']
-        # t_l_2_ratio = latest_target_days_k_line_list[-1]['pct_chg']
-        # t_l_1_ratio = self.retain_decimals_no_rounding(t_l_1_ratio, decimals=1)
-        # t_l_2_ratio = self.retain_decimals_no_rounding(t_l_2_ratio, decimals=1)
-        # # print(f't_l_1_ratio: {t_l_1_ratio}, t_l_2_ratio: {t_l_2_ratio}')
-        # if t_l_1_ratio < -7 or t_l_2_ratio < -6:
-        #     return False, 'fff'
+        t_l_k_line_low = latest_target_days_k_line_list[-1]['low']
+        t_l_1_ratio = 100 * (t_l_k_line_low - latest_target_days_k_line_list[-2]['close']) / \
+                      latest_target_days_k_line_list[-2]['close']
+        t_l_2_ratio = latest_target_days_k_line_list[-1]['pct_chg']
+        t_l_1_ratio = self.retain_decimals_no_rounding(t_l_1_ratio, decimals=1)
+        t_l_2_ratio = self.retain_decimals_no_rounding(t_l_2_ratio, decimals=1)
+        # print(f't_l_1_ratio: {t_l_1_ratio}, t_l_2_ratio: {t_l_2_ratio}')
+        if t_l_1_ratio < -7 or t_l_2_ratio < -6:
+            return False, 'fff'
         #
         # t_3_k_line = latest_target_days_k_line_list[0]
         # t_3_k_line_green_ok = self.is_green(t_3_k_line)
@@ -1212,7 +1223,7 @@ class Strategist(object):
             return False, 'ggg'
         boll_days_20_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=20, days_interval=t_s_count)
         boll_days_20_count_ratio = 100 * boll_days_20_count / t_s_count
-        if boll_days_20_count_ratio < 80:
+        if boll_days_20_count_ratio < 90:
             return False, 'ggg'
         boll_days_10_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=10, days_interval=t_s_count)
         boll_days_10_count_ratio = 100 * boll_days_10_count / t_s_count
@@ -1225,13 +1236,8 @@ class Strategist(object):
         ma_up = self.is_ma_up_1(k_line_list, t_s_count + 1, stat_day_min=1)
         if not ma_up:
             return False, 'ggg'
-        # continue_exceed_ma_days = self.get_latest_price_continue_exceed_ma_days(k_line_list, t_s_count + 1)
-        # if continue_exceed_ma_days < 1:
-        #     return False, 'ggg'
-        # continue_red_days = self.get_latest_continue_red_days(k_line_list, t_s_count + 1)
-        # if continue_red_days > 2:
-        #     # print(continue_red_days)
-        #     return False, 'ggg'
+        # continue_exceed_target_close_days = self.get_latest_continue_exceed_target_close_days(k_line_list, t_s_count + 1, target_close_p)
+        # print(continue_exceed_target_close_days)
         diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1)
         diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
         if diff_sat_count_ratio < 90:
