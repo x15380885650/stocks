@@ -31,6 +31,11 @@ class Persister(object):
         diff = self.redis.sdiff(monitor_key, notifier_key)
         return list(diff)
 
+    def get_notifier_code_list(self, date):
+        notifier_key = '{}:{}:notifier'.format(self.key_prefix, date)
+        code_list = self.redis.smembers(notifier_key)
+        return list(code_list)
+
     def get_all_monitor_code_list(self, date):
         pattern_monitor = '*:{}:monitor'.format(date)
         monitor_keys = self.scan_keys(pattern_monitor)
