@@ -585,7 +585,7 @@ class Strategist(object):
         now_open_price = k_line_list[-1]['open']
         open_close_ratio = 100 * (now_open_price - prev_close_price) / prev_close_price
         open_close_ratio = self.retain_decimals_no_rounding(open_close_ratio, decimals=1)
-        if open_close_ratio > 3 or open_close_ratio < -3:
+        if open_close_ratio > 2 or open_close_ratio < -2:
             return True
         return False
 
@@ -1126,7 +1126,7 @@ class Strategist(object):
         # print(latest_close_price)
         if latest_close_price > 15 or latest_close_price < 3:
             return False, 'a'
-        range_days = 17
+        range_days = 18
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
         temp_k_line_list = k_line_list[-range_days - 1:-1]
         max_pct_chg_binary_list = self.get_max_pct_chg_binary_list(latest_range_days_k_line_list)
@@ -1134,13 +1134,24 @@ class Strategist(object):
         for i, v in enumerate(max_pct_chg_binary_list):
             if v == 1:
                 max_pct_chg_index_list.append(i)
-        if len(max_pct_chg_index_list) not in [2, 3, 4]:
+        max_pct_chg_index_list_len = len(max_pct_chg_index_list)
+        if max_pct_chg_index_list_len not in [2, 3, 4]:
             return False, "aaa"
-        # print(max_pct_chg_index_list)
-        if max_pct_chg_index_list[-1] - max_pct_chg_index_list[-2] > 7:
+
+        if max_pct_chg_index_list_len == 2:
+            if max_pct_chg_index_list[-1] - max_pct_chg_index_list[-2] > 4:
+                return False, "aaa"
+        if max_pct_chg_index_list[-1] > 11:
             return False, "aaa"
-        if max_pct_chg_index_list[-1] > 10:
-            return False, "aaa"
+
+        t_t_kline = latest_range_days_k_line_list[max_pct_chg_index_list[-1]]
+        t_t_t_kline = latest_range_days_k_line_list[max_pct_chg_index_list[-2]]
+        t_t_t_kline_close = t_t_t_kline['close']
+        t_t_kline_close = t_t_kline['close']
+        t_t_kline_close_ratio = 100 * (t_t_kline_close - t_t_t_kline_close) / t_t_t_kline_close
+        if t_t_kline_close_ratio < -4.5:
+            return False, 'aaa'
+
         target_index = max_pct_chg_index_list[-1]
         t_1_k_line = latest_range_days_k_line_list[target_index]
         t_s_count = range_days - target_index - 2
@@ -1157,7 +1168,7 @@ class Strategist(object):
         l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
         l_r_close_ratio = self.retain_decimals_no_rounding(l_r_close_ratio, decimals=1)
         # print(l_r_close_ratio)
-        if l_r_close_ratio > 1:
+        if l_r_close_ratio > 4.5:
             return False, 'ccc'
         #
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
