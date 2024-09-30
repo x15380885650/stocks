@@ -1123,7 +1123,6 @@ class Strategist(object):
         if open_high:
             return False, 'a'
         latest_close_price = k_line_list[-1]['close']
-        # print(latest_close_price)
         if latest_close_price > 15 or latest_close_price < 3:
             return False, 'a'
         range_days = 18
@@ -1164,18 +1163,17 @@ class Strategist(object):
         target_open_p = latest_range_days_k_line_list[target_index]['open']
         temp_prev_close_p = temp_k_line_list[target_index]['close']
         if temp_prev_close_p < target_open_p:
-            pass
-            # target_open_p = temp_prev_close_p
+            target_open_p = temp_prev_close_p
 
         latest_close_p = latest_target_days_k_line_list[-1]['close']
         l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
         l_r_close_ratio = self.retain_decimals_no_rounding(l_r_close_ratio, decimals=1)
-        # print(l_r_close_ratio)
         if l_r_close_ratio > 5:
             return False, 'ccc'
-        #
+
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
-        if max_close_price_interval < target_close_p:
+        max_high_price_interval = self.get_max_high_price(latest_target_days_k_line_list)
+        if max_close_price_interval < target_close_p and max_high_price_interval < target_close_p:
             return False, 'ccc'
 
         now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
@@ -1185,15 +1183,20 @@ class Strategist(object):
             return False, 'ccc'
         #
         gt_target_close_days = 0
+        gt_target_high_days = 0
         for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
             open_p = t_k_line['open']
+            high_p = t_k_line['high']
             if close_p < target_open_p or open_p < target_open_p:
                 return False, 'ddd'
             if close_p >= target_close_p:
                 gt_target_close_days += 1
+            if high_p >= target_close_p:
+                gt_target_high_days += 1
         gt_target_close_days_ratio = 100 * (gt_target_close_days/t_s_count)
-        if gt_target_close_days_ratio < 20:
+        gt_target_high_days_ratio = 100 * (gt_target_high_days / t_s_count)
+        if gt_target_close_days_ratio < 20 and gt_target_high_days_ratio < 25:
             return False, 'ddd'
         #
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
@@ -1201,7 +1204,6 @@ class Strategist(object):
         down_num_ratio_1 = 100*down_num/t_s_count
         down_num_ratio_2 = 100*down_num_2/t_s_count
         down_num_ratio = down_num_ratio_1 if down_num_ratio_1 > down_num_ratio_2 else down_num_ratio_2
-        # print(down_num_ratio)
         if not (30 < down_num_ratio <= 80):
             return False, 'eee'
         #
