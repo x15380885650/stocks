@@ -85,8 +85,11 @@ class EfDataSource(DataSource):
                           'volume': volume, 'amount': amount, 'pct_chg': pct_chg, 'turn': turn, 'amp': amp, 'name': name}
                 if prev_close:
                     n_item['prev_close'] = prev_close
+                    pct_chg_high = 100 * (n_item['high'] - n_item['prev_close']) / n_item['prev_close']
+                    n_item['pct_chg_high'] = round(pct_chg_high, 2)
                 k_line_list.append(n_item)
                 prev_close = close
+
             stock_kline_history_list.append(k_line_list)
         return stock_kline_history_list
 
