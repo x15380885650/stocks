@@ -1137,22 +1137,17 @@ class Strategist(object):
         if max_pct_chg_index_list_len not in [2, 3, 4]:
             return False, "aaa"
 
-        max_pct_chg_index_list_minus_1 = max_pct_chg_index_list[-1]
-        max_pct_chg_index_list_minus_2 = max_pct_chg_index_list[-2]
-        t_t_kline = latest_range_days_k_line_list[max_pct_chg_index_list_minus_1]
-        t_t_t_kline = latest_range_days_k_line_list[max_pct_chg_index_list_minus_2]
         if max_pct_chg_index_list_len == 2:
-            if max_pct_chg_index_list_minus_1 - max_pct_chg_index_list_minus_2 > 4:
+            if max_pct_chg_index_list[-1] - max_pct_chg_index_list[-2] > 1:
                 return False, "aaa"
-            else:
-                if t_t_kline['open'] < t_t_t_kline['close']:
-                    return False, "aaa"
         elif max_pct_chg_index_list_len == 3:
-            if max_pct_chg_index_list_minus_1 - max_pct_chg_index_list_minus_2 > 5:
+            if max_pct_chg_index_list[-1] - max_pct_chg_index_list[-2] > 5:
                 return False, "aaa"
         if max_pct_chg_index_list[-1] > 11:
             return False, "aaa"
 
+        t_t_kline = latest_range_days_k_line_list[max_pct_chg_index_list[-1]]
+        t_t_t_kline = latest_range_days_k_line_list[max_pct_chg_index_list[-2]]
         t_t_t_kline_close = t_t_t_kline['close']
         t_t_kline_close = t_t_kline['close']
         t_t_kline_close_ratio = 100 * (t_t_kline_close - t_t_t_kline_close) / t_t_t_kline_close
