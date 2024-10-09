@@ -837,10 +837,9 @@ class Strategist(object):
             return False, 'ccc'
 
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
-        min_close_price_interval = self.get_min_close_price(latest_target_days_k_line_list)
-        rr_ratio = abs(100 * (max_close_price_interval - min_close_price_interval) / min_close_price_interval)
-        if max_close_price_interval < target_close_p and rr_ratio < 5:
+        if max_close_price_interval < target_close_p:
             return False, 'ccc'
+
 
         now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
         if max_close_price_interval > now_ideal_close_price:
@@ -848,11 +847,18 @@ class Strategist(object):
         if now_ideal_close_price < target_close_p:
             return False, 'ccc'
 
+        close_open_p_count = 0
         for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
             open_p = t_k_line['open']
-            if close_p < target_open_p or open_p < target_open_p:
+            low_p = t_k_line['low']
+            if close_p < target_open_p or open_p < target_open_p or low_p < target_open_p:
                 return False, 'ddd'
+            if close_p >= target_close_p or open_p >= target_close_p:
+                close_open_p_count += 1
+        close_open_p_count_ratio = 100 * close_open_p_count / t_s_count
+        if close_open_p_count_ratio < 40:
+            return False, 'ddd'
 
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
