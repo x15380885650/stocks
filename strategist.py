@@ -840,7 +840,6 @@ class Strategist(object):
         if max_close_price_interval < target_close_p:
             return False, 'ccc'
 
-
         now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
         if max_close_price_interval > now_ideal_close_price:
             return False, 'ccc'
@@ -862,8 +861,8 @@ class Strategist(object):
 
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
-        # if down_num not in [3, 4] and down_num_2 not in [3, 4]:
-        #     return False, 'eee'
+        if down_num not in [2, 3, 4] and down_num_2 not in [2, 3, 4]:
+            return False, 'eee'
 
         down_num_ratio_1 = 100 * down_num / t_s_count
         down_num_ratio_2 = 100 * down_num_2 / t_s_count
