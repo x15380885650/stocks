@@ -448,7 +448,7 @@ class Strategist(object):
         for k_line in k_line_list[-days_interval-1: -1]:
             low_price = round(k_line['low'], 2)
             ma_price = round(boll_price_series[k_line['date']], 2)
-            if low_price >= ma_price:
+            if low_price > ma_price:
                 count += 1
         return count
 
@@ -840,7 +840,6 @@ class Strategist(object):
         if max_close_price_interval < target_close_p:
             return False, 'ccc'
 
-
         now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
         if max_close_price_interval > now_ideal_close_price:
             return False, 'ccc'
@@ -893,22 +892,22 @@ class Strategist(object):
             t_t_ratio = self.retain_decimals_no_rounding(t_t_ratio, 1)
             # print(t_t_ratio, t_t_ratio_2)
             # print(f't_t_ratio:{t_t_ratio}, t_t_ratio_2:{t_t_ratio_2}')
-            if t_t_ratio > 8 or t_t_ratio_2 > 8:
+            if t_t_ratio > 5 and t_t_ratio_2 < 2:
                 return False, 'fff'
-            # if t_t_ratio > 7 and t_t_ratio_2 > 8:
-            #     return False, 'fff'
 
         boll_days_30_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count)
+        boll_days_30_count_ = self.get_low_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count)
         boll_days_30_count_ratio = 100 * boll_days_30_count / t_s_count
-        if boll_days_30_count_ratio < 100:
+        if boll_days_30_count_ratio < 100 or boll_days_30_count_ != boll_days_30_count:
             return False, 'ggg'
+
         boll_days_20_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=20, days_interval=t_s_count)
+        boll_days_20_count_ = self.get_low_price_exceed_ma_days(k_line_list, boll_days=20, days_interval=t_s_count)
         boll_days_20_count_ratio = 100 * boll_days_20_count / t_s_count
-        if boll_days_20_count_ratio < 100:
+        if boll_days_20_count_ratio < 100 or boll_days_20_count_ != boll_days_20_count:
             return False, 'ggg'
         boll_days_10_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=10, days_interval=t_s_count)
         boll_days_10_count_ratio = 100 * boll_days_10_count / t_s_count
-        # print(boll_days_10_count_ratio)
         if boll_days_10_count_ratio < 80:
             return False, 'ggg'
         boll_days_5_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=5, days_interval=t_s_count)
