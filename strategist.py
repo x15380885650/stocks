@@ -861,8 +861,8 @@ class Strategist(object):
 
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
-        # if down_num not in [3, 4] and down_num_2 not in [3, 4]:
-        #     return False, 'eee'
+        if down_num not in [2, 3, 4] and down_num_2 not in [2, 3, 4]:
+            return False, 'eee'
 
         down_num_ratio_1 = 100 * down_num / t_s_count
         down_num_ratio_2 = 100 * down_num_2 / t_s_count
