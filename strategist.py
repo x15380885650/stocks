@@ -833,7 +833,7 @@ class Strategist(object):
         latest_close_p = latest_target_days_k_line_list[-1]['close']
         l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
         # print(l_r_close_ratio)
-        if l_r_close_ratio > 5:
+        if l_r_close_ratio > 7:
             return False, 'ccc'
 
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
@@ -864,12 +864,12 @@ class Strategist(object):
         if down_num not in [2, 3, 4] and down_num_2 not in [2, 3, 4]:
             return False, 'eee'
 
-        down_num_ratio_1 = 100 * down_num / t_s_count
-        down_num_ratio_2 = 100 * down_num_2 / t_s_count
-        down_num_ratio = down_num_ratio_1 if down_num_ratio_1 > down_num_ratio_2 else down_num_ratio_2
-        # print(down_num_ratio)
-        if not (30 <= down_num_ratio <= 80):
-            return False, 'eee'
+        # down_num_ratio_1 = 100 * down_num / t_s_count
+        # down_num_ratio_2 = 100 * down_num_2 / t_s_count
+        # down_num_ratio = down_num_ratio_1 if down_num_ratio_1 > down_num_ratio_2 else down_num_ratio_2
+        # # print(down_num_ratio)
+        # if not (30 <= down_num_ratio <= 80):
+        #     return False, 'eee'
 
         t_l_k_line_low = latest_target_days_k_line_list[-1]['low']
         t_l_1_ratio = 100 * (t_l_k_line_low - latest_target_days_k_line_list[-2]['close']) / \
