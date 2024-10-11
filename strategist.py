@@ -922,8 +922,11 @@ class Strategist(object):
         if continue_exceed_ma_days < 1:
             return False, 'ggg'
         continue_red_days = self.get_latest_continue_red_days(k_line_list, t_s_count + 1)
-        if continue_red_days > 2:
-            print(continue_red_days)
+        continue_red_days_ratio = 100 * continue_red_days / t_s_count
+        # print(continue_red_days_ratio)
+        if continue_red_days_ratio > 45:
+        # if continue_red_days > 2:
+        #     print(continue_red_days)
             return False, 'ggg'
         diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1)
         diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
