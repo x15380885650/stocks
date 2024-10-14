@@ -555,6 +555,17 @@ class Strategist(object):
                 break
         return sat_day
 
+    def get_latest_continue_green_days(self, k_line_list, days):
+        sat_day = 0
+        for i in range(2, days+1):
+            k_line = k_line_list[-i]
+            k_line_green = self.is_green(k_line)
+            if k_line_green:
+                sat_day += 1
+            else:
+                break
+        return sat_day
+
     def get_latest_continue_exceed_target_close_days(self, k_line_list, days, target_close):
         sat_day = 0
         for i in range(2, days+1):
@@ -908,7 +919,7 @@ class Strategist(object):
             high_p = t_k_line['high']
             t_t_ratio = 100 * (high_p - prev_close_p) / prev_close_p
             t_t_ratio_2 = 100 * (high_p - open_p) / open_p
-            if t_t_ratio > 5 and t_t_ratio_2 < 2:
+            if t_t_ratio > 5 and t_t_ratio_2 < 1:
                 return False, 'fff'
 
         boll_days_30_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count+1)
@@ -918,7 +929,7 @@ class Strategist(object):
         if boll_days_20_count___ratio != 100 and boll_days_30_count___ratio != 100:
             prev_ma_gt_later_ma_days_count = self.get_prev_ma_gt_later_ma_days(k_line_list, prev_boll_days=20, later_boll_days=30, days_interval=t_s_count+1)
             prev_ma_gt_later_ma_days_count_ratio = 100 * prev_ma_gt_later_ma_days_count / (t_s_count+1)
-            if prev_ma_gt_later_ma_days_count_ratio != 100:
+            if prev_ma_gt_later_ma_days_count_ratio != 100 or t_s_count < 6:
                 return False, 'ggg'
 
         boll_days_30_count = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count)
