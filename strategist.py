@@ -919,7 +919,7 @@ class Strategist(object):
             high_p = t_k_line['high']
             t_t_ratio = 100 * (high_p - prev_close_p) / prev_close_p
             t_t_ratio_2 = 100 * (high_p - open_p) / open_p
-            if t_t_ratio > 5 and t_t_ratio_2 < 1:
+            if t_t_ratio > 5 and t_t_ratio_2 < 2:
                 return False, 'fff'
 
         boll_days_30_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count+1)
