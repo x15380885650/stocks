@@ -1126,7 +1126,6 @@ class Strategist(object):
             return False, 'ggg'
         return True, OK
 
-
     def get_fifth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         open_high = self.is_open_price_high(k_line_list)
         if open_high:
@@ -1186,7 +1185,7 @@ class Strategist(object):
         if open_high:
             return False, 'a'
         latest_close_price = k_line_list[-1]['close']
-        if latest_close_price > 15 or latest_close_price < 3:
+        if latest_close_price > latest_close_price_max or latest_close_price < latest_close_price_min:
             return False, 'a'
         range_days = 18
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
@@ -1279,7 +1278,18 @@ class Strategist(object):
         # print(f't_l_1_ratio: {t_l_1_ratio}, t_l_2_ratio: {t_l_2_ratio}')
         if t_l_1_ratio < -7 or t_l_2_ratio < -6:
             return False, 'fff'
-        #
+
+        boll_days_30_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count + 1)
+        boll_days_20_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=20, days_interval=t_s_count + 1)
+        boll_days_30_count___ratio = 100 * boll_days_30_count___ / (t_s_count + 1)
+        boll_days_20_count___ratio = 100 * boll_days_20_count___ / (t_s_count + 1)
+        if boll_days_20_count___ratio != 100 or boll_days_30_count___ratio != 100:
+            prev_ma_gt_later_ma_days_count = self.get_prev_ma_gt_later_ma_days(
+                k_line_list, prev_boll_days=20, later_boll_days=30, days_interval=t_s_count + 1)
+            prev_ma_gt_later_ma_days_count_ratio = 100 * prev_ma_gt_later_ma_days_count / (t_s_count + 1)
+            if prev_ma_gt_later_ma_days_count_ratio != 100 or t_s_count < 6:
+                return False, 'ggg'
+
         boll_days_30_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count)
         boll_days_30_count_ratio = 100 * boll_days_30_count / t_s_count
         if boll_days_30_count_ratio < 100:
