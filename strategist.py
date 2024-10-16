@@ -1246,21 +1246,28 @@ class Strategist(object):
         #
         gt_target_close_days = 0
         gt_target_high_days = 0
+        low_p_days = 0
         for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
             open_p = t_k_line['open']
             high_p = t_k_line['high']
+            low_p = t_k_line['low']
             if close_p < target_open_p or open_p < target_open_p:
                 return False, 'ddd'
+            if low_p < target_open_p:
+                low_p_days += 1
             if close_p >= target_close_p:
                 gt_target_close_days += 1
             if high_p >= target_close_p:
                 gt_target_high_days += 1
         gt_target_close_days_ratio = 100 * (gt_target_close_days/t_s_count)
         gt_target_high_days_ratio = 100 * (gt_target_high_days / t_s_count)
+        low_p_days_days_ratio = 100 * (low_p_days / t_s_count)
         if gt_target_close_days_ratio < 20 and gt_target_high_days_ratio < 25:
             return False, 'ddd'
-        #
+        if low_p_days_days_ratio >= 40:
+            return False, 'ddd'
+
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
         down_num_ratio_1 = 100*down_num/t_s_count
