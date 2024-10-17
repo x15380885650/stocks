@@ -1192,9 +1192,17 @@ class Strategist(object):
         temp_k_line_list = k_line_list[-range_days - 1:-1]
         max_pct_chg_binary_list = self.get_max_pct_chg_binary_list(latest_range_days_k_line_list)
         max_pct_chg_index_list = []
+        v_k_line_count = 0
         for i, v in enumerate(max_pct_chg_binary_list):
             if v == 1:
                 max_pct_chg_index_list.append(i)
+                v_k_line = latest_range_days_k_line_list[i]
+                v_k_line_open = v_k_line['open']
+                v_k_line_close = v_k_line['close']
+                if v_k_line_open == v_k_line_close:
+                    v_k_line_count += 1
+        if v_k_line_count > 1:
+            return False, "aaa"
         max_pct_chg_index_list_len = len(max_pct_chg_index_list)
         if max_pct_chg_index_list_len not in [2, 3, 4]:
             return False, "aaa"
@@ -1275,7 +1283,7 @@ class Strategist(object):
         down_num_ratio = down_num_ratio_1 if down_num_ratio_1 > down_num_ratio_2 else down_num_ratio_2
         if not (30 < down_num_ratio <= 80):
             return False, 'eee'
-        #
+
         t_l_k_line_low = latest_target_days_k_line_list[-1]['low']
         t_l_1_ratio = 100 * (t_l_k_line_low - latest_target_days_k_line_list[-2]['close']) / \
                       latest_target_days_k_line_list[-2]['close']
