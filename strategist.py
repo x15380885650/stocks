@@ -1180,31 +1180,26 @@ class Strategist(object):
             return False, 'fff'
         return True, OK
 
-    def is_target_k_line_ok(self, range_days, k_line_list, max_pct_chg_index_list, target_v_k_line, latest_range_days_k_line_list):
-        target_k_line_ok = False
+    def is_target_k_line_ok(self, range_days, k_line_list, max_pct_chg_index_list, latest_range_days_k_line_list):
         stock_tech = self.get_stock_tech(k_line_list=k_line_list)
-        for boll_day in [5, 10, 20, 30]:
-            boll_day = stock_tech['boll_{}'.format(boll_day)]
-            boll_day_price = round(boll_day.iloc[-range_days + max_pct_chg_index_list[-2]], 2)
-            target_v_k_line_open = target_v_k_line['open']
-            target_v_k_line_close = target_v_k_line['close']
-            target_v_k_line_low = target_v_k_line['low']
-            print(boll_day_price, target_v_k_line_open, target_v_k_line_close, target_v_k_line_low)
-            if not (boll_day_price and target_v_k_line_open and boll_day_price < target_v_k_line_close and boll_day_price < target_v_k_line_low):
-                target_k_line_ok = True
+        target_v_k_line_index = max_pct_chg_index_list[-2]
+        target_v_k_line_interval = -1
+        target_v_k_line_interval_ok = False
+        for idx, target_v_k_line in enumerate(latest_range_days_k_line_list[target_v_k_line_index::-1]):
+            target_v_k_line_interval = idx
+            for day in [5, 10, 20]:
+                boll_day = stock_tech['boll_{}'.format(day)]
+                boll_day_price = round(boll_day.iloc[-range_days + target_v_k_line_index - idx], 2)
+                target_v_k_line_open = target_v_k_line['open']
+                target_v_k_line_close = target_v_k_line['close']
+                if not (boll_day_price < target_v_k_line_close and boll_day_price < target_v_k_line_open):
+                    target_v_k_line_interval_ok = True
+                    break
+            if target_v_k_line_interval_ok:
                 break
-        if not target_k_line_ok:
-            boll_5_day = stock_tech['boll_5']
-            target_v_prev_k_line = latest_range_days_k_line_list[max_pct_chg_index_list[-2]-1]
-            target_v_prev_k_line_open = target_v_prev_k_line['open']
-            target_v_prev_k_line_close = target_v_prev_k_line['close']
-            target_v_prev_k_line_low = target_v_prev_k_line['low']
-            boll_5_price_prev = round(boll_5_day.iloc[-range_days + max_pct_chg_index_list[-2] - 1], 2)
-            if not (
-                    boll_5_price_prev and target_v_prev_k_line_open and boll_5_price_prev < target_v_prev_k_line_close and boll_5_price_prev < target_v_prev_k_line_low):
-                target_k_line_ok = True
-        return target_k_line_ok
-
+        if target_v_k_line_interval > 3:
+            return False
+        return True
 
     def get_sixth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         open_high = self.is_open_price_high(k_line_list)
@@ -1230,8 +1225,7 @@ class Strategist(object):
                 v_k_line_close = v_k_line['close']
                 if v_k_line_open == v_k_line_close:
                     v_k_line_count += 1
-        target_v_k_line = latest_range_days_k_line_list[max_pct_chg_index_list[-2]]
-        target_k_line_ok = self.is_target_k_line_ok(range_days, k_line_list, max_pct_chg_index_list, target_v_k_line, latest_range_days_k_line_list)
+        target_k_line_ok = self.is_target_k_line_ok(range_days, k_line_list, max_pct_chg_index_list, latest_range_days_k_line_list)
         if not target_k_line_ok:
             return False, "aaa"
         if v_k_line_count > 1:
