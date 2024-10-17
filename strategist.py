@@ -1180,6 +1180,32 @@ class Strategist(object):
             return False, 'fff'
         return True, OK
 
+    def is_target_k_line_ok(self, range_days, k_line_list, max_pct_chg_index_list, target_v_k_line, latest_range_days_k_line_list):
+        target_k_line_ok = False
+        stock_tech = self.get_stock_tech(k_line_list=k_line_list)
+        for boll_day in [5, 10, 20, 30]:
+            boll_day = stock_tech['boll_{}'.format(boll_day)]
+            boll_day_price = round(boll_day.iloc[-range_days + max_pct_chg_index_list[-2]], 2)
+            target_v_k_line_open = target_v_k_line['open']
+            target_v_k_line_close = target_v_k_line['close']
+            target_v_k_line_low = target_v_k_line['low']
+            print(boll_day_price, target_v_k_line_open, target_v_k_line_close, target_v_k_line_low)
+            if not (boll_day_price and target_v_k_line_open and boll_day_price < target_v_k_line_close and boll_day_price < target_v_k_line_low):
+                target_k_line_ok = True
+                break
+        if not target_k_line_ok:
+            boll_5_day = stock_tech['boll_5']
+            target_v_prev_k_line = latest_range_days_k_line_list[max_pct_chg_index_list[-2]-1]
+            target_v_prev_k_line_open = target_v_prev_k_line['open']
+            target_v_prev_k_line_close = target_v_prev_k_line['close']
+            target_v_prev_k_line_low = target_v_prev_k_line['low']
+            boll_5_price_prev = round(boll_5_day.iloc[-range_days + max_pct_chg_index_list[-2] - 1], 2)
+            if not (
+                    boll_5_price_prev and target_v_prev_k_line_open and boll_5_price_prev < target_v_prev_k_line_close and boll_5_price_prev < target_v_prev_k_line_low):
+                target_k_line_ok = True
+        return target_k_line_ok
+
+
     def get_sixth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         open_high = self.is_open_price_high(k_line_list)
         if open_high:
@@ -1193,14 +1219,21 @@ class Strategist(object):
         max_pct_chg_binary_list = self.get_max_pct_chg_binary_list(latest_range_days_k_line_list)
         max_pct_chg_index_list = []
         v_k_line_count = 0
+        target_v_k_line = None
         for i, v in enumerate(max_pct_chg_binary_list):
             if v == 1:
                 max_pct_chg_index_list.append(i)
                 v_k_line = latest_range_days_k_line_list[i]
+                if not target_v_k_line:
+                    target_v_k_line = v_k_line
                 v_k_line_open = v_k_line['open']
                 v_k_line_close = v_k_line['close']
                 if v_k_line_open == v_k_line_close:
                     v_k_line_count += 1
+        target_v_k_line = latest_range_days_k_line_list[max_pct_chg_index_list[-2]]
+        target_k_line_ok = self.is_target_k_line_ok(range_days, k_line_list, max_pct_chg_index_list, target_v_k_line, latest_range_days_k_line_list)
+        if not target_k_line_ok:
+            return False, "aaa"
         if v_k_line_count > 1:
             return False, "aaa"
         max_pct_chg_index_list_len = len(max_pct_chg_index_list)
