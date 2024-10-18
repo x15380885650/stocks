@@ -1199,6 +1199,9 @@ class Strategist(object):
                 break
         if target_v_k_line_interval > 3:
             return False
+        v_v_v = target_v_k_line_index - target_v_k_line_interval
+        if v_v_v not in max_pct_chg_index_list and v_v_v > max_pct_chg_index_list[0]-1:
+            return False
         return True
 
     def get_sixth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
