@@ -1225,9 +1225,7 @@ class Strategist(object):
                 v_k_line_close = v_k_line['close']
                 if v_k_line_open == v_k_line_close:
                     v_k_line_count += 1
-        target_k_line_ok = self.is_target_k_line_ok(range_days, k_line_list, max_pct_chg_index_list, latest_range_days_k_line_list)
-        if not target_k_line_ok:
-            return False, "aaa"
+
         if v_k_line_count > 1:
             return False, "aaa"
         max_pct_chg_index_list_len = len(max_pct_chg_index_list)
@@ -1241,6 +1239,9 @@ class Strategist(object):
             if max_pct_chg_index_list[-1] - max_pct_chg_index_list[-2] > 5:
                 return False, "aaa"
         if max_pct_chg_index_list[-1] > 11 or max_pct_chg_index_list[-1] < 6:
+            return False, "aaa"
+        target_k_line_ok = self.is_target_k_line_ok(range_days, k_line_list, max_pct_chg_index_list, latest_range_days_k_line_list)
+        if not target_k_line_ok:
             return False, "aaa"
 
         t_t_kline = latest_range_days_k_line_list[max_pct_chg_index_list[-1]]
