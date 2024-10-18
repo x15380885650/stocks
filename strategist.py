@@ -632,12 +632,12 @@ class Strategist(object):
                 max_pct_chg_list.append(0)
         return max_pct_chg_list
 
-    def is_open_price_high(self, k_line_list):
+    def is_open_price_high(self, k_line_list, open_close_ratio_max=3.0, open_close_ratio_mim=-3.0):
         prev_close_price = k_line_list[-2]['close']
         now_open_price = k_line_list[-1]['open']
         open_close_ratio = 100 * (now_open_price - prev_close_price) / prev_close_price
         open_close_ratio = self.retain_decimals_no_rounding(open_close_ratio, decimals=1)
-        if open_close_ratio > 3 or open_close_ratio < -3:
+        if open_close_ratio > open_close_ratio_max or open_close_ratio < open_close_ratio_mim:
             return True
         return False
 
@@ -844,6 +844,7 @@ class Strategist(object):
         if open_high:
             return False, 'a'
         latest_close_price = k_line_list[-1]['close']
+        # print(latest_close_price)
         if latest_close_price > latest_close_price_max or latest_close_price < latest_close_price_min:
             return False, 'a'
         range_days = 9
@@ -1057,12 +1058,12 @@ class Strategist(object):
         return True, OK
 
     def get_fourth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
-        open_high = self.is_open_price_high(k_line_list)
+        open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=4.5)
         if open_high:
             return False, 'a'
         latest_close_price = k_line_list[-1]['close']
         # print(latest_close_price)
-        if latest_close_price > 15 or latest_close_price < 3:
+        if latest_close_price > latest_close_price_max or latest_close_price < latest_close_price_min:
             return False, 'a'
         range_days = 8
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
@@ -1197,18 +1198,18 @@ class Strategist(object):
                     break
             if target_v_k_line_interval_ok:
                 break
-        if target_v_k_line_interval > 3:
-            return False
         v_v_v = target_v_k_line_index - target_v_k_line_interval
-        if v_v_v not in max_pct_chg_index_list and v_v_v > max_pct_chg_index_list[0]-1:
-            return False
-        return True
+        # print(max_pct_chg_index_list, v_v_v)
+        if v_v_v == max_pct_chg_index_list[0] or v_v_v == max_pct_chg_index_list[0]-1:
+            return True
+        return False
 
     def get_sixth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         open_high = self.is_open_price_high(k_line_list)
         if open_high:
             return False, 'a'
         latest_close_price = k_line_list[-1]['close']
+        # print(latest_close_price)
         if latest_close_price > latest_close_price_max or latest_close_price < latest_close_price_min:
             return False, 'a'
         range_days = 18
@@ -1229,8 +1230,8 @@ class Strategist(object):
                 if v_k_line_open == v_k_line_close:
                     v_k_line_count += 1
 
-        if v_k_line_count > 1:
-            return False, "aaa"
+        # if v_k_line_count > 1:
+        #     return False, "aaa"
         max_pct_chg_index_list_len = len(max_pct_chg_index_list)
         if max_pct_chg_index_list_len not in [2, 3, 4]:
             return False, "aaa"
