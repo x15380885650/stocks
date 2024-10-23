@@ -899,8 +899,8 @@ class Strategist(object):
 
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
-        if down_num + down_num_2 <= 3:
-            return False, 'eee'
+        # if down_num + down_num_2 <= 3:
+        #     return False, 'eee'
         if down_num not in [2, 3, 4] and down_num_2 not in [2, 3, 4]:
             return False, 'eee'
 
