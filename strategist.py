@@ -75,7 +75,9 @@ class Strategist(object):
             if not close_price or not open_price:
                 continue
             r = (float(close_price) - float(open_price)) / float(open_price) * 100
-            if r <= 0:
+            if r == 0:
+                continue
+            elif r < 0:
                 down_num += 1
             elif r > 0:
                 up_num += 1
