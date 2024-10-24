@@ -1206,7 +1206,7 @@ class Strategist(object):
                 break
         v_v_v = target_v_k_line_index - target_v_k_line_interval
         # print(max_pct_chg_index_list, v_v_v)
-        if v_v_v == max_pct_chg_index_list[0] or v_v_v == max_pct_chg_index_list[0]-1:
+        if v_v_v == max_pct_chg_index_list[0]:
             return True
         return False
 
