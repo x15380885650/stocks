@@ -76,6 +76,8 @@ class Notifier(Ancestor):
                             monitor_code_show_count += 1
                     if pct_chg < min_pct_chg_notifier or code in buy_code_list:
                         continue
+                    if pct_chg >= min_pct_chg_notifier + 1:
+                        continue
                     now_time_forbidden = self.is_now_time_forbidden()
                     if self.is_trade_time_forbidden and now_time_forbidden:
                         continue
