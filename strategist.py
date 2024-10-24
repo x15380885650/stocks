@@ -75,12 +75,14 @@ class Strategist(object):
             if not close_price or not open_price:
                 continue
             r = (float(close_price) - float(open_price)) / float(open_price) * 100
-            if r == 0:
-                continue
-            elif r < 0:
-                down_num += 1
-            elif r > 0:
+            if r > 0:
                 up_num += 1
+            else:
+                down_num += 1
+            # elif r < 0:
+            #     down_num += 1
+            # elif r > 0:
+            #     up_num += 1
         return up_num, down_num
 
     def get_up_and_down_num_2(self, data_list):
@@ -901,8 +903,8 @@ class Strategist(object):
 
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
-        # if down_num + down_num_2 <= 3:
-        #     return False, 'eee'
+        if down_num + down_num_2 <= 3:
+            return False, 'eee'
         if down_num not in [2, 3, 4] and down_num_2 not in [2, 3, 4]:
             return False, 'eee'
 
