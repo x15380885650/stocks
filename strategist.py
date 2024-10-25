@@ -902,7 +902,7 @@ class Strategist(object):
         if close_open_p_count_ratio < 40:
             return False, 'ddd'
 
-        up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list, r_r=-0.4)
+        up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list, r_r=-0.1)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
         # print(down_num, down_num_2, t_s_count)
         if down_num + down_num_2 <= 3:
