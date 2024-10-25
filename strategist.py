@@ -66,7 +66,7 @@ class Strategist(object):
             return True
         return False
 
-    def get_up_and_down_num(self, data_list, r_r=0.0):
+    def get_up_and_down_num(self, data_list):
         up_num = down_num = 0
         for data in data_list:
             close_price = data['close']
@@ -74,15 +74,10 @@ class Strategist(object):
             if not close_price or not open_price:
                 continue
             r = (float(close_price) - float(open_price)) / float(open_price) * 100
-            if r_r < r < 0:
-                # print(r)
-                continue
-            if r == 0:
-                continue
-            elif r > 0:
+            if r > 0:
                 # print(r)
                 up_num += 1
-            elif r < 0:
+            else:
                 down_num += 1
         return up_num, down_num
 
@@ -902,7 +897,7 @@ class Strategist(object):
         if close_open_p_count_ratio < 40:
             return False, 'ddd'
 
-        up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list, r_r=-0.1)
+        up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
         # print(down_num, down_num_2, t_s_count)
         if down_num + down_num_2 <= 3:
