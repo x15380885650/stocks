@@ -28,8 +28,8 @@ class Ancestor(object):
         from datetime import datetime
         now = datetime.now()
 
-        start_time = datetime(now.year, now.month, now.day, 10, 15)
-        end_time = datetime(now.year, now.month, now.day, 14, 15)
+        start_time = datetime(now.year, now.month, now.day, 10, 20)
+        end_time = datetime(now.year, now.month, now.day, 14, 10)
 
         if start_time < now < end_time:
             return True
