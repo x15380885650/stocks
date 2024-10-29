@@ -28,10 +28,10 @@ class Ancestor(object):
         from datetime import datetime
         now = datetime.now()
         
-        start_time_1 = datetime(now.year, now.month, now.day, 10, 21)
+        start_time_1 = datetime(now.year, now.month, now.day, 10, 26)
         end_time_1 = datetime(now.year, now.month, now.day, 11, 25)
 
-        start_time_2 = datetime(now.year, now.month, now.day, 13, 6)
+        start_time_2 = datetime(now.year, now.month, now.day, 13, 16)
         end_time_2 = datetime(now.year, now.month, now.day, 14, 10)
 
         if start_time_1 <= now <= end_time_1 or start_time_2 <= now <= end_time_2:

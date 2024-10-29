@@ -885,6 +885,8 @@ class Strategist(object):
             return False, 'ccc'
 
         close_open_p_count = 0
+        close_p_count = 0
+        open_p_count = 0
         for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
             open_p = t_k_line['open']
@@ -893,6 +895,10 @@ class Strategist(object):
                 return False, 'ddd'
             if close_p >= target_close_p or open_p >= target_close_p:
                 close_open_p_count += 1
+            if close_p >= target_close_p:
+                close_p_count += 1
+            if open_p >= target_close_p:
+                open_p_count += 1
         close_open_p_count_ratio = 100 * close_open_p_count / t_s_count
         if close_open_p_count_ratio < 40:
             return False, 'ddd'
@@ -915,14 +921,26 @@ class Strategist(object):
         if t_l_1_ratio < -8 or t_l_2_ratio < -6:
             return False, 'fff'
 
+        pct_chg_lt_0_list = []
+        pct_chg_gt_0_list = []
         for t_k_line in latest_target_days_k_line_list:
             prev_close_p = t_k_line['prev_close']
             open_p = t_k_line['open']
             high_p = t_k_line['high']
+            pct_chg_p = t_k_line['pct_chg']
+            if pct_chg_p < 0:
+                pct_chg_lt_0_list.append(pct_chg_p)
+            if pct_chg_p > 0:
+                pct_chg_gt_0_list.append(pct_chg_p)
             t_t_ratio = 100 * (high_p - prev_close_p) / prev_close_p
             t_t_ratio_2 = 100 * (high_p - open_p) / open_p
             if t_t_ratio > 5 and t_t_ratio_2 < 2:
                 return False, 'fff'
+        max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
+        if t_s_count == 7 and max_pct_chg < 7:
+            return False, 'fff'
+        if max_pct_chg < 2:
+            return False, 'fff'
 
         boll_days_30_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count+1)
         boll_days_20_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=20,days_interval=t_s_count + 1)
