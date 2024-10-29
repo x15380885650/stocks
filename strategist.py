@@ -865,13 +865,13 @@ class Strategist(object):
         target_open_p = latest_range_days_k_line_list[target_index]['open']
         temp_prev_close_p = temp_k_line_list[target_index]['close']
         if temp_prev_close_p < target_open_p:
-            pass
-            # target_open_p = temp_prev_close_p
+            # pass
+            target_open_p = temp_prev_close_p
 
         latest_close_p = latest_target_days_k_line_list[-1]['close']
         l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
         l_r_close_ratio = self.retain_decimals_no_rounding(l_r_close_ratio, 1)
-        if l_r_close_ratio > 7:
+        if l_r_close_ratio > 8:
             return False, 'ccc'
 
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
