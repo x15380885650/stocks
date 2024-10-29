@@ -27,11 +27,14 @@ class Ancestor(object):
     def is_now_time_forbidden(self):
         from datetime import datetime
         now = datetime.now()
+        
+        start_time_1 = datetime(now.year, now.month, now.day, 10, 21)
+        end_time_1 = datetime(now.year, now.month, now.day, 11, 25)
 
-        start_time = datetime(now.year, now.month, now.day, 10, 15)
-        end_time = datetime(now.year, now.month, now.day, 14, 15)
+        start_time_2 = datetime(now.year, now.month, now.day, 13, 6)
+        end_time_2 = datetime(now.year, now.month, now.day, 14, 10)
 
-        if start_time < now < end_time:
+        if start_time_1 <= now <= end_time_1 or start_time_2 <= now <= end_time_2:
             return True
         return False
 
