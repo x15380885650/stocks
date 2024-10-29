@@ -1289,7 +1289,7 @@ class Strategist(object):
         latest_close_p = latest_target_days_k_line_list[-1]['close']
         l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
         l_r_close_ratio = self.retain_decimals_no_rounding(l_r_close_ratio, decimals=1)
-        if l_r_close_ratio > 5:
+        if l_r_close_ratio > 8:
             return False, 'ccc'
 
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
