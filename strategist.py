@@ -938,7 +938,9 @@ class Strategist(object):
             if t_t_ratio > 5 and t_t_ratio_2 < 2:
                 return False, 'fff'
         max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
-        if t_s_count == 7 and max_pct_chg < 7:
+        min_pct_chg = self.get_min_pct_chg(latest_target_days_k_line_list)
+        # print(max_pct_chg, min_pct_chg, t_s_count)
+        if t_s_count == 7 and (max_pct_chg < 7 or min_pct_chg > -4):
             return False, 'fff'
         if max_pct_chg < 2:
             return False, 'fff'
@@ -1220,7 +1222,7 @@ class Strategist(object):
                 break
         v_v_v = target_v_k_line_index - target_v_k_line_interval
         # print(max_pct_chg_index_list, v_v_v)
-        if v_v_v == max_pct_chg_index_list[0]:
+        if v_v_v == max_pct_chg_index_list[0] or v_v_v == max_pct_chg_index_list[1]:
             return True
         return False
 
