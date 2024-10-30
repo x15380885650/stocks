@@ -939,10 +939,14 @@ class Strategist(object):
                 return False, 'fff'
         max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
         min_pct_chg = self.get_min_pct_chg(latest_target_days_k_line_list)
-        # print(max_pct_chg, min_pct_chg, t_s_count)
-        if t_s_count == 7 and (max_pct_chg < 7 or min_pct_chg > -4):
+        min_pct_chg = round(min_pct_chg, 1)
+        max_pct_chg = round(max_pct_chg, 1)
+        min_pct_chg_ratio = round(100*min_pct_chg/t_s_count, 0)
+        max_pct_chg_ratio = round(100*max_pct_chg/t_s_count, 0)
+        # print(max_pct_chg, min_pct_chg, t_s_count, min_pct_chg_ratio, max_pct_chg_ratio)
+        if min_pct_chg_ratio > -50 or max_pct_chg_ratio < 45:
             return False, 'fff'
-        if max_pct_chg < 2:
+        if t_s_count == 7 and (max_pct_chg < 7 or min_pct_chg > -4):
             return False, 'fff'
 
         boll_days_30_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count+1)
