@@ -53,6 +53,7 @@ class LargeScreenMonitor(Ancestor):
                     code = stock_kline_list[-1]['code']
                     name = stock_kline_list[-1]['name']
                     pct_chg = stock_kline_list[-1]['pct_chg']
+                    pct_chg_high = stock_kline_list[-1]['pct_chg_high']
                     buy_flag = code_dict[code]
                     if buy_flag == 1:
                         from_monitor_list = buy_code_info[code]
@@ -64,8 +65,8 @@ class LargeScreenMonitor(Ancestor):
                             prev_close = round(now_price / (1 + pct_chg/100), 2)
                             buy_price = round(prev_close * (1 + min_pct_chg_notifier/100), 2)
                             from_monitor_list = monitor_code_info[code]
-                            print('code: {}, name: {}, pct_chg: {}, now_price: {}, buy_price: {}, bought: {}, from: {}'
-                                  .format(code, name, pct_chg, now_price, buy_price, buy_flag, ','.join(from_monitor_list)))
+                            print('code: {}, name: {}, pct_chg: {}, pct_chg_high: {}, now_price: {}, buy_price: {}, bought: {}, from: {}'
+                                  .format(code, name, pct_chg, pct_chg_high, now_price, buy_price, buy_flag, ','.join(from_monitor_list)))
                             monitor_code_show_count += 1
             except Exception as e:
                 print(e)
