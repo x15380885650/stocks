@@ -59,7 +59,6 @@ class Notifier(Ancestor):
                     code = stock_kline_list[-1]['code']
                     name = stock_kline_list[-1]['name']
                     pct_chg = stock_kline_list[-1]['pct_chg']
-                    pct_chg_high = stock_kline_list[-1]['pct_chg_high']
                     buy_flag = code_dict[code]
                     if code in monitor_code_list and pct_chg < min_pct_chg_monitor:
                         self.persister.remove_monitor_code(end_date_str, code)
@@ -72,10 +71,10 @@ class Notifier(Ancestor):
                             now_price = stock_kline_list[-1]['close']
                             prev_close = round(now_price / (1 + pct_chg/100), 2)
                             buy_price = round(prev_close * (1 + min_pct_chg_notifier/100), 2)
-                            print('code: {}, name: {}, pct_chg: {}, pct_chg_high: {}, now_price: {}, buy_price: {}, {}'
-                                  .format(code, name, pct_chg, pct_chg_high, now_price, buy_price, buy_flag))
+                            print('code: {}, name: {}, pct_chg: {}, now_price: {}, buy_price: {}, {}'
+                                  .format(code, name, pct_chg, now_price, buy_price, buy_flag))
                             monitor_code_show_count += 1
-                    if (pct_chg < min_pct_chg_notifier and pct_chg_high < min_pct_chg_monitor) or code in buy_code_list:
+                    if pct_chg < min_pct_chg_notifier or code in buy_code_list:
                         continue
                     if pct_chg >= min_pct_chg_notifier + 1:
                         continue
