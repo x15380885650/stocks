@@ -635,7 +635,7 @@ class Strategist(object):
         now_open_price = k_line_list[-1]['open']
         open_close_ratio = 100 * (now_open_price - prev_close_price) / prev_close_price
         open_close_ratio = self.retain_decimals_no_rounding(open_close_ratio, decimals=1)
-        print(open_close_ratio)
+        # print(open_close_ratio)
         if open_close_ratio > open_close_ratio_max or open_close_ratio < open_close_ratio_mim:
             return True
         return False
