@@ -59,11 +59,11 @@ class EfDataSource(DataSource):
                                   'name': name})
         return kline_history
 
-    def get_stock_list_kline_history(self, code_list, start_date, end_date):
+    def get_stock_list_kline_history(self, code_list, start_date, end_date, klt=101):
         stock_kline_history_list = []
         start_date = start_date.replace('-', '')
         end_date = end_date.replace('-', '')
-        data = ef.stock.get_quote_history(code_list, beg=start_date, end=end_date, fqt=0)
+        data = ef.stock.get_quote_history(code_list, beg=start_date, end=end_date, fqt=0, klt=klt)
         for code, df in data.items():
             k_line_list = []
             prev_close = None

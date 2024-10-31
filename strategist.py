@@ -1,5 +1,6 @@
 import copy
 import pandas as pd
+from datetime import datetime
 from stockstats import StockDataFrame
 from constants import *
 OK = 'ok'
@@ -838,7 +839,8 @@ class Strategist(object):
         #       .format(interval, up_ratio_interval_day, pct_chg_interval_day, open_price, close_price, code))
         # return True, OK
 
-    def get_second_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
+    def get_second_strategy_res(self, k_line_list, c_fetcher):
+        code = k_line_list[-1]['code']
         open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=2, open_close_ratio_mim=-2)
         if open_high:
             return False, 'a'
@@ -861,14 +863,13 @@ class Strategist(object):
         target_index = max_pct_chg_index_list[-1]
         t_s_count = range_days - target_index - 2
         latest_target_days_k_line_list = latest_range_days_k_line_list[target_index + 1:]
-
+        target_index_date = latest_range_days_k_line_list[target_index]['date']
         target_close_p = latest_range_days_k_line_list[target_index]['close']
         target_open_p = latest_range_days_k_line_list[target_index]['open']
         temp_prev_close_p = temp_k_line_list[target_index]['close']
         if temp_prev_close_p < target_open_p:
             pass
             # target_open_p = temp_prev_close_p
-
         latest_close_p = latest_target_days_k_line_list[-1]['close']
         l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
         l_r_close_ratio = self.retain_decimals_no_rounding(l_r_close_ratio, 1)
@@ -996,6 +997,19 @@ class Strategist(object):
         diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
         if diff_sat_count_ratio < 100:
             return False, 'ggg'
+
+        minute_k_line_list = c_fetcher.get_stock_list_minute_kline_list([code], target_index_date, target_index_date)
+        if minute_k_line_list:
+            for minute_k_line in minute_k_line_list[0]:
+                minute_k_line_close = minute_k_line['close']
+                if minute_k_line_close == target_close_p:
+                    print(minute_k_line['date'])
+                    time_obj = datetime.strptime(minute_k_line['date'], "%Y-%m-%d %H:%M")
+                    hour = time_obj.hour
+                    if hour < 12:
+                        break
+                    else:
+                        return False, 'ggg'
         return True, OK
 
     def get_third_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):

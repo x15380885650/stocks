@@ -111,6 +111,18 @@ class CodeFetcher(object):
             new_stock_list_kline.append(stock_k_line)
         return new_stock_list_kline
 
+    def get_stock_list_minute_kline_list(self, code_list, start_date_str, end_date_str):
+        stock_list_kline = self.ds.get_stock_list_kline_history(code_list, start_date_str, end_date_str, klt=5)
+        new_stock_list_kline = []
+        for stock_k_line in stock_list_kline:
+            if not stock_k_line:
+                return new_stock_list_kline
+            last_date = stock_k_line[-1]['date'].split()[0]
+            if last_date != end_date_str:
+                continue
+            new_stock_list_kline.append(stock_k_line)
+        return new_stock_list_kline
+
     def is_stock_basic_satisfied(self, stock):
         try:
             code = stock[1][0]

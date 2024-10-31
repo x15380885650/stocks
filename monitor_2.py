@@ -18,9 +18,12 @@ TEST_CODE_DICT = {
 # '603958': '2024-10-24',
 # '600203': '2024-10-28',
 
+# '000672': '2024-10-31',
 # '002581': '2024-10-31',
 # '002630': '2024-10-31',
-# '600537': '2024-10-31',
+# '600537': '2024-10-30',
+# '000639': '2024-10-31',
+
 # #
 # '600661': '2024-05-13',
 # '600661': '2024-05-14',
@@ -48,8 +51,8 @@ class SecondMonitor(Monitor):
         super(SecondMonitor, self).__init__(key_prefix='monitor_2')
         self.test_code_dict = TEST_CODE_DICT
 
-    def get_strategy_res(self, code, stock_kline_list, min_opt_macd_diff=0):
-        return self.strategist.get_second_strategy_res(code, stock_kline_list, min_opt_macd_diff)
+    def get_strategy_res(self, stock_kline_list, c_fetcher):
+        return self.strategist.get_second_strategy_res(stock_kline_list, c_fetcher)
 
 
 if __name__ == '__main__':
