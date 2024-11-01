@@ -147,6 +147,18 @@ class Persister(object):
         key = '{}:min_pct_chg_monitor'.format(self.key_prefix)
         self.redis.set(key, pct_chg_monitor)
 
+    def get_stock_filter_cond(self):
+        key = '{}:stock_filter_cond'.format(self.key_prefix)
+        stock_filter_cond = self.redis.hgetall(key)
+        if not stock_filter_cond:
+            stock_filter_cond = {'latest_close_price_min': 2.9,
+                                 'latest_close_price_max': 20,
+                                 'stock_value_min': 10,
+                                 'stock_value_max': 150}
+            for k, v in stock_filter_cond.items():
+                self.redis.hset(key, k, v)
+        return stock_filter_cond
+
     def get_sleep_time_notifier(self):
         key = '{}:sleep_time_notifier'.format(self.key_prefix)
         sleep_time = self.redis.get(key)

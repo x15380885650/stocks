@@ -863,12 +863,9 @@ class Strategist(object):
         # return True, OK
 
     def get_second_strategy_res(self, k_line_list, c_fetcher):
-        code = k_line_list[-1]['code']
+        # code = k_line_list[-1]['code']
         open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=2, open_close_ratio_mim=-2)
         if open_high:
-            return False, 'a'
-        latest_close_price = k_line_list[-1]['close']
-        if latest_close_price > latest_close_price_max or latest_close_price < latest_close_price_min:
             return False, 'a'
         range_days = 8
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
@@ -1031,11 +1028,11 @@ class Strategist(object):
         diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
         if diff_sat_count_ratio < 100:
             return False, 'ggg'
-        minute_k_line_list = c_fetcher.get_stock_list_minute_kline_list([code], target_date_p, target_date_p)
-        if minute_k_line_list:
-            zt_time_ok = self.is_target_day_zt_time_ok(target_close_p, target_prev_close_p, minute_k_line_list)
-            if not zt_time_ok:
-                return False, 'ggg'
+        # minute_k_line_list = c_fetcher.get_stock_list_minute_kline_list([code], target_date_p, target_date_p)
+        # if minute_k_line_list:
+        #     zt_time_ok = self.is_target_day_zt_time_ok(target_close_p, target_prev_close_p, minute_k_line_list)
+        #     if not zt_time_ok:
+        #         return False, 'ggg'
         return True, OK
 
     def get_third_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
@@ -1129,10 +1126,6 @@ class Strategist(object):
     def get_fourth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=4.5)
         if open_high:
-            return False, 'a'
-        latest_close_price = k_line_list[-1]['close']
-        # print(latest_close_price)
-        if latest_close_price > latest_close_price_max or latest_close_price < latest_close_price_min:
             return False, 'a'
         range_days = 8
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
@@ -1276,9 +1269,6 @@ class Strategist(object):
     def get_sixth_strategy_res(self, k_line_list, c_fetcher):
         open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=2, open_close_ratio_mim=-2)
         if open_high:
-            return False, 'a'
-        latest_close_price = k_line_list[-1]['close']
-        if latest_close_price > latest_close_price_max or latest_close_price < latest_close_price_min:
             return False, 'a'
         range_days = 18
         latest_range_days_k_line_list = k_line_list[-range_days:-1]

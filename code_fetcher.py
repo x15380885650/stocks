@@ -1,8 +1,7 @@
 import os
 from itertools import islice
 from dumper_loader import load_data_append_by_json_dump, save_data_list_append_by_json_dump
-from constants import pct_change_max_i, pct_change_max_j, latest_close_price_max, latest_close_price_min,\
-    stock_value_min, stock_value_max
+from constants import pct_change_max_i, pct_change_max_j
 
 
 class CodeFetcher(object):
@@ -123,7 +122,8 @@ class CodeFetcher(object):
             new_stock_list_kline.append(stock_k_line)
         return new_stock_list_kline
 
-    def is_stock_basic_satisfied(self, stock):
+    def is_stock_basic_satisfied(self, stock, latest_close_price_min, latest_close_price_max,
+                                 stock_value_min, stock_value_max):
         try:
             code = stock[1][0]
             name = stock[1][1]
@@ -149,12 +149,14 @@ class CodeFetcher(object):
             return False
         return True
 
-    def fetch_real_time_filtered_code_list(self, pct_chg_min=4):
+    def fetch_real_time_filtered_code_list(self, pct_chg_min, latest_close_price_min, latest_close_price_max,
+                                           stock_value_min, stock_value_max):
         stock_list = self.ds.get_stocks_realtime_quotes()
         filtered_list = []
         stock_total_count = 0
         for stock in stock_list.iterrows():
-            basic_satisfied = self.is_stock_basic_satisfied(stock)
+            basic_satisfied = self.is_stock_basic_satisfied(
+                stock, latest_close_price_min, latest_close_price_max, stock_value_min, stock_value_max)
             if not basic_satisfied:
                 continue
             stock_total_count += 1

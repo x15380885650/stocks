@@ -65,13 +65,21 @@ class Monitor(Ancestor):
                     monitor_code_list = self.persister.get_monitor_code_list(end_date_str)
                     notifier_code_list = self.persister.get_notifier_code_list(end_date_str)
                     buy_code_list = self.persister.get_buy_code_list()
+                    stock_filter_cond = self.persister.get_stock_filter_cond()
+                    latest_close_price_min = float(stock_filter_cond['latest_close_price_min'])
+                    latest_close_price_max = float(stock_filter_cond['latest_close_price_max'])
+                    stock_value_min = float(stock_filter_cond['stock_value_min'])
+                    stock_value_max = float(stock_filter_cond['stock_value_max'])
+                    print(f'stock_filter_cond: {stock_filter_cond}')
                     if clear_monitor_status:
                         exclude_stock_set.clear()
                         monitor_stock_count = 0
                         cond_dict.clear()
                         self.persister.clear_monitor_code_list(end_date_str)
                     code_list, pct_chg_count_ratio = c_fetcher.fetch_real_time_filtered_code_list(
-                        pct_chg_min=min_pct_chg_monitor)
+                        pct_chg_min=min_pct_chg_monitor, latest_close_price_min=latest_close_price_min,
+                        latest_close_price_max=latest_close_price_max, stock_value_min=stock_value_min,
+                        stock_value_max=stock_value_max)
                     new_code_list = []
                     for c in code_list:
                         if c not in exclude_stock_set:
