@@ -689,11 +689,13 @@ class Strategist(object):
             return False
         return True
 
-    def is_target_day_zt_time_ok(self, target_close_p, k_line_list):
+    def is_target_day_zt_time_ok(self, target_close_p, temp_prev_close_p, k_line_list):
         for minute_k_line in k_line_list[0]:
             minute_k_line_close = minute_k_line['close']
-            if minute_k_line_close == target_close_p:
-                print(minute_k_line['date'])
+            temp_prev_close_p_ratio = 100 * (minute_k_line_close-temp_prev_close_p)/temp_prev_close_p
+            if (minute_k_line_close == target_close_p) or (temp_prev_close_p_ratio>9):
+            # if minute_k_line_close == target_close_p:
+                # print(minute_k_line['date'])
                 time_obj = datetime.strptime(minute_k_line['date'], "%Y-%m-%d %H:%M")
                 hour = time_obj.hour
                 if hour < 12:
@@ -958,6 +960,9 @@ class Strategist(object):
         min_pct_chg = self.get_min_pct_chg(latest_target_days_k_line_list)
         min_pct_chg = round(min_pct_chg, 1)
         max_pct_chg = round(max_pct_chg, 1)
+        # # print(max_pct_chg, min_pct_chg)
+        if max_pct_chg > 9.5 or min_pct_chg < -7:
+            return False, 'fff'
         min_pct_chg_ratio = round(100*min_pct_chg/t_s_count, 0)
         max_pct_chg_ratio = round(100*max_pct_chg/t_s_count, 0)
         # print(max_pct_chg, min_pct_chg, t_s_count, min_pct_chg_ratio, max_pct_chg_ratio)
@@ -1013,9 +1018,10 @@ class Strategist(object):
 
         minute_k_line_list = c_fetcher.get_stock_list_minute_kline_list([code], target_index_date, target_index_date)
         if minute_k_line_list:
-            zt_time_ok = self.is_target_day_zt_time_ok(target_close_p, minute_k_line_list)
+            zt_time_ok = self.is_target_day_zt_time_ok(target_close_p, temp_prev_close_p, minute_k_line_list)
             if not zt_time_ok:
                 return False, 'ggg'
+        print(code)
         return True, OK
 
     def get_third_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
