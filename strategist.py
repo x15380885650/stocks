@@ -907,6 +907,7 @@ class Strategist(object):
         close_open_p_count = 0
         close_p_count = 0
         open_p_count = 0
+        low_p_count = 0
         for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
             open_p = t_k_line['open']
@@ -919,6 +920,13 @@ class Strategist(object):
                 close_p_count += 1
             if open_p >= target_close_p:
                 open_p_count += 1
+            if low_p >= target_close_p:
+                low_p_count += 1
+        low_p_count_ratio = 100 * (low_p_count/t_s_count)
+        low_p_count_ratio = self.retain_decimals_no_rounding(low_p_count_ratio, decimals=0)
+        # print(low_p_count, t_s_count, low_p_count_ratio)
+        if low_p_count_ratio > 85:
+            return False, 'ddd'
         close_open_p_count_ratio = 100 * close_open_p_count / t_s_count
         if close_open_p_count_ratio < 40:
             return False, 'ddd'
