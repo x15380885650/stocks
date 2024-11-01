@@ -451,6 +451,14 @@ class Strategist(object):
                 count += 1
         return count
 
+    def get_one_day_ma(self, stock_tech, ma_day, date_str):
+        ma_series = stock_tech['boll_{}'.format(ma_day)]
+        ma_dict = ma_series.to_dict()
+        ma_val = round(ma_dict[date_str], 2)
+        return ma_val
+
+
+
     def get_close_or_open_price_exceed_ma_days(self, k_line_list, boll_days, days_interval):
         count = 0
         stock_tech = self.get_stock_tech(k_line_list=k_line_list)
@@ -860,10 +868,9 @@ class Strategist(object):
         if open_high:
             return False, 'a'
         latest_close_price = k_line_list[-1]['close']
-        # print(latest_close_price)
         if latest_close_price > latest_close_price_max or latest_close_price < latest_close_price_min:
             return False, 'a'
-        range_days = 9
+        range_days = 8
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
         temp_k_line_list = k_line_list[-range_days - 1:-1]
         max_pct_chg_binary_list = self.get_max_pct_chg_binary_list(latest_range_days_k_line_list)
@@ -875,30 +882,35 @@ class Strategist(object):
             return False, "aaa"
         if max_pct_chg_index_list[-1] > 2:
             return False, "aaa"
+        origin_stock_tech = self.get_stock_tech(k_line_list=k_line_list)
         target_index = max_pct_chg_index_list[-1]
         t_s_count = range_days - target_index - 2
         latest_target_days_k_line_list = latest_range_days_k_line_list[target_index + 1:]
-        target_index_date = latest_range_days_k_line_list[target_index]['date']
-        target_close_p = latest_range_days_k_line_list[target_index]['close']
-        target_open_p = latest_range_days_k_line_list[target_index]['open']
-        temp_prev_close_p = temp_k_line_list[target_index]['close']
-        if temp_prev_close_p < target_open_p:
-            pass
-            # target_open_p = temp_prev_close_p
-        latest_close_p = latest_target_days_k_line_list[-1]['close']
+        target_k_line = latest_range_days_k_line_list[target_index]
+        target_date_p = target_k_line['date']
+        target_close_p = target_k_line['close']
+        target_open_p = target_k_line['open']
+        target_prev_k_line = temp_k_line_list[target_index]
+        target_prev_close_p = target_prev_k_line['close']
+        target_prev_date_p = target_prev_k_line['date']
+        target_prev_ma_5_val = self.get_one_day_ma(origin_stock_tech, ma_day=5, date_str=target_prev_date_p)
+        target_prev_ma_10_val = self.get_one_day_ma(origin_stock_tech, ma_day=10, date_str=target_prev_date_p)
+        target_prev_ma_val = target_prev_ma_5_val if target_prev_ma_5_val < target_prev_ma_10_val else target_prev_ma_10_val
+        target_val = target_open_p if target_open_p > target_prev_close_p else target_prev_close_p
+        if target_val < target_prev_ma_val:
+            return False, "aaa"
+        latest_k_line = latest_target_days_k_line_list[-1]
+        latest_close_p = latest_k_line['close']
         l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
         l_r_close_ratio = self.retain_decimals_no_rounding(l_r_close_ratio, 1)
         # print(l_r_close_ratio, t_s_count)
         l_r_r_close_ratio = (l_r_close_ratio/t_s_count)
-        # print(l_r_r_close_ratio)
-        if l_r_r_close_ratio >= 1.2:
+        if l_r_r_close_ratio > 1.2:
             return False, 'ccc'
-
         max_close_price_interval = self.get_max_close_price(latest_target_days_k_line_list)
+        now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
         if max_close_price_interval < target_close_p:
             return False, 'ccc'
-
-        now_ideal_close_price = round(k_line_list[-2]['close'] * 1.1, 2)
         if max_close_price_interval > now_ideal_close_price:
             return False, 'ccc'
         if now_ideal_close_price < target_close_p:
@@ -908,11 +920,12 @@ class Strategist(object):
         close_p_count = 0
         open_p_count = 0
         low_p_count = 0
+        target_open_p_adjust = target_prev_close_p if target_prev_close_p < target_open_p else target_open_p
         for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
             open_p = t_k_line['open']
             low_p = t_k_line['low']
-            if close_p < target_open_p or open_p < target_open_p or low_p < target_open_p:
+            if close_p < target_open_p_adjust or open_p < target_open_p_adjust or low_p < target_open_p_adjust:
                 return False, 'ddd'
             if close_p >= target_close_p or open_p >= target_close_p:
                 close_open_p_count += 1
@@ -924,10 +937,10 @@ class Strategist(object):
                 low_p_count += 1
         low_p_count_ratio = 100 * (low_p_count/t_s_count)
         low_p_count_ratio = self.retain_decimals_no_rounding(low_p_count_ratio, decimals=0)
-        # print(low_p_count, t_s_count, low_p_count_ratio)
-        if low_p_count_ratio > 85:
-            return False, 'ddd'
         close_open_p_count_ratio = 100 * close_open_p_count / t_s_count
+        # print(low_p_count, t_s_count, low_p_count_ratio, close_open_p_count_ratio)
+        if low_p_count_ratio > 70:
+            return False, 'ddd'
         if close_open_p_count_ratio < 40:
             return False, 'ddd'
 
@@ -948,7 +961,7 @@ class Strategist(object):
         # print(f't_l_1_ratio: {t_l_1_ratio}, t_l_2_ratio: {t_l_2_ratio}')
         if t_l_1_ratio < -8 or t_l_2_ratio < -6:
             return False, 'fff'
-
+        #
         pct_chg_lt_0_list = []
         pct_chg_gt_0_list = []
         for t_k_line in latest_target_days_k_line_list:
@@ -966,29 +979,24 @@ class Strategist(object):
                 return False, 'fff'
         max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
         min_pct_chg = self.get_min_pct_chg(latest_target_days_k_line_list)
-        min_pct_chg = round(min_pct_chg, 1)
-        max_pct_chg = round(max_pct_chg, 1)
-        # # print(max_pct_chg, min_pct_chg)
-        if max_pct_chg > 9.5 or min_pct_chg < -7:
+        min_pct_chg = self.retain_decimals_no_rounding(min_pct_chg, decimals=1)
+        max_pct_chg = self.retain_decimals_no_rounding(max_pct_chg, decimals=1)
+        # # # print(max_pct_chg, min_pct_chg)
+        if max_pct_chg > 9 or min_pct_chg < -7:
             return False, 'fff'
-        min_pct_chg_ratio = round(100*min_pct_chg/t_s_count, 0)
-        max_pct_chg_ratio = round(100*max_pct_chg/t_s_count, 0)
+        # min_pct_chg_ratio = round(100*min_pct_chg/t_s_count, 0)
+        # max_pct_chg_ratio = round(100*max_pct_chg/t_s_count, 0)
         # print(max_pct_chg, min_pct_chg, t_s_count, min_pct_chg_ratio, max_pct_chg_ratio)
-        if min_pct_chg_ratio > -50 or max_pct_chg_ratio < 45:
-            return False, 'fff'
-        if t_s_count == 7 and (max_pct_chg < 7 or min_pct_chg > -4):
-            return False, 'fff'
+        # if min_pct_chg_ratio > -50 or max_pct_chg_ratio < 45:
+        #     return False, 'fff'
 
         boll_days_30_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count+1)
         boll_days_20_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=20,days_interval=t_s_count + 1)
         boll_days_30_count___ratio = 100 * boll_days_30_count___ / (t_s_count+1)
         boll_days_20_count___ratio = 100 * boll_days_20_count___ / (t_s_count+1)
         if boll_days_20_count___ratio != 100 and boll_days_30_count___ratio != 100:
-            prev_ma_gt_later_ma_days_count = self.get_prev_ma_gt_later_ma_days(k_line_list, prev_boll_days=20, later_boll_days=30, days_interval=t_s_count+1)
-            prev_ma_gt_later_ma_days_count_ratio = 100 * prev_ma_gt_later_ma_days_count / (t_s_count+1)
-            if prev_ma_gt_later_ma_days_count_ratio != 100 or t_s_count < 6:
-                return False, 'ggg'
-
+            return False, 'ggg'
+        #
         boll_days_30_count = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count)
         boll_days_30_count_ = self.get_low_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count)
         boll_days_30_count_ratio = 100 * boll_days_30_count / t_s_count
@@ -1009,7 +1017,7 @@ class Strategist(object):
         boll_days_5_count_ratio = 100 * boll_days_5_count / t_s_count
         if boll_days_5_count_ratio < 20:
             return False, 'ggg'
-        ma_up = self.is_ma_up_1(k_line_list, t_s_count + 1)
+        ma_up = self.is_ma_up_1(k_line_list, t_s_count+1, stat_day_min=2)
         if not ma_up:
             return False, 'ggg'
         continue_exceed_ma_days = self.get_latest_price_continue_exceed_ma_days(k_line_list, t_s_count + 1)
@@ -1017,19 +1025,17 @@ class Strategist(object):
             return False, 'ggg'
         continue_red_days = self.get_latest_continue_red_days(k_line_list, t_s_count + 1)
         continue_red_days_ratio = 100 * continue_red_days / t_s_count
-        if continue_red_days_ratio > 50:
+        if continue_red_days_ratio > 20:
             return False, 'ggg'
         diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1)
         diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
         if diff_sat_count_ratio < 100:
             return False, 'ggg'
-
-        minute_k_line_list = c_fetcher.get_stock_list_minute_kline_list([code], target_index_date, target_index_date)
+        minute_k_line_list = c_fetcher.get_stock_list_minute_kline_list([code], target_date_p, target_date_p)
         if minute_k_line_list:
-            zt_time_ok = self.is_target_day_zt_time_ok(target_close_p, temp_prev_close_p, minute_k_line_list)
+            zt_time_ok = self.is_target_day_zt_time_ok(target_close_p, target_prev_close_p, minute_k_line_list)
             if not zt_time_ok:
                 return False, 'ggg'
-        print(code)
         return True, OK
 
     def get_third_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
@@ -1267,12 +1273,11 @@ class Strategist(object):
             return True
         return False
 
-    def get_sixth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
-        open_high = self.is_open_price_high(k_line_list)
+    def get_sixth_strategy_res(self, k_line_list, c_fetcher):
+        open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=2, open_close_ratio_mim=-2)
         if open_high:
             return False, 'a'
         latest_close_price = k_line_list[-1]['close']
-        # print(latest_close_price)
         if latest_close_price > latest_close_price_max or latest_close_price < latest_close_price_min:
             return False, 'a'
         range_days = 18
@@ -1293,8 +1298,6 @@ class Strategist(object):
                 if v_k_line_open == v_k_line_close:
                     v_k_line_count += 1
 
-        # if v_k_line_count > 1:
-        #     return False, "aaa"
         max_pct_chg_index_list_len = len(max_pct_chg_index_list)
         if max_pct_chg_index_list_len not in [2, 3, 4]:
             return False, "aaa"
@@ -1376,7 +1379,7 @@ class Strategist(object):
         down_num_ratio_1 = 100*down_num/t_s_count
         down_num_ratio_2 = 100*down_num_2/t_s_count
         down_num_ratio = down_num_ratio_1 if down_num_ratio_1 > down_num_ratio_2 else down_num_ratio_2
-        if not (30 < down_num_ratio <= 80):
+        if not (40 <= down_num_ratio <= 80):
             return False, 'eee'
 
         t_l_k_line_low = latest_target_days_k_line_list[-1]['low']
