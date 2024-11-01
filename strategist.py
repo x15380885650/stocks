@@ -689,6 +689,19 @@ class Strategist(object):
             return False
         return True
 
+    def is_target_day_zt_time_ok(self, target_close_p, k_line_list):
+        for minute_k_line in k_line_list[0]:
+            minute_k_line_close = minute_k_line['close']
+            if minute_k_line_close == target_close_p:
+                print(minute_k_line['date'])
+                time_obj = datetime.strptime(minute_k_line['date'], "%Y-%m-%d %H:%M")
+                hour = time_obj.hour
+                if hour < 12:
+                    return True
+                else:
+                    return False
+        return True
+
     def get_first_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
         open_high = self.is_open_price_high(k_line_list)
         if open_high:
@@ -1000,16 +1013,9 @@ class Strategist(object):
 
         minute_k_line_list = c_fetcher.get_stock_list_minute_kline_list([code], target_index_date, target_index_date)
         if minute_k_line_list:
-            for minute_k_line in minute_k_line_list[0]:
-                minute_k_line_close = minute_k_line['close']
-                if minute_k_line_close == target_close_p:
-                    print(minute_k_line['date'])
-                    time_obj = datetime.strptime(minute_k_line['date'], "%Y-%m-%d %H:%M")
-                    hour = time_obj.hour
-                    if hour < 12:
-                        break
-                    else:
-                        return False, 'ggg'
+            zt_time_ok = self.is_target_day_zt_time_ok(target_close_p, minute_k_line_list)
+            if not zt_time_ok:
+                return False, 'ggg'
         return True, OK
 
     def get_third_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
