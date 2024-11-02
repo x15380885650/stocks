@@ -1123,70 +1123,34 @@ class Strategist(object):
             return False, 'ggg'
         return True, OK
 
-    def get_fourth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
-        open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=4.5)
-        if open_high:
-            return False, 'a'
-        range_days = 8
+    def get_fourth_strategy_res(self, k_line_list, c_fetcher):
+        latest_30_days_k_line_list = k_line_list[-31:-1]
+        range_days = 6
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
-        pct_chg_sum = 0
-        for k_line in latest_range_days_k_line_list:
-            pct_chg = k_line['pct_chg']
-            pct_chg_sum += pct_chg
-            pct_chg = self.retain_decimals_no_rounding(pct_chg, decimals=1)
-            if pct_chg > 3 or pct_chg < -1.5:
-                return False, 'b'
-        pct_chg_sum = self.retain_decimals_no_rounding(pct_chg_sum, decimals=1)
-        # print(f'pct_chg_sum: {pct_chg_sum}')
-        if pct_chg_sum < 0 or pct_chg_sum > 3.5:
-            return False, 'c'
-
-        latest_continue_green_days = 0
-        latest_continue_green_days_pct_chg_sum = 0
-        for k_l in latest_range_days_k_line_list[-1::-1]:
-            if self.is_green(k_l) and k_l['pct_chg'] <= 0:
-                latest_continue_green_days += 1
-                latest_continue_green_days_pct_chg_sum += k_l['pct_chg']
-            else:
-                break
-        if latest_continue_green_days >= 2:
-            # print(latest_continue_green_days_pct_chg_sum)
-            return False, 'c'
-
-        max_high_prev_close_ratio = self.get_max_high_prev_close_ratio(latest_range_days_k_line_list)
-        min_low_prev_close_ratio = self.get_min_low_prev_close_ratio(latest_range_days_k_line_list)
-        if max_high_prev_close_ratio > 3.5 or min_low_prev_close_ratio < -3:
-            return False, 'dddd'
-
-        up_num, down_num = self.get_up_and_down_num(latest_range_days_k_line_list)
-        up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_range_days_k_line_list)
-        if down_num not in [3, 4] and down_num_2 not in [3, 4]:
-            return False, 'eee'
-
-        t_s_count = range_days - 1
-        boll_days_30_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count)
-        boll_days_30_count_ratio = 100 * boll_days_30_count / t_s_count
-        if boll_days_30_count_ratio < 100:
-            return False, 'ggg'
-        boll_days_20_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=20, days_interval=t_s_count)
-        boll_days_20_count_ratio = 100 * boll_days_20_count / t_s_count
-        if boll_days_20_count_ratio < 100:
-            return False, 'ggg'
-        boll_days_10_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=10, days_interval=t_s_count)
-        boll_days_10_count_ratio = 100 * boll_days_10_count / t_s_count
-        if boll_days_10_count_ratio < 70:
-            return False, 'ggg'
-        boll_days_5_count = self.get_close_price_exceed_ma_days(k_line_list, boll_days=5, days_interval=t_s_count)
-        boll_days_5_count_ratio = 100 * boll_days_5_count / t_s_count
-        if boll_days_5_count_ratio < 50:
-            return False, 'ggg'
-        ma_up = self.is_ma_up_1(k_line_list, t_s_count + 1, stat_day_min=1)
-        if not ma_up:
-            return False, 'ggg'
-        diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1, dea_min_check=True)
-        diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
-        if diff_sat_count_ratio < 50:
-            return False, 'ggg'
+        temp_k_line_list = k_line_list[-range_days - 1:-1]
+        max_pct_chg_binary_list = self.get_max_pct_chg_binary_list(latest_range_days_k_line_list)
+        max_pct_chg_index_list = []
+        for i, v in enumerate(max_pct_chg_binary_list):
+            if v == 1:
+                max_pct_chg_index_list.append(i)
+        if len(max_pct_chg_index_list) not in [3]:
+            return False, "aaa"
+        if max_pct_chg_index_list[0] != 1 and max_pct_chg_index_list[-1] != 3:
+            return False, "aaa"
+        target_index = max_pct_chg_index_list[-1]
+        latest_target_days_k_line_list = latest_range_days_k_line_list[target_index + 1:]
+        latest_k_line = latest_target_days_k_line_list[-1]
+        latest_k_line_green = self.is_green(latest_k_line)
+        if not latest_k_line_green:
+            return False, 'aaa'
+        latest_k_line_pct_chg = latest_k_line['pct_chg']
+        # print(f'latest_k_line_pct_chg: {latest_k_line_pct_chg}')
+        if latest_k_line_pct_chg < -5.5:
+            return False, 'aaa'
+        latest_30_days_high_max = self.get_max_high_price(latest_30_days_k_line_list)
+        latest_k_line_high = latest_k_line['high']
+        if latest_k_line_high != latest_30_days_high_max:
+            return False, 'aaa'
         return True, OK
 
     def get_fifth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):

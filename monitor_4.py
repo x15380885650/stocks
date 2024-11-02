@@ -1,15 +1,14 @@
 from monitor import Monitor
 
 TEST_CODE_DICT = {
-# '002173': '2023-05-26',
-# '600272': '2023-08-09',
-# '600355': '2023-09-20',
-# '600178': '2023-11-09',
-# '002103': '2023-11-16',
-# '603536': '2023-11-24',
-# '600661': '2023-12-01',
-# '600678': '2023-12-05',
-# '600635': '2024-07-25',
+# '000158': '2024-10-11',
+# '002094': '2024-10-17',
+# '000016': '2024-10-24',
+# '002542': '2024-10-24',
+# '600171': '2024-10-24',
+# '601727': '2024-10-25',
+#
+# '002261': '2024-10-11',
 }
 
 
@@ -18,8 +17,8 @@ class FourthMonitor(Monitor):
         super(FourthMonitor, self).__init__(key_prefix='monitor_4')
         self.test_code_dict = TEST_CODE_DICT
 
-    def get_strategy_res(self, code, stock_kline_list, min_opt_macd_diff=0):
-        return self.strategist.get_fourth_strategy_res(code, stock_kline_list, min_opt_macd_diff)
+    def get_strategy_res(self, stock_kline_list, c_fetcher):
+        return self.strategist.get_fourth_strategy_res(stock_kline_list, c_fetcher)
 
 
 if __name__ == '__main__':
