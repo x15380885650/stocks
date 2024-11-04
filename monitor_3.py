@@ -1,10 +1,7 @@
 from monitor import Monitor
 
 TEST_CODE_DICT = {
-# '603721': '2023-11-20',
-# '600178': '2023-11-23',
-# '002146': '2024-05-16',
-# '603386': '2024-06-25',
+# '001330': '2024-11-04',
 
 }
 
@@ -14,8 +11,8 @@ class ThirdMonitor(Monitor):
         super(ThirdMonitor, self).__init__(key_prefix='monitor_3')
         self.test_code_dict = TEST_CODE_DICT
 
-    def get_strategy_res(self, code, stock_kline_list, min_opt_macd_diff=0):
-        return self.strategist.get_third_strategy_res(code, stock_kline_list, min_opt_macd_diff)
+    def get_strategy_res(self, stock_kline_list, c_fetcher):
+        return self.strategist.get_third_strategy_res(stock_kline_list, c_fetcher)
 
 
 if __name__ == '__main__':
