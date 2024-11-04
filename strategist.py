@@ -1226,7 +1226,7 @@ class Strategist(object):
                 max_pct_chg_index_list.append(i)
         if len(max_pct_chg_index_list) not in [3]:
             return False, "aaa"
-        if max_pct_chg_index_list[0] != 1 and max_pct_chg_index_list[-1] != 3:
+        if max_pct_chg_index_list[-1] != 3 and max_pct_chg_index_list[-2] != 2:
             return False, "aaa"
         target_index = max_pct_chg_index_list[-1]
         latest_target_days_k_line_list = latest_range_days_k_line_list[target_index + 1:]
@@ -1236,13 +1236,43 @@ class Strategist(object):
             return False, 'aaa'
         latest_k_line_pct_chg = latest_k_line['pct_chg']
         latest_k_line_pct_chg = self.retain_decimals_no_rounding(latest_k_line_pct_chg, decimals=1)
-        print(f'latest_k_line_pct_chg: {latest_k_line_pct_chg}')
-        if latest_k_line_pct_chg < -6:
+        # print(f'latest_k_line_pct_chg: {latest_k_line_pct_chg}')
+        if latest_k_line_pct_chg < -7.5 or latest_k_line_pct_chg > -1.5:
             return False, 'aaa'
         latest_30_days_high_max = self.get_max_high_price(latest_30_days_k_line_list)
         latest_k_line_high = latest_k_line['high']
         if latest_k_line_high != latest_30_days_high_max:
             return False, 'aaa'
+        code = latest_range_days_k_line_list[-1]['code']
+        zt_minute_list = []
+        for k_line in latest_range_days_k_line_list[-2::-1]:
+            k_line_date = k_line['date']
+            k_line_pct_chg = k_line['pct_chg']
+            k_line_close = k_line['close']
+            if k_line_pct_chg < pct_change_max_i:
+                continue
+            minute_k_line_list = c_fetcher.get_stock_list_minute_kline_list([code], k_line_date, k_line_date)
+            if minute_k_line_list:
+                for minute_k_line in minute_k_line_list[0]:
+                    minute_k_line_close = minute_k_line['close']
+                    if minute_k_line_close == k_line_close:
+                        zt_minute_list.append(minute_k_line['date'])
+                        break
+        if len(zt_minute_list) != len(max_pct_chg_index_list):
+            return False, 'bbb'
+        # print(zt_minute_list)
+        zt_minute_ok_list = []
+        for zt_minute in zt_minute_list:
+            time_obj = datetime.strptime(zt_minute, "%Y-%m-%d %H:%M")
+            hour = time_obj.hour
+            minute = time_obj.minute
+            if hour <= 9 and minute <= 45:
+                zt_minute_ok_list.append(True)
+            else:
+                zt_minute_ok_list.append(False)
+        # print(zt_minute_ok_list)
+        if not zt_minute_ok_list[0] or not zt_minute_ok_list[1]:
+            return False, 'bbb'
         return True, OK
 
     def get_fifth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
