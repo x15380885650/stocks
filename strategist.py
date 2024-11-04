@@ -1266,7 +1266,7 @@ class Strategist(object):
             time_obj = datetime.strptime(zt_minute, "%Y-%m-%d %H:%M")
             hour = time_obj.hour
             minute = time_obj.minute
-            if hour <= 9 and minute <= 45:
+            if hour <= 9 and minute <= 50:
                 zt_minute_ok_list.append(True)
             else:
                 zt_minute_ok_list.append(False)
