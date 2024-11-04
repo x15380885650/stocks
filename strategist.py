@@ -1244,29 +1244,41 @@ class Strategist(object):
         if latest_k_line_high != latest_30_days_high_max:
             return False, 'aaa'
         code = latest_range_days_k_line_list[-1]['code']
-        zt_minute_list = []
+        zt_list = []
         for k_line in latest_range_days_k_line_list[-2::-1]:
+            zt_minute_count = 0
+            total_minute_count = 0
             k_line_date = k_line['date']
             k_line_pct_chg = k_line['pct_chg']
             k_line_close = k_line['close']
             if k_line_pct_chg < pct_change_max_i:
                 continue
+            zt_first_time = None
             minute_k_line_list = c_fetcher.get_stock_list_minute_kline_list([code], k_line_date, k_line_date)
             if minute_k_line_list:
                 for minute_k_line in minute_k_line_list[0]:
                     minute_k_line_close = minute_k_line['close']
+                    total_minute_count += 1
                     if minute_k_line_close == k_line_close:
-                        zt_minute_list.append(minute_k_line['date'])
-                        break
-        if len(zt_minute_list) != len(max_pct_chg_index_list):
+                        if not zt_first_time:
+                            zt_first_time = minute_k_line['date']
+                        zt_minute_count += 1
+            zt_list.append({'zt_first_time': zt_first_time, 'zt_minute_count': zt_minute_count, 'total_minute_count': total_minute_count})
+        if len(zt_list) != len(max_pct_chg_index_list):
             return False, 'bbb'
         # print(zt_minute_list)
         zt_minute_ok_list = []
-        for zt_minute in zt_minute_list:
-            time_obj = datetime.strptime(zt_minute, "%Y-%m-%d %H:%M")
+        for idx, zt in enumerate(zt_list):
+            zt_first_time = zt['zt_first_time']
+            zt_minute_ratio = round(100*zt['zt_minute_count'] / zt['total_minute_count'], 2)
+            # print(zt_first_time, zt_minute_ratio)
+            if idx == 0 and zt_minute_ratio < 95:
+                zt_minute_ok_list.append(False)
+                continue
+            time_obj = datetime.strptime(zt_first_time, "%Y-%m-%d %H:%M")
             hour = time_obj.hour
             minute = time_obj.minute
-            if hour <= 9 and minute <= 50:
+            if hour <= 9 and minute <= 45:
                 zt_minute_ok_list.append(True)
             else:
                 zt_minute_ok_list.append(False)
