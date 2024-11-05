@@ -867,6 +867,7 @@ class Strategist(object):
         open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=3, open_close_ratio_mim=-2)
         if open_high:
             return False, 'a'
+        # print(k_line_list[-1]['close'])
         range_days = 8
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
         temp_k_line_list = k_line_list[-range_days - 1:-1]
@@ -875,7 +876,7 @@ class Strategist(object):
         for i, v in enumerate(max_pct_chg_binary_list):
             if v == 1:
                 max_pct_chg_index_list.append(i)
-        if len(max_pct_chg_index_list) not in [1, 2]:
+        if len(max_pct_chg_index_list) not in [1]:
             return False, "aaa"
         if max_pct_chg_index_list[-1] >= 2:
             return False, "aaa"
@@ -978,8 +979,8 @@ class Strategist(object):
         min_pct_chg = self.get_min_pct_chg(latest_target_days_k_line_list)
         min_pct_chg = self.retain_decimals_no_rounding(min_pct_chg, decimals=1)
         max_pct_chg = self.retain_decimals_no_rounding(max_pct_chg, decimals=1)
-        # # # print(max_pct_chg, min_pct_chg)
-        if max_pct_chg > 9 or min_pct_chg < -7:
+        # print(max_pct_chg, min_pct_chg)
+        if max_pct_chg > 8.5 or min_pct_chg < -7:
             return False, 'fff'
         # min_pct_chg_ratio = round(100*min_pct_chg/t_s_count, 0)
         # max_pct_chg_ratio = round(100*max_pct_chg/t_s_count, 0)
