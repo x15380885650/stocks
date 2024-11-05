@@ -1241,7 +1241,7 @@ class Strategist(object):
         latest_k_line_pct_chg = latest_k_line['pct_chg']
         latest_k_line_pct_chg = self.retain_decimals_no_rounding(latest_k_line_pct_chg, decimals=1)
         # print(f'latest_k_line_pct_chg: {latest_k_line_pct_chg}')
-        if latest_k_line_pct_chg > -1:
+        if latest_k_line_pct_chg >= 0:
             return False, 'aaa'
         latest_prev_k_line = latest_range_days_k_line_list[-2]
         latest_prev_k_line_close = latest_prev_k_line['close']
