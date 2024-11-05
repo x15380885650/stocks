@@ -1226,7 +1226,7 @@ class Strategist(object):
                 max_pct_chg_index_list.append(i)
         if len(max_pct_chg_index_list) not in [3]:
             return False, "aaa"
-        if max_pct_chg_index_list[-1] != 3 and max_pct_chg_index_list[-2] != 2:
+        if max_pct_chg_index_list[-1] != 3 or max_pct_chg_index_list[-2] != 2 or max_pct_chg_index_list[0] != 1:
             return False, "aaa"
         target_index = max_pct_chg_index_list[-1]
         latest_target_days_k_line_list = latest_range_days_k_line_list[target_index + 1:]
@@ -1237,7 +1237,7 @@ class Strategist(object):
         latest_k_line_pct_chg = latest_k_line['pct_chg']
         latest_k_line_pct_chg = self.retain_decimals_no_rounding(latest_k_line_pct_chg, decimals=1)
         # print(f'latest_k_line_pct_chg: {latest_k_line_pct_chg}')
-        if latest_k_line_pct_chg < -7.5 or latest_k_line_pct_chg > -1.5:
+        if latest_k_line_pct_chg > -1:
             return False, 'aaa'
         latest_30_days_high_max = self.get_max_high_price(latest_30_days_k_line_list)
         latest_k_line_high = latest_k_line['high']
