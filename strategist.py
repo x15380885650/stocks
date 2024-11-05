@@ -1049,7 +1049,7 @@ class Strategist(object):
         for i, v in enumerate(max_pct_chg_binary_list):
             if v == 1:
                 max_pct_chg_index_list.append(i)
-        if len(max_pct_chg_index_list) not in [1, 2]:
+        if len(max_pct_chg_index_list) not in [1]:
             return False, "aaa"
         if max_pct_chg_index_list[-1] != 2:
             return False, "aaa"
@@ -1153,7 +1153,7 @@ class Strategist(object):
         min_pct_chg = self.retain_decimals_no_rounding(min_pct_chg, decimals=1)
         max_pct_chg = self.retain_decimals_no_rounding(max_pct_chg, decimals=1)
         # # # print(max_pct_chg, min_pct_chg)
-        if max_pct_chg > 9 or min_pct_chg < -7:
+        if max_pct_chg > 7 or min_pct_chg < -7:
             return False, 'fff'
         # min_pct_chg_ratio = round(100*min_pct_chg/t_s_count, 0)
         # max_pct_chg_ratio = round(100*max_pct_chg/t_s_count, 0)
