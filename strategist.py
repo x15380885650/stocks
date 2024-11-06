@@ -864,11 +864,11 @@ class Strategist(object):
 
     def get_second_strategy_res(self, k_line_list, c_fetcher):
         # code = k_line_list[-1]['code']
-        open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=3, open_close_ratio_mim=-2)
+        open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=3, open_close_ratio_mim=-3)
         if open_high:
             return False, 'a'
         # print(k_line_list[-1]['close'])
-        range_days = 8
+        range_days = 9
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
         temp_k_line_list = k_line_list[-range_days - 1:-1]
         max_pct_chg_binary_list = self.get_max_pct_chg_binary_list(latest_range_days_k_line_list)
@@ -878,11 +878,11 @@ class Strategist(object):
                 max_pct_chg_index_list.append(i)
         if len(max_pct_chg_index_list) not in [1]:
             return False, "aaa"
-        if max_pct_chg_index_list[-1] >= 2:
-            return False, "aaa"
         origin_stock_tech = self.get_stock_tech(k_line_list=k_line_list)
         target_index = max_pct_chg_index_list[-1]
         t_s_count = range_days - target_index - 2
+        if t_s_count not in [5, 6]:
+            return False, 'aaa'
         latest_target_days_k_line_list = latest_range_days_k_line_list[target_index + 1:]
         target_k_line = latest_range_days_k_line_list[target_index]
         target_date_p = target_k_line['date']
