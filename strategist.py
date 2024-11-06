@@ -1459,11 +1459,16 @@ class Strategist(object):
         gt_target_close_days = 0
         gt_target_high_days = 0
         low_p_days = 0
+        open_close_ratio_max = 0
         for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
             open_p = t_k_line['open']
             high_p = t_k_line['high']
             low_p = t_k_line['low']
+            open_close_ratio = 100 * (open_p-close_p)/close_p
+            if open_close_ratio_max < open_close_ratio:
+                open_close_ratio_max = open_close_ratio
+
             if close_p < target_open_p or open_p < target_open_p:
                 return False, 'ddd'
             if low_p < target_open_p:
@@ -1475,6 +1480,9 @@ class Strategist(object):
         gt_target_close_days_ratio = 100 * (gt_target_close_days/t_s_count)
         gt_target_high_days_ratio = 100 * (gt_target_high_days / t_s_count)
         low_p_days_days_ratio = 100 * (low_p_days / t_s_count)
+        print(f'open_close_ratio_max: {open_close_ratio_max}')
+        # if open_close_ratio_max > 15:
+        #     return False, 'ddd'
         if gt_target_close_days_ratio < 20 and gt_target_high_days_ratio < 25:
             return False, 'ddd'
         if low_p_days_days_ratio >= 40:
