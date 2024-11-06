@@ -1220,7 +1220,7 @@ class Strategist(object):
         # if open_high:
         #     return False, 'aaa'
         latest_30_days_k_line_list = k_line_list[-31:-1]
-        range_days = 6
+        range_days = 7
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
         temp_k_line_list = k_line_list[-range_days - 1:-1]
         max_pct_chg_binary_list = self.get_max_pct_chg_binary_list(latest_range_days_k_line_list)
@@ -1228,9 +1228,9 @@ class Strategist(object):
         for i, v in enumerate(max_pct_chg_binary_list):
             if v == 1:
                 max_pct_chg_index_list.append(i)
-        if len(max_pct_chg_index_list) not in [3]:
+        if len(max_pct_chg_index_list) not in [3, 4]:
             return False, "aaa"
-        if max_pct_chg_index_list[-1] != 3 or max_pct_chg_index_list[-2] != 2 or max_pct_chg_index_list[0] != 1:
+        if max_pct_chg_index_list[-1] != 4 or max_pct_chg_index_list[-2] != 3 or max_pct_chg_index_list[-3] != 2:
             return False, "bbb"
         target_index = max_pct_chg_index_list[-1]
         latest_target_days_k_line_list = latest_range_days_k_line_list[target_index + 1:]
@@ -1295,6 +1295,14 @@ class Strategist(object):
         # print(zt_minute_ok_list)
         if not zt_minute_ok_list[0] or not zt_minute_ok_list[1]:
             return False, 'ggg'
+        pct_chg_sum = 0
+        for t_k_line in latest_range_days_k_line_list:
+            pct_chg_sum += t_k_line['pct_chg']
+        t_t_kline_close = latest_range_days_k_line_list[-1]['close']
+        t_t_kline_open = latest_range_days_k_line_list[0]['open']
+        t_t_kline_ratio = 100 * (t_t_kline_close-t_t_kline_open)/t_t_kline_open
+        # if t_t_kline_ratio > 35:
+        #     return False, 'hhh'
         return True, OK
 
     def get_fifth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
