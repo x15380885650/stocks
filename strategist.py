@@ -1301,8 +1301,8 @@ class Strategist(object):
         t_t_kline_close = latest_range_days_k_line_list[-1]['close']
         t_t_kline_open = latest_range_days_k_line_list[0]['open']
         t_t_kline_ratio = 100 * (t_t_kline_close-t_t_kline_open)/t_t_kline_open
-        # if t_t_kline_ratio > 35:
-        #     return False, 'hhh'
+        if t_t_kline_ratio > 35:
+            return False, 'hhh'
         return True, OK
 
     def get_fifth_strategy_res(self, code, k_line_list, min_opt_macd_diff=0):
