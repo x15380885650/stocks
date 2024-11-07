@@ -1482,9 +1482,9 @@ class Strategist(object):
         gt_target_close_days_ratio = 100 * (gt_target_close_days/t_s_count)
         gt_target_high_days_ratio = 100 * (gt_target_high_days / t_s_count)
         low_p_days_days_ratio = 100 * (low_p_days / t_s_count)
-        print(f'open_close_ratio_max: {open_close_ratio_max}')
-        # if open_close_ratio_max > 15:
-        #     return False, 'ddd'
+        # print(f'open_close_ratio_max: {open_close_ratio_max}')
+        if open_close_ratio_max > 15:
+            return False, 'ddd'
         if gt_target_close_days_ratio < 20 and gt_target_high_days_ratio < 25:
             return False, 'ddd'
         if low_p_days_days_ratio >= 40:
