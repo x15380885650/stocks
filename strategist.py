@@ -918,7 +918,9 @@ class Strategist(object):
         close_p_count = 0
         open_p_count = 0
         low_p_count = 0
-        target_open_p_adjust = target_prev_close_p if target_prev_close_p < target_open_p else target_open_p
+        # target_open_p_adjust = target_prev_close_p if target_prev_close_p < target_open_p else target_open_p
+        # print(target_prev_close_p, target_open_p)
+        target_open_p_adjust = target_open_p
         for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
             open_p = t_k_line['open']
