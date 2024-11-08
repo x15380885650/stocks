@@ -895,9 +895,9 @@ class Strategist(object):
         return False, 'a'
 
     def get_fourth_strategy_res(self, k_line_list, c_fetcher):
-        # open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=5, open_close_ratio_mim=-11)
-        # if open_high:
-        #     return False, 'aaa'
+        open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=5, open_close_ratio_mim=-11)
+        if open_high:
+            return False, 'aaa'
         latest_30_days_k_line_list = k_line_list[-31:-1]
         range_days = 7
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
@@ -925,8 +925,8 @@ class Strategist(object):
         latest_prev_k_line = latest_range_days_k_line_list[-2]
         latest_prev_k_line_close = latest_prev_k_line['close']
         now_k_line_open = k_line_list[-1]['open']
-        # if now_k_line_open >= latest_prev_k_line_close:
-        #     return False, 'aaa'
+        if now_k_line_open >= latest_prev_k_line_close:
+            return False, 'aaa'
         # print(latest_prev_k_line_close, now_k_line_open)
         latest_30_days_high_max = self.get_max_high_price(latest_30_days_k_line_list)
         latest_k_line_high = latest_k_line['high']
