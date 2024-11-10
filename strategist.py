@@ -927,7 +927,7 @@ class Strategist(object):
         now_k_line_open = k_line_list[-1]['open']
         latest_prev_k_line_close_ratio = 100 * (latest_prev_k_line_close-now_k_line_open)/now_k_line_open
         # print(now_k_line_open, latest_prev_k_line_close, latest_prev_k_line_close_ratio)
-        if latest_prev_k_line_close_ratio < 2:
+        if latest_prev_k_line_close_ratio <= 0:
             return False, 'aaa'
         # print(latest_prev_k_line_close, now_k_line_open)
         latest_30_days_high_max = self.get_max_high_price(latest_30_days_k_line_list)
