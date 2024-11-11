@@ -828,7 +828,7 @@ class Strategist(object):
                 pct_chg_gt_0_list.append(pct_chg_p)
             t_t_ratio = 100 * (high_p - prev_close_p) / prev_close_p
             t_t_ratio_2 = 100 * (high_p - open_p) / open_p
-            if t_t_ratio > 5 and t_t_ratio_2 < 2:
+            if t_t_ratio > 6 and t_t_ratio_2 < 3:
                 return False, 'fff'
         max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
         min_pct_chg = self.get_min_pct_chg(latest_target_days_k_line_list)
@@ -1034,7 +1034,6 @@ class Strategist(object):
         max_pct_chg_index_list_len = len(max_pct_chg_index_list)
         if max_pct_chg_index_list_len not in [2, 3, 4]:
             return False, "aaa"
-
         if max_pct_chg_index_list_len == 2:
             if max_pct_chg_index_list[-1] - max_pct_chg_index_list[-2] > 1:
                 return False, "aaa"
@@ -1043,6 +1042,15 @@ class Strategist(object):
                 return False, "aaa"
         if max_pct_chg_index_list[-1] > 11 or max_pct_chg_index_list[-1] < 6:
             return False, "aaa"
+        kkk_pct_chg_sum = 0
+        for kkk in latest_range_days_k_line_list[max_pct_chg_index_list[0]: max_pct_chg_index_list[-1] + 1]:
+            kkk_pct_chg_sum += kkk['pct_chg']
+        if kkk_pct_chg_sum > 35:
+            return False, "aaa"
+        diffs = [max_pct_chg_index_list[i + 1] - max_pct_chg_index_list[i] for i in
+                 range(len(max_pct_chg_index_list) - 1)]
+        if 1 not in diffs:
+            return False, 'aaa'
         target_k_line_ok = self.is_target_k_line_ok(range_days, k_line_list, max_pct_chg_index_list, latest_range_days_k_line_list)
         if not target_k_line_ok:
             return False, "aaa"
@@ -1088,10 +1096,16 @@ class Strategist(object):
         low_p_days = 0
         open_close_ratio_max = 0
         for t_k_line in latest_target_days_k_line_list:
-            close_p = t_k_line['close']
+            prev_close_p = t_k_line['prev_close']
             open_p = t_k_line['open']
             high_p = t_k_line['high']
+            close_p = t_k_line['close']
             low_p = t_k_line['low']
+            pct_chg = t_k_line['pct_chg']
+            t_t_ratio = 100 * (high_p - prev_close_p) / prev_close_p
+            t_t_ratio_2 = 100 * (high_p - open_p) / open_p
+            if t_t_ratio > 6 and t_t_ratio_2 < 3 and pct_chg < -4:
+                return False, 'fff'
             open_close_ratio = 100 * (open_p-close_p)/close_p
             if open_close_ratio_max < open_close_ratio:
                 open_close_ratio_max = open_close_ratio
