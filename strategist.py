@@ -821,14 +821,14 @@ class Strategist(object):
             prev_close_p = t_k_line['prev_close']
             open_p = t_k_line['open']
             high_p = t_k_line['high']
+            close_p = t_k_line['close']
             pct_chg_p = t_k_line['pct_chg']
             if pct_chg_p < 0:
                 pct_chg_lt_0_list.append(pct_chg_p)
             if pct_chg_p > 0:
                 pct_chg_gt_0_list.append(pct_chg_p)
-            t_t_ratio = 100 * (high_p - prev_close_p) / prev_close_p
-            t_t_ratio_2 = 100 * (high_p - open_p) / open_p
-            if t_t_ratio > 6 and t_t_ratio_2 < 3:
+            t_t_ratio_3 = 100 * (high_p - close_p)/close_p
+            if t_t_ratio_3 > 11:
                 return False, 'fff'
         max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
         min_pct_chg = self.get_min_pct_chg(latest_target_days_k_line_list)
@@ -1102,9 +1102,8 @@ class Strategist(object):
             close_p = t_k_line['close']
             low_p = t_k_line['low']
             pct_chg = t_k_line['pct_chg']
-            t_t_ratio = 100 * (high_p - prev_close_p) / prev_close_p
-            t_t_ratio_2 = 100 * (high_p - open_p) / open_p
-            if t_t_ratio > 6 and t_t_ratio_2 < 3 and pct_chg < -4:
+            t_t_ratio_3 = 100 * (high_p - close_p) / close_p
+            if t_t_ratio_3 > 12 and pct_chg < -4:
                 return False, 'fff'
             open_close_ratio = 100 * (open_p-close_p)/close_p
             if open_close_ratio_max < open_close_ratio:
