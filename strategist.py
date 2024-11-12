@@ -843,6 +843,21 @@ class Strategist(object):
         # if min_pct_chg_ratio > -50 or max_pct_chg_ratio < 45:
         #     return False, 'fff'
 
+        t_3_k_line = latest_target_days_k_line_list[0]
+        t_1_k_line = latest_range_days_k_line_list[target_index]
+        t_3_k_line_green_ok = self.is_green(t_3_k_line)
+        if t_3_k_line_green_ok:
+            t_1_k_line_close = t_1_k_line['close']
+            t_3_k_line_high = t_3_k_line['high']
+            t_3_k_line_open = t_3_k_line['open']
+            t_3_k_pct_chg = t_3_k_line['pct_chg']
+            t_t_ratio = 100 * (t_3_k_line_high - t_1_k_line_close) / t_1_k_line_close
+            t_t_ratio_2 = 100 * (t_3_k_line_high - t_3_k_line_open) / t_3_k_line_open
+            t_t_ratio = self.retain_decimals_no_rounding(t_t_ratio, 1)
+            print(f't_t_ratio:{t_t_ratio}, t_3_k_pct_chg:{t_3_k_pct_chg}')
+            if t_t_ratio > 9 or t_3_k_pct_chg > 3:
+                return False, 'fff'
+
         boll_days_30_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count+1)
         boll_days_20_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=20,days_interval=t_s_count + 1)
         boll_days_30_count___ratio = 100 * boll_days_30_count___ / (t_s_count+1)
