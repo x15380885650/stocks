@@ -940,7 +940,7 @@ class Strategist(object):
         latest_prev_k_line_close = latest_prev_k_line['close']
         now_k_line_open = k_line_list[-1]['open']
         latest_prev_k_line_close_ratio = 100 * (latest_prev_k_line_close-now_k_line_open)/now_k_line_open
-        if latest_prev_k_line_close_ratio <= 1:
+        if latest_prev_k_line_close_ratio <= 0:
             return False, 'aaa'
         latest_30_days_high_max = self.get_max_high_price(latest_30_days_k_line_list)
         latest_k_line_high = latest_k_line['high']
@@ -994,7 +994,7 @@ class Strategist(object):
         t_t_kline_close = latest_range_days_k_line_list[-1]['close']
         t_t_kline_open = latest_range_days_k_line_list[0]['open']
         t_t_kline_ratio = 100 * (t_t_kline_close-t_t_kline_open)/t_t_kline_open
-        if t_t_kline_ratio > 32:
+        if t_t_kline_ratio > 35:
             return False, 'hhh'
         return True, OK
 
