@@ -1021,7 +1021,11 @@ class Strategist(object):
                 target_v_k_line_open = target_v_k_line['open']
                 target_v_k_line_close = target_v_k_line['close']
                 # if not (boll_day_price < target_v_k_line_close and boll_day_price < target_v_k_line_open):
-                if boll_day_price < target_v_k_line_open:
+                # print(boll_day_price, target_v_k_line_open)
+                boll_day_price = round(boll_day_price, 1)
+                target_v_k_line_open = round(target_v_k_line_open, 1)
+                # print(boll_day_price, target_v_k_line_open)
+                if boll_day_price <= target_v_k_line_open:
                     target_v_k_line_interval_ok = True
                     break
             if target_v_k_line_interval_ok:
@@ -1031,7 +1035,8 @@ class Strategist(object):
             if v_v_v == max_pct_chg_index_list[-2]:
                 return True
         else:
-            if v_v_v == max_pct_chg_index_list[0] or v_v_v == max_pct_chg_index_list[0]-1:
+            # if v_v_v == max_pct_chg_index_list[0] or v_v_v == max_pct_chg_index_list[0]-1:
+            if v_v_v == max_pct_chg_index_list[0]:
                 return True
         return False
 
