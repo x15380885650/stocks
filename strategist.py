@@ -721,6 +721,13 @@ class Strategist(object):
         if open_high:
             return False, 'a'
         # print(k_line_list[-1]['close'])
+        s_pct_chg_sum = 0
+        for s in k_line_list[-20:-1]:
+            pct_chg = s['pct_chg']
+            s_pct_chg_sum += pct_chg
+        s_pct_chg_sum = self.retain_decimals_no_rounding(s_pct_chg_sum, decimals=0)
+        if s_pct_chg_sum > 45:
+            return False, 'aaa'
         range_days = 9
         latest_range_days_k_line_list = k_line_list[-range_days:-1]
         temp_k_line_list = k_line_list[-range_days - 1:-1]
@@ -854,7 +861,7 @@ class Strategist(object):
             t_t_ratio = 100 * (t_3_k_line_high - t_1_k_line_close) / t_1_k_line_close
             t_t_ratio_2 = 100 * (t_3_k_line_high - t_3_k_line_open) / t_3_k_line_open
             t_t_ratio = self.retain_decimals_no_rounding(t_t_ratio, 1)
-            print(f't_t_ratio:{t_t_ratio}, t_3_k_pct_chg:{t_3_k_pct_chg}')
+            # print(f't_t_ratio:{t_t_ratio}, t_3_k_pct_chg:{t_3_k_pct_chg}')
             if t_t_ratio > 9 or t_3_k_pct_chg > 3:
                 return False, 'fff'
 
