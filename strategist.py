@@ -1015,20 +1015,24 @@ class Strategist(object):
         target_v_k_line_interval_ok = False
         for idx, target_v_k_line in enumerate(latest_range_days_k_line_list[target_v_k_line_index::-1]):
             target_v_k_line_interval = idx
-            for day in [5, 10, 20]:
+            for day in [5, 10]:
                 boll_day = stock_tech['boll_{}'.format(day)]
                 boll_day_price = round(boll_day.iloc[-range_days + target_v_k_line_index - idx], 2)
                 target_v_k_line_open = target_v_k_line['open']
                 target_v_k_line_close = target_v_k_line['close']
-                if not (boll_day_price < target_v_k_line_close and boll_day_price < target_v_k_line_open):
+                # if not (boll_day_price < target_v_k_line_close and boll_day_price < target_v_k_line_open):
+                if boll_day_price < target_v_k_line_open:
                     target_v_k_line_interval_ok = True
                     break
             if target_v_k_line_interval_ok:
                 break
         v_v_v = target_v_k_line_index - target_v_k_line_interval
-        # print(max_pct_chg_index_list, v_v_v)
-        if v_v_v == max_pct_chg_index_list[0] or v_v_v == max_pct_chg_index_list[1]:
-            return True
+        if len(max_pct_chg_index_list) > 2:
+            if v_v_v == max_pct_chg_index_list[-2]:
+                return True
+        else:
+            if v_v_v == max_pct_chg_index_list[0] or v_v_v == max_pct_chg_index_list[0]-1:
+                return True
         return False
 
     def get_sixth_strategy_res(self, k_line_list, c_fetcher):
