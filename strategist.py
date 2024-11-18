@@ -541,11 +541,12 @@ class Strategist(object):
         sat_day = 0
         for i in range(2, days+1):
             close_price = k_line_list[-i]['close']
+            open_price = k_line_list[-i]['open']
             ma_5_price = round(stock_tech['boll_{}'.format(5)].iloc[-i], 2)
             ma_10_price = round(stock_tech['boll_{}'.format(10)].iloc[-i], 2)
             ma_20_price = round(stock_tech['boll_{}'.format(20)].iloc[-i], 2)
             ma_30_price = round(stock_tech['boll_{}'.format(30)].iloc[-i], 2)
-            if close_price >= ma_5_price or close_price >= ma_10_price:
+            if close_price >= ma_5_price or close_price >= ma_10_price or open_price >= ma_5_price or open_price >= ma_10_price:
                 sat_day += 1
             else:
                 break
@@ -819,7 +820,7 @@ class Strategist(object):
         t_l_1_ratio = self.retain_decimals_no_rounding(t_l_1_ratio, decimals=1)
         t_l_2_ratio = self.retain_decimals_no_rounding(t_l_2_ratio, decimals=1)
         # print(f't_l_1_ratio: {t_l_1_ratio}, t_l_2_ratio: {t_l_2_ratio}')
-        if t_l_1_ratio < -8 or t_l_2_ratio < -6:
+        if t_l_1_ratio < -8 or t_l_2_ratio < -7:
             return False, 'fff'
         #
         pct_chg_lt_0_list = []
@@ -862,7 +863,8 @@ class Strategist(object):
             t_t_ratio_2 = 100 * (t_3_k_line_high - t_3_k_line_open) / t_3_k_line_open
             t_t_ratio = self.retain_decimals_no_rounding(t_t_ratio, 1)
             # print(f't_t_ratio:{t_t_ratio}, t_3_k_pct_chg:{t_3_k_pct_chg}')
-            if t_t_ratio > 9 or t_3_k_pct_chg > 3:
+            # if t_t_ratio > 9 and t_3_k_pct_chg > 3:
+            if t_t_ratio > 9:
                 return False, 'fff'
 
         boll_days_30_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count+1)
