@@ -808,6 +808,10 @@ class Strategist(object):
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
         # print(down_num, down_num_2, t_s_count)
+        if down_num >= 5 or down_num_2 >= 5:
+            return False, 'eee'
+        if down_num <= 1 or down_num_2 <= 1:
+            return False, 'eee'
         if down_num + down_num_2 <= 3:
             return False, 'eee'
         if down_num not in [2, 3, 4] and down_num_2 not in [2, 3, 4]:
