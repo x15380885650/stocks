@@ -799,7 +799,7 @@ class Strategist(object):
         low_p_count_ratio = 100 * (low_p_count/t_s_count)
         low_p_count_ratio = self.retain_decimals_no_rounding(low_p_count_ratio, decimals=0)
         close_open_p_count_ratio = 100 * close_open_p_count / t_s_count
-        # print(low_p_count, t_s_count, low_p_count_ratio, close_open_p_count_ratio)
+        # print(low_p_count_ratio, close_open_p_count_ratio)
         if low_p_count_ratio > 70:
             return False, 'ddd'
         if close_open_p_count_ratio < 40:
@@ -824,36 +824,24 @@ class Strategist(object):
         t_l_1_ratio = self.retain_decimals_no_rounding(t_l_1_ratio, decimals=1)
         t_l_2_ratio = self.retain_decimals_no_rounding(t_l_2_ratio, decimals=1)
         # print(f't_l_1_ratio: {t_l_1_ratio}, t_l_2_ratio: {t_l_2_ratio}')
-        if t_l_1_ratio < -8 or t_l_2_ratio < -7:
+        if t_l_1_ratio < -8 or t_l_2_ratio < -8:
             return False, 'fff'
-        #
-        pct_chg_lt_0_list = []
-        pct_chg_gt_0_list = []
+
         for t_k_line in latest_target_days_k_line_list:
             prev_close_p = t_k_line['prev_close']
             open_p = t_k_line['open']
             high_p = t_k_line['high']
             close_p = t_k_line['close']
-            pct_chg_p = t_k_line['pct_chg']
-            if pct_chg_p < 0:
-                pct_chg_lt_0_list.append(pct_chg_p)
-            if pct_chg_p > 0:
-                pct_chg_gt_0_list.append(pct_chg_p)
             t_t_ratio_3 = 100 * (high_p - close_p)/close_p
             if t_t_ratio_3 > 11:
                 return False, 'fff'
         max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
         min_pct_chg = self.get_min_pct_chg(latest_target_days_k_line_list)
-        min_pct_chg = self.retain_decimals_no_rounding(min_pct_chg, decimals=1)
-        max_pct_chg = self.retain_decimals_no_rounding(max_pct_chg, decimals=1)
+        min_pct_chg = self.retain_decimals_no_rounding(min_pct_chg, decimals=0)
+        max_pct_chg = self.retain_decimals_no_rounding(max_pct_chg, decimals=0)
         # print(max_pct_chg, min_pct_chg)
-        if max_pct_chg > 8.5 or min_pct_chg < -7:
+        if max_pct_chg > 8 or min_pct_chg < -8:
             return False, 'fff'
-        # min_pct_chg_ratio = round(100*min_pct_chg/t_s_count, 0)
-        # max_pct_chg_ratio = round(100*max_pct_chg/t_s_count, 0)
-        # print(max_pct_chg, min_pct_chg, t_s_count, min_pct_chg_ratio, max_pct_chg_ratio)
-        # if min_pct_chg_ratio > -50 or max_pct_chg_ratio < 45:
-        #     return False, 'fff'
 
         t_3_k_line = latest_target_days_k_line_list[0]
         t_1_k_line = latest_range_days_k_line_list[target_index]
@@ -861,18 +849,13 @@ class Strategist(object):
         if t_3_k_line_green_ok:
             t_1_k_line_close = t_1_k_line['close']
             t_3_k_line_high = t_3_k_line['high']
-            t_3_k_line_open = t_3_k_line['open']
-            t_3_k_pct_chg = t_3_k_line['pct_chg']
             t_t_ratio = 100 * (t_3_k_line_high - t_1_k_line_close) / t_1_k_line_close
-            t_t_ratio_2 = 100 * (t_3_k_line_high - t_3_k_line_open) / t_3_k_line_open
             t_t_ratio = self.retain_decimals_no_rounding(t_t_ratio, 1)
-            # print(f't_t_ratio:{t_t_ratio}, t_3_k_pct_chg:{t_3_k_pct_chg}')
-            # if t_t_ratio > 9 and t_3_k_pct_chg > 3:
             if t_t_ratio > 9:
                 return False, 'fff'
 
         boll_days_30_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count+1)
-        boll_days_20_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=20,days_interval=t_s_count + 1)
+        boll_days_20_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=20, days_interval=t_s_count+1)
         boll_days_30_count___ratio = 100 * boll_days_30_count___ / (t_s_count+1)
         boll_days_20_count___ratio = 100 * boll_days_20_count___ / (t_s_count+1)
         if boll_days_20_count___ratio != 100 and boll_days_30_count___ratio != 100:
@@ -906,6 +889,7 @@ class Strategist(object):
             return False, 'ggg'
         continue_red_days = self.get_latest_continue_red_days(k_line_list, t_s_count + 1)
         continue_red_days_ratio = 100 * continue_red_days / t_s_count
+        # print(continue_red_days_ratio)
         if continue_red_days_ratio > 20:
             return False, 'ggg'
         diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1)
