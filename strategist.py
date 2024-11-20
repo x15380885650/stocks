@@ -782,10 +782,17 @@ class Strategist(object):
         # target_open_p_adjust = target_prev_close_p if target_prev_close_p < target_open_p else target_open_p
         # print(target_prev_close_p, target_open_p)
         target_open_p_adjust = target_open_p
+        high_prev_close_p_count = 0
         for t_k_line in latest_target_days_k_line_list:
             close_p = t_k_line['close']
             open_p = t_k_line['open']
             low_p = t_k_line['low']
+            high_p = t_k_line['high']
+            prev_close_p = t_k_line['prev_close']
+            high_prev_close_p_ratio = 100 * (high_p-prev_close_p)/prev_close_p
+            if high_prev_close_p_ratio > 9:
+                # print(high_prev_close_p_ratio)
+                high_prev_close_p_count += 1
             if close_p < target_open_p_adjust or open_p < target_open_p_adjust or low_p < target_open_p_adjust:
                 return False, 'ddd'
             if close_p >= target_close_p or open_p >= target_close_p:
@@ -803,6 +810,8 @@ class Strategist(object):
         if low_p_count_ratio > 70:
             return False, 'ddd'
         if close_open_p_count_ratio < 40:
+            return False, 'ddd'
+        if high_prev_close_p_count > 1:
             return False, 'ddd'
 
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
