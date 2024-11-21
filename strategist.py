@@ -855,8 +855,8 @@ class Strategist(object):
                 return False, 'fff'
         max_pct_chg = self.get_max_pct_chg(latest_target_days_k_line_list)
         min_pct_chg = self.get_min_pct_chg(latest_target_days_k_line_list)
-        min_pct_chg = self.retain_decimals_no_rounding(min_pct_chg, decimals=0)
-        max_pct_chg = self.retain_decimals_no_rounding(max_pct_chg, decimals=0)
+        min_pct_chg = round(min_pct_chg, 0)
+        max_pct_chg = round(max_pct_chg, 0)
         # print(max_pct_chg, min_pct_chg)
         if max_pct_chg > 8 or min_pct_chg < -8:
             return False, 'fff'
