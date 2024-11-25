@@ -875,7 +875,7 @@ class Strategist(object):
         max_pct_chg = round(max_pct_chg, 0)
         min_pct_chg = round(min_pct_chg, 0)
         # print(max_pct_chg, min_pct_chg)
-        if max_pct_chg > 8 or min_pct_chg < -7:
+        if max_pct_chg > 8 or min_pct_chg < -8:
             return False, 'fff'
 
         t_3_k_line = latest_target_days_k_line_list[0]
