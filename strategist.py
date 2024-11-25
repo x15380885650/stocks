@@ -718,7 +718,7 @@ class Strategist(object):
 
     def get_second_strategy_res(self, k_line_list, c_fetcher):
         # code = k_line_list[-1]['code']
-        open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=3, open_close_ratio_mim=-3)
+        open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=3, open_close_ratio_mim=-4)
         if open_high:
             return False, 'a'
         now_open_price = k_line_list[-1]['open']
@@ -891,7 +891,7 @@ class Strategist(object):
             t_3_k_line_open_close_ratio = 100 * (t_3_k_line_open - t_3_k_line_close) / t_3_k_line_close
             t_3_k_line_open_close_ratio = round(t_3_k_line_open_close_ratio, 1)
             # print(t_3_k_line_open_close_ratio)
-            if t_t_ratio > 9 or t_3_k_line_open_close_ratio > 4.5:
+            if t_t_ratio > 9 or t_3_k_line_open_close_ratio > 5:
                 return False, 'fff'
 
         boll_days_30_count___ = self.get_close_or_open_price_exceed_ma_days(k_line_list, boll_days=30, days_interval=t_s_count+1)
