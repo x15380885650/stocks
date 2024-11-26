@@ -71,6 +71,7 @@ class Notifier(Ancestor):
                             now_price = stock_kline_list[-1]['close']
                             prev_close = round(now_price / (1 + pct_chg/100), 2)
                             buy_price = round(prev_close * (1 + min_pct_chg_notifier/100), 2)
+                            print(f'prev_close: {prev_close}, min_pct_chg_notifier: {min_pct_chg_monitor}')
                             print('code: {}, name: {}, pct_chg: {}, now_price: {}, buy_price: {}, {}'
                                   .format(code, name, pct_chg, now_price, buy_price, buy_flag))
                             monitor_code_show_count += 1
