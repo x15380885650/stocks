@@ -718,7 +718,7 @@ class Strategist(object):
 
     def get_second_strategy_res(self, k_line_list, c_fetcher):
         # code = k_line_list[-1]['code']
-        open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=3, open_close_ratio_mim=-3)
+        open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=3, open_close_ratio_mim=-4)
         if open_high:
             return False, 'a'
         now_open_price = k_line_list[-1]['open']
