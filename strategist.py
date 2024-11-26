@@ -718,7 +718,7 @@ class Strategist(object):
 
     def get_second_strategy_res(self, k_line_list, c_fetcher):
         # code = k_line_list[-1]['code']
-        open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=3, open_close_ratio_mim=-4)
+        open_high = self.is_open_price_high(k_line_list, open_close_ratio_max=3, open_close_ratio_mim=-3)
         if open_high:
             return False, 'a'
         now_open_price = k_line_list[-1]['open']
@@ -764,7 +764,7 @@ class Strategist(object):
         latest_k_line = latest_target_days_k_line_list[-1]
         latest_close_p = latest_k_line['close']
         l_r_close_ratio = 100 * (latest_close_p - target_close_p) / target_close_p
-        l_r_close_ratio = self.retain_decimals_no_rounding(l_r_close_ratio, 1)
+        l_r_close_ratio = round(l_r_close_ratio, 0)
         # print(l_r_close_ratio, t_s_count)
         l_r_r_close_ratio = (l_r_close_ratio/t_s_count)
         if l_r_r_close_ratio > 1.2:
