@@ -42,7 +42,6 @@ class LargeScreenMonitor(Ancestor):
                 for buy_code, from_monitor_list in buy_code_info.items():
                     code_dict[buy_code] = 1
                 all_code_list = list(code_dict.keys())
-                min_pct_chg_notifier = self.persister.get_min_pct_chg_notifier()
                 sleep_time = self.persister.get_sleep_time_notifier()
                 stock_list_kline_list = c_fetcher.get_stock_list_kline_list(all_code_list, end_date_str, end_date_str)
                 sorted_stock_list_kline_list = sorted(
@@ -62,10 +61,12 @@ class LargeScreenMonitor(Ancestor):
                         if pct_chg > 0:
                             now_price = stock_kline_list[-1]['close']
                             prev_close = round(now_price / (1 + pct_chg/100), 2)
-                            buy_price = round(prev_close * (1 + min_pct_chg_notifier/100), 2)
                             from_monitor_list = monitor_code_info[code]
-                            print('code: {}, name: {}, pct_chg: {}, now_price: {}, buy_price: {}, bought: {}, from: {}'
-                                  .format(code, name, pct_chg, now_price, buy_price, buy_flag, ','.join(from_monitor_list)))
+                            for monitor_source in from_monitor_list:
+                                min_pct_chg_notifier = self.persister.get_min_pct_chg_notifier(key_prefix=monitor_source)
+                                buy_price = round(prev_close * (1 + min_pct_chg_notifier / 100), 2)
+                                print('code: {}, name: {}, pct_chg: {}, now_price: {}, buy_price: {}, bought: {}, from: {}, pct_chg_notifier: {}'
+                                      .format(code, name, pct_chg, now_price, buy_price, buy_flag, monitor_source, min_pct_chg_notifier))
                             monitor_code_show_count += 1
             except Exception as e:
                 print(e)

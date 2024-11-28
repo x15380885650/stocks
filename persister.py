@@ -127,11 +127,14 @@ class Persister(object):
                 code_list.append(code)
         return code_list
 
-    def get_min_pct_chg_notifier(self):
-        key = '{}:min_pct_chg_notifier'.format(self.key_prefix)
+    def get_min_pct_chg_notifier(self, key_prefix=None):
+        if not key_prefix:
+            key = '{}:min_pct_chg_notifier'.format(self.key_prefix)
+        else:
+            key = '{}:min_pct_chg_notifier'.format(key_prefix)
         pct_chg = self.redis.get(key)
         if pct_chg is None:
-            pct_chg = 6.5
+            pct_chg = 6
             self.redis.set(key, pct_chg)
         return float(pct_chg)
 
