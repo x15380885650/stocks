@@ -33,8 +33,8 @@ class SixthMonitor(Monitor):
         super(SixthMonitor, self).__init__(key_prefix='monitor_6')
         self.test_code_dict = TEST_CODE_DICT
 
-    def get_strategy_res(self, k_line_list, c_fetcher):
-        return self.strategist.get_sixth_strategy_res(k_line_list, c_fetcher)
+    def get_strategy_res(self, stock_kline_list, c_fetcher, is_test=False):
+        return self.strategist.get_sixth_strategy_res(stock_kline_list, c_fetcher, is_test=is_test)
 
 
 if __name__ == '__main__':

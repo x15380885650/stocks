@@ -59,8 +59,8 @@ class SecondMonitor(Monitor):
         super(SecondMonitor, self).__init__(key_prefix='monitor_2')
         self.test_code_dict = TEST_CODE_DICT
 
-    def get_strategy_res(self, stock_kline_list, c_fetcher):
-        return self.strategist.get_second_strategy_res(stock_kline_list, c_fetcher)
+    def get_strategy_res(self, stock_kline_list, c_fetcher, is_test=False):
+        return self.strategist.get_second_strategy_res(stock_kline_list, c_fetcher, is_test=is_test)
 
 
 if __name__ == '__main__':

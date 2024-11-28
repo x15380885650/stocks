@@ -15,7 +15,7 @@ class Monitor(Ancestor):
         self.test_code_dict = {}
         self.strategist = Strategist()
 
-    def get_strategy_res(self, stock_kline_list, c_fetcher):
+    def get_strategy_res(self, stock_kline_list, c_fetcher, is_test=False):
         raise NotImplementedError
         
     def run(self):
@@ -36,7 +36,7 @@ class Monitor(Ancestor):
                     code = stock_kline_list[-1]['code']
                     if len(stock_kline_list) < int(self.stock_days / 2):
                         continue
-                    res_ok, cond = self.get_strategy_res(stock_kline_list, c_fetcher)
+                    res_ok, cond = self.get_strategy_res(stock_kline_list, c_fetcher, is_test=True)
                     if res_ok:
                         s_count += 1
             print('s_count: {}, test_count: {}'.format(s_count, len(self.test_code_dict)))
@@ -110,7 +110,7 @@ class Monitor(Ancestor):
                             exclude_stock_set.add(code)
                             continue
                         monitor_stock_count += 1
-                        res_ok, cond = self.get_strategy_res(stock_kline_list, c_fetcher)
+                        res_ok, cond = self.get_strategy_res(stock_kline_list, c_fetcher, is_test=False)
                         cond_dict[cond].add(code)
                         if not res_ok:
                             exclude_stock_set.add(code)
