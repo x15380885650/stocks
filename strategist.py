@@ -984,7 +984,18 @@ class Strategist(object):
         if latest_k_line_high != latest_30_days_high_max:
             return False, 'eee'
         latest_k_line_open = latest_k_line['open']
+        latest_k_line_close = latest_k_line['close']
+        latest_k_line_low = latest_k_line['low']
         # print(latest_k_line_open, latest_prev_k_line_close)
+        latest_k_line_open_close_ratio = 100 * (latest_k_line_open-latest_k_line_close)/latest_k_line_close
+        latest_k_line_high_open_ratio = 100 * (latest_k_line_high-latest_k_line_open)/latest_k_line_open
+        latest_k_line_close_low_ratio = 100 * (latest_k_line_close - latest_k_line_low) / latest_k_line_low
+        if latest_k_line_close_low_ratio > 5:
+            return False, 'eee'
+        if latest_k_line_high_open_ratio > 7:
+            return False, 'eee'
+        if latest_k_line_open_close_ratio < 5:
+            return False, 'eee'
         if latest_k_line_open < latest_prev_k_line_close:
             return False, 'eee'
         if not is_test:
