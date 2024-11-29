@@ -930,7 +930,7 @@ class Strategist(object):
         continue_red_days = self.get_latest_continue_red_days(k_line_list, t_s_count + 1)
         continue_red_days_ratio = 100 * continue_red_days / t_s_count
         # print(continue_red_days_ratio)
-        if continue_red_days_ratio > 20:
+        if continue_red_days_ratio > 40:
             return False, 'ggg'
         diff_sat_count = self.get_diff_sat_count(k_line_list, t_s_count + 1)
         diff_sat_count_ratio = 100 * diff_sat_count / t_s_count
@@ -1055,34 +1055,36 @@ class Strategist(object):
         return False, 'a'
 
     def is_target_k_line_ok(self, range_days, k_line_list, max_pct_chg_index_list, latest_range_days_k_line_list):
-        stock_tech = self.get_stock_tech(k_line_list=k_line_list)
-        target_v_k_line_index = max_pct_chg_index_list[-2]
-        target_v_k_line_interval = -1
-        target_v_k_line_interval_ok = False
-        for idx, target_v_k_line in enumerate(latest_range_days_k_line_list[target_v_k_line_index::-1]):
-            target_v_k_line_interval = idx
-            for day in [5, 10]:
-                boll_day = stock_tech['boll_{}'.format(day)]
-                boll_day_price = round(boll_day.iloc[-range_days + target_v_k_line_index - idx], 2)
-                target_v_k_line_open = target_v_k_line['open']
-                target_v_k_line_close = target_v_k_line['close']
-                # if not (boll_day_price < target_v_k_line_close and boll_day_price < target_v_k_line_open):
-                # print(boll_day_price, target_v_k_line_open)
-                boll_day_price = round(boll_day_price, 1)
-                target_v_k_line_open = round(target_v_k_line_open, 1)
-                # print(boll_day_price, target_v_k_line_open)
-                if boll_day_price <= target_v_k_line_open:
-                    target_v_k_line_interval_ok = True
-                    break
-            if target_v_k_line_interval_ok:
-                break
-        v_v_v = target_v_k_line_index - target_v_k_line_interval
-        if len(max_pct_chg_index_list) > 2:
-            if v_v_v == max_pct_chg_index_list[-2]:
+        if len(max_pct_chg_index_list) == 2:
+            temp_k_line = latest_range_days_k_line_list[max_pct_chg_index_list[0]-1]
+            origin_stock_tech = self.get_stock_tech(k_line_list=k_line_list)
+            ma_5_val = self.get_one_day_ma(origin_stock_tech, ma_day=5, date_str=temp_k_line['date'])
+            ma_10_val = self.get_one_day_ma(origin_stock_tech, ma_day=10, date_str=temp_k_line['date'])
+            temp_k_line_open = temp_k_line['open']
+            temp_k_line_close = temp_k_line['close']
+            temp_k_line_low_val = temp_k_line_open if temp_k_line_open < temp_k_line_close else temp_k_line_close
+            if temp_k_line_low_val >= ma_5_val and temp_k_line_low_val >= ma_10_val:
                 return True
         else:
-            # if v_v_v == max_pct_chg_index_list[0] or v_v_v == max_pct_chg_index_list[0]-1:
-            if v_v_v == max_pct_chg_index_list[0]:
+            stock_tech = self.get_stock_tech(k_line_list=k_line_list)
+            target_v_k_line_index = max_pct_chg_index_list[-2]
+            target_v_k_line_interval = -1
+            target_v_k_line_interval_ok = False
+            for idx, target_v_k_line in enumerate(latest_range_days_k_line_list[target_v_k_line_index::-1]):
+                target_v_k_line_interval = idx
+                for day in [5, 10]:
+                    boll_day = stock_tech['boll_{}'.format(day)]
+                    boll_day_price = round(boll_day.iloc[-range_days + target_v_k_line_index - idx], 2)
+                    target_v_k_line_open = target_v_k_line['open']
+                    boll_day_price = round(boll_day_price, 1)
+                    target_v_k_line_open = round(target_v_k_line_open, 1)
+                    if boll_day_price <= target_v_k_line_open:
+                        target_v_k_line_interval_ok = True
+                        break
+                if target_v_k_line_interval_ok:
+                    break
+            v_v_v = target_v_k_line_index - target_v_k_line_interval
+            if v_v_v == max_pct_chg_index_list[-2]:
                 return True
         return False
 
@@ -1107,7 +1109,7 @@ class Strategist(object):
                 v_k_line_close = v_k_line['close']
                 if v_k_line_open == v_k_line_close:
                     v_k_line_count += 1
-
+        # print(max_pct_chg_index_list)
         max_pct_chg_index_list_len = len(max_pct_chg_index_list)
         if max_pct_chg_index_list_len not in [2, 3, 4]:
             return False, "aaa"
@@ -1126,6 +1128,9 @@ class Strategist(object):
             return False, "aaa"
         diffs = [max_pct_chg_index_list[i + 1] - max_pct_chg_index_list[i] for i in
                  range(len(max_pct_chg_index_list) - 1)]
+        max_diff = max(diffs)
+        if max_diff > 7:
+            return False, 'aaa'
         if 1 not in diffs:
             return False, 'aaa'
         target_k_line_ok = self.is_target_k_line_ok(range_days, k_line_list, max_pct_chg_index_list, latest_range_days_k_line_list)
@@ -1169,6 +1174,7 @@ class Strategist(object):
             return False, 'ccc'
         #
         gt_target_close_days = 0
+        less_target_open_days = 0
         gt_target_high_days = 0
         low_p_days = 0
         open_close_ratio_max = 0
@@ -1194,16 +1200,26 @@ class Strategist(object):
                 gt_target_close_days += 1
             if high_p >= target_close_p:
                 gt_target_high_days += 1
+            if open_p <= target_close_p:
+                less_target_open_days += 1
+
         gt_target_close_days_ratio = 100 * (gt_target_close_days/t_s_count)
-        gt_target_high_days_ratio = 100 * (gt_target_high_days / t_s_count)
-        low_p_days_days_ratio = 100 * (low_p_days / t_s_count)
+        gt_target_high_days_ratio = 100 * (gt_target_high_days/t_s_count)
+        low_p_days_days_ratio = 100 * (low_p_days/t_s_count)
+        less_target_open_days_ratio = 100 * (less_target_open_days/t_s_count)
         # print(f'open_close_ratio_max: {open_close_ratio_max}')
+        # print(less_target_open_days, t_s_count)
+        if less_target_open_days_ratio == 100:
+            return False, 'ddd'
         if open_close_ratio_max > 15:
             return False, 'ddd'
-        if gt_target_close_days_ratio < 20 and gt_target_high_days_ratio < 25:
+        if gt_target_close_days_ratio < 10:
+            return False, 'ddd'
+        if gt_target_high_days_ratio < 25:
             return False, 'ddd'
         if low_p_days_days_ratio >= 40:
             return False, 'ddd'
+
 
         up_num, down_num = self.get_up_and_down_num(latest_target_days_k_line_list)
         up_num_2, down_num_2 = self.get_up_and_down_num_2(latest_target_days_k_line_list)
