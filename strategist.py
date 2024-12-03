@@ -988,13 +988,14 @@ class Strategist(object):
         latest_k_line_open_close_ratio = 100 * (latest_k_line_open - latest_k_line_close) / latest_k_line_close
         latest_k_line_high_open_ratio = 100 * (latest_k_line_high - latest_k_line_open) / latest_k_line_open
         latest_k_line_close_low_ratio = 100 * (latest_k_line_close - latest_k_line_low) / latest_k_line_low
-        if latest_k_line_close_low_ratio > 5:
+        latest_k_line_open_prev_close_ratio = 100 * (latest_k_line_open - latest_prev_k_line_close) / latest_prev_k_line_close
+        if latest_k_line_close_low_ratio > 4.5:
             return False, 'eee'
-        if latest_k_line_high_open_ratio > 7:
+        if latest_k_line_high_open_ratio > 6.5:
             return False, 'eee'
         if latest_k_line_open_close_ratio < 5:
             return False, 'eee'
-        if latest_k_line_open < latest_prev_k_line_close:
+        if latest_k_line_open_prev_close_ratio < 0.5:
             return False, 'eee'
         if not is_test:
             code = latest_range_days_k_line_list[-1]['code']
@@ -1093,14 +1094,15 @@ class Strategist(object):
         # print(latest_k_line_open, latest_prev_k_line_close)
         latest_k_line_open_close_ratio = 100 * (latest_k_line_open-latest_k_line_close)/latest_k_line_close
         latest_k_line_high_open_ratio = 100 * (latest_k_line_high-latest_k_line_open)/latest_k_line_open
-        latest_k_line_close_low_ratio = 100 * (latest_k_line_close - latest_k_line_low) / latest_k_line_low
-        if latest_k_line_close_low_ratio > 5:
+        latest_k_line_close_low_ratio = 100 * (latest_k_line_close - latest_k_line_low)/latest_k_line_low
+        latest_k_line_open_prev_close_ratio = 100 * (latest_k_line_open-latest_prev_k_line_close)/latest_prev_k_line_close
+        if latest_k_line_close_low_ratio > 4.5:
             return False, 'eee'
-        if latest_k_line_high_open_ratio > 7:
+        if latest_k_line_high_open_ratio > 6.5:
             return False, 'eee'
         if latest_k_line_open_close_ratio < 5:
             return False, 'eee'
-        if latest_k_line_open < latest_prev_k_line_close:
+        if latest_k_line_open_prev_close_ratio < 0.5:
             return False, 'eee'
         if not is_test:
             code = latest_range_days_k_line_list[-1]['code']
